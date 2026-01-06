@@ -1,0 +1,2002 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyFlow - Master Your Prep</title>
+    
+    <!-- Performance Optimization: Preconnect & DNS Prefetch -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+    <link rel="dns-prefetch" href="https://unpkg.com">
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://www.gstatic.com">
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Defer non-critical scripts to unblock rendering -->
+    <script src="https://unpkg.com/lucide@latest" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class', // Enable manual dark mode toggle
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#f0f9ff', 100: '#e0f2fe', 200: '#bae6fd', 300: '#7dd3fc', 400: '#38bdf8', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 800: '#075985', 900: '#0c4a6e', 950: '#082f49' },
+                        backlog: { 50: '#fff7ed', 100: '#ffedd5', 500: '#f97316', 600: '#ea580c' },
+                        // Custom dark mode palette adjustments
+                        dark: {
+                            bg: '#020617', // Slate 950
+                            card: '#0f172a', // Slate 900
+                            border: '#1e293b' // Slate 800
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+        // Inline script to prevent FOUC (Flash of Unstyled Content) and default to DARK
+        if (localStorage.theme === 'light') {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+    <style>
+        /* Smooth Theme Transition */
+        html { transition: background-color 0.3s, color 0.3s; }
+        
+        /* Optimization: Prevent FOUC (Flash of Unstyled Content) */
+        body { visibility: hidden; opacity: 0; transition: opacity 0.3s ease-in; }
+        body.loaded { visibility: visible; opacity: 1; }
+
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+        .dark .custom-scroll::-webkit-scrollbar-thumb { background-color: #334155; }
+        
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(8px); }
+        .dark .glass { background: rgba(15, 23, 42, 0.9); }
+        
+        .card-transition { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        /* Mobile Menu Transition */
+        #mobile-menu-overlay { transition: opacity 0.3s ease; }
+        #mobile-sidebar { transition: transform 0.3s ease; }
+        .menu-open #mobile-menu-overlay { opacity: 1; pointer-events: auto; }
+        .menu-open #mobile-sidebar { transform: translateX(0); }
+        .menu-closed #mobile-menu-overlay { opacity: 0; pointer-events: none; }
+        .menu-closed #mobile-sidebar { transform: translateX(-100%); }
+
+        /* Loader */
+        .loader { border: 3px solid #f3f3f3; border-radius: 50%; border-top: 3px solid #0ea5e9; width: 20px; height: 20px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 h-screen flex overflow-hidden selection:bg-brand-100 selection:text-brand-900 dark:selection:bg-brand-900 dark:selection:text-brand-100 menu-closed" id="app-body">
+
+    <div id="global-error" class="hidden fixed inset-0 z-[100] bg-white flex items-center justify-center p-8">
+        <div class="max-w-md text-center">
+            <h2 class="text-xl font-bold text-red-600 mb-2">Something went wrong</h2>
+            <p id="global-error-msg" class="text-sm text-slate-600 mb-4">Please refresh the page.</p>
+            <button onclick="location.reload()" class="px-4 py-2 bg-slate-100 rounded-lg text-sm font-bold">Reload</button>
+        </div>
+    </div>
+    <script>
+        window.onerror = function(msg, url, line) {
+            console.error("Global Error:", msg);
+            const el = document.getElementById('global-error');
+            const txt = document.getElementById('global-error-msg');
+            if(el && txt) {
+                el.classList.remove('hidden');
+                txt.textContent = `${msg}`;
+            }
+        };
+    </script>
+
+    <div id="auth-modal" class="fixed inset-0 z-[60] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center hidden">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 relative overflow-hidden border border-slate-200 dark:border-slate-800">
+            <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-brand-400 to-brand-600"></div>
+            
+            <div class="mb-6 text-center">
+                <div class="inline-flex items-center justify-center p-3 bg-brand-50 dark:bg-slate-800 rounded-xl mb-4 text-brand-600 dark:text-brand-400">
+                    <i data-lucide="cloud" class="w-8 h-8"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Sync Your Progress</h2>
+                <p class="text-slate-500 dark:text-slate-400 text-sm mt-2">Log in to access your schedule across all your devices.</p>
+            </div>
+
+            <form id="auth-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1.5">Email</label>
+                    <input type="email" id="auth-email" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm dark:text-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all placeholder:text-slate-400" placeholder="you@example.com">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1.5">Password</label>
+                    <input type="password" id="auth-pass" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm dark:text-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all placeholder:text-slate-400" placeholder="••••••••">
+                </div>
+                
+                <div id="auth-error" class="text-red-500 text-xs font-bold hidden bg-red-50 dark:bg-red-900/20 p-3 rounded-lg flex items-center gap-2">
+                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                    <span id="auth-error-msg">Error message</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 pt-2">
+                    <button type="button" onclick="handleAuth('signup')" class="w-full py-3 px-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">Create Account</button>
+                    <button type="button" onclick="handleAuth('login')" class="w-full py-3 px-4 bg-brand-600 text-white font-bold rounded-xl text-sm hover:bg-brand-700 shadow-lg shadow-brand-200 dark:shadow-none transition-all flex justify-center items-center gap-2">
+                        <span id="auth-btn-text">Log In</span>
+                        <div id="auth-loader" class="loader hidden border-white/30 border-t-white"></div>
+                    </button>
+                </div>
+            </form>
+            
+            <div class="mt-6 text-center">
+                <button onclick="startDemoMode()" class="text-xs font-bold text-slate-400 hover:text-brand-600 transition-colors">Continue without Syncing (Local Only)</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="mobile-menu-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden" onclick="toggleMobileMenu()"></div>
+    <div id="mobile-sidebar" class="fixed inset-y-0 left-0 w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 z-50 flex flex-col shadow-2xl md:hidden transform -translate-x-full">
+        <div class="p-6 pb-2">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-3 text-brand-600 dark:text-brand-500">
+                    <div class="p-2 bg-brand-50 dark:bg-brand-900/30 rounded-xl">
+                        <i data-lucide="layers" class="w-6 h-6"></i>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-slate-900 dark:text-white">StudyFlow</span>
+                </div>
+                <button onclick="toggleMobileMenu()" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" aria-label="Close menu">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+             <div class="space-y-1">
+                <button onclick="switchView('overview'); toggleMobileMenu()" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400" data-view="overview">
+                    <i data-lucide="layout-grid" class="w-5 h-5"></i> Overview
+                </button>
+                <button onclick="switchView('target'); toggleMobileMenu()" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400" data-view="target">
+                    <i data-lucide="crosshair" class="w-5 h-5"></i> Next Target
+                </button>
+                <button onclick="switchView('backlog'); toggleMobileMenu()" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400" data-view="backlog">
+                    <i data-lucide="history" class="w-5 h-5"></i> Backlog Plan
+                </button>
+                <button onclick="switchView('mistakes'); toggleMobileMenu()" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400" data-view="mistakes">
+                    <i data-lucide="book" class="w-5 h-5"></i> Mistake Notebook
+                </button>
+            </div>
+             <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
+                <div class="flex items-center gap-3 px-2">
+                    <div class="w-8 h-8 rounded-full bg-brand-100 dark:bg-slate-700 flex items-center justify-center text-brand-600 dark:text-brand-400 font-bold text-xs" id="mobile-user-avatar">?</div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-bold text-slate-900 dark:text-white truncate" id="mobile-user-email">Guest</p>
+                        <p class="text-[10px] font-medium text-slate-500 dark:text-slate-400" id="mobile-sync-status">Local Storage</p>
+                    </div>
+                    <button onclick="handleLogout()" class="text-slate-400 hover:text-red-500" aria-label="Logout"><i data-lucide="log-out" class="w-4 h-4"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex-col flex-shrink-0 hidden md:flex z-20 transition-colors duration-300">
+        <div class="p-6 pb-2">
+            <div class="flex items-center gap-3 text-brand-600 dark:text-brand-400 mb-8">
+                <div class="p-2 bg-brand-50 dark:bg-slate-800 rounded-xl">
+                    <i data-lucide="layers" class="w-6 h-6"></i>
+                </div>
+                <span class="font-bold text-xl tracking-tight text-slate-900 dark:text-white">StudyFlow</span>
+            </div>
+
+            <div class="space-y-1">
+                <button onclick="switchView('overview')" id="nav-overview" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all bg-brand-50 dark:bg-brand-900/20 text-brand-700 dark:text-brand-400">
+                    <i data-lucide="layout-grid" class="w-5 h-5"></i>
+                    Overview
+                </button>
+                <button onclick="switchView('target')" id="nav-target" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all">
+                    <i data-lucide="crosshair" class="w-5 h-5"></i>
+                    Next Target
+                </button>
+                <button onclick="switchView('backlog')" id="nav-backlog" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all">
+                    <i data-lucide="history" class="w-5 h-5"></i>
+                    Backlog Plan
+                </button>
+                <button onclick="switchView('mistakes')" id="nav-mistakes" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all">
+                    <i data-lucide="book" class="w-5 h-5"></i>
+                    Mistake Notebook
+                </button>
+            </div>
+        </div>
+
+        <div class="mt-auto p-6 border-t border-slate-100 dark:border-slate-800 space-y-4">
+             <button onclick="toggleTheme()" class="w-full flex items-center justify-between p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" aria-label="Toggle dark mode">
+                <div class="flex items-center gap-2 text-xs font-bold">
+                    <i data-lucide="moon" class="w-4 h-4 hidden dark:block"></i>
+                    <i data-lucide="sun" class="w-4 h-4 block dark:hidden"></i>
+                    <span id="theme-text">Dark Mode</span>
+                </div>
+                <div class="w-8 h-4 bg-slate-200 dark:bg-slate-700 rounded-full relative">
+                    <div class="w-2 h-2 bg-white rounded-full absolute top-1 left-1 transition-transform duration-300 dark:translate-x-4"></div>
+                </div>
+            </button>
+
+             <div class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800 p-2 rounded-xl border border-slate-200 dark:border-slate-700">
+                <div class="w-8 h-8 rounded-lg bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 flex items-center justify-center text-brand-600 dark:text-brand-400 font-bold text-xs shadow-sm" id="desktop-user-avatar">?</div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-xs font-bold text-slate-800 dark:text-slate-200 truncate" id="desktop-user-email">Guest</p>
+                    <p class="text-[9px] font-bold text-slate-400 flex items-center gap-1" id="desktop-sync-status"><span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span> Local</p>
+                </div>
+                <button onclick="handleLogout()" class="text-slate-400 hover:text-red-500 p-1" title="Log Out" aria-label="Log Out"><i data-lucide="log-out" class="w-4 h-4"></i></button>
+            </div>
+
+            <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs font-bold text-slate-400 uppercase" id="footer-goal-label">Daily Goal</span>
+                    <span class="text-xs font-bold text-brand-600 dark:text-brand-400" id="sidebar-progress-text">0%</span>
+                </div>
+                <div class="h-2 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div id="sidebar-progress-bar" class="h-full w-0 transition-all duration-500"></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1 flex flex-col relative overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+        
+        <div class="md:hidden h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 shrink-0">
+            <span class="font-bold text-lg text-slate-800 dark:text-white">StudyFlow</span>
+            <button onclick="toggleMobileMenu()" class="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg active:bg-slate-200 transition-colors text-slate-600 dark:text-slate-300" aria-label="Toggle menu">
+                <i data-lucide="menu" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <div id="view-overview" class="flex-1 flex flex-col overflow-hidden">
+            <header class="px-8 py-6 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex justify-between items-end shrink-0 transition-colors">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Good Morning!</h1>
+                    <p class="text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-2 text-sm font-medium">
+                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                        <span id="overview-date">...</span>
+                    </p>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
+                    <button onclick="changeDay(-1)" class="p-2 hover:bg-white dark:hover:bg-slate-700 rounded-md shadow-sm transition-all text-slate-600 dark:text-slate-300" aria-label="Previous day"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                    <button onclick="goToToday()" class="px-3 py-1.5 hover:bg-white dark:hover:bg-slate-700 rounded-md shadow-sm transition-all text-xs font-bold text-slate-700 dark:text-slate-200">Today</button>
+                    <button onclick="changeDay(1)" class="p-2 hover:bg-white dark:hover:bg-slate-700 rounded-md shadow-sm transition-all text-slate-600 dark:text-slate-300" aria-label="Next day"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                </div>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-8 custom-scroll">
+                <div class="max-w-5xl mx-auto space-y-8">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-gradient-to-br from-brand-600 to-indigo-700 rounded-2xl p-6 text-white shadow-lg shadow-brand-200 dark:shadow-none relative overflow-hidden">
+                            <div class="relative z-10">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <p class="text-brand-100 text-xs font-bold uppercase tracking-wider mb-1">Upcoming Exam</p>
+                                        <h3 class="text-2xl font-bold" id="card-main-name">...</h3>
+                                        <p class="text-xs text-brand-100 mt-1 font-medium" id="card-main-date-info">...</p>
+                                    </div>
+                                    <div class="bg-white/20 p-2 rounded-lg backdrop-blur-sm"><i data-lucide="target" class="w-6 h-6"></i></div>
+                                </div>
+                                <div class="flex items-baseline gap-2 mb-2">
+                                    <span class="text-4xl font-extrabold" id="card-main-days">--</span>
+                                    <span class="text-sm font-medium text-brand-100">Days Left</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="h-1.5 flex-1 bg-black/20 rounded-full overflow-hidden backdrop-blur-sm">
+                                        <div class="h-full bg-white/90 w-0 transition-all duration-1000" id="card-main-bar"></div>
+                                    </div>
+                                    <span class="text-xs font-bold text-brand-50" id="card-main-text">0%</span>
+                                </div>
+                            </div>
+                            <div class="absolute -right-4 -bottom-4 text-white/5"><i data-lucide="crosshair" class="w-40 h-40"></i></div>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm relative overflow-hidden transition-colors">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-backlog-600 font-bold text-xs uppercase tracking-wider mb-1">Backlog Mission</p>
+                                    <h3 class="text-xl font-bold text-slate-800 dark:text-white">AIATS-5 Prep</h3>
+                                    <p class="text-xs text-slate-400 mt-1 font-medium">Deadline: Feb 1, 2026</p>
+                                </div>
+                                <div class="bg-backlog-50 dark:bg-orange-900/20 p-2 rounded-lg text-backlog-600"><i data-lucide="zap" class="w-6 h-6"></i></div>
+                            </div>
+                            <div class="flex items-baseline gap-2 mb-4">
+                                <span class="text-4xl font-extrabold text-slate-800 dark:text-white" id="backlog-days-large">--</span>
+                                <span class="text-sm font-medium text-slate-400">Days Left</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="h-2 flex-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                    <div class="h-full bg-backlog-500 w-0 transition-all duration-1000" id="card-backlog-bar"></div>
+                                </div>
+                                <span class="text-xs font-bold text-slate-600 dark:text-slate-400" id="card-backlog-text">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-xl font-bold text-slate-800 dark:text-white">Today's Focus</h2>
+                            <span class="text-sm text-slate-500 dark:text-slate-400" id="agenda-date-display">...</span>
+                        </div>
+
+                        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col min-h-[300px] transition-colors">
+                            <div id="overview-task-list" class="flex-1 p-2 space-y-2">
+                                </div>
+                            
+                            <div class="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800">
+                                <form id="add-task-form" class="flex gap-2 items-center">
+                                    <div class="relative flex-1">
+                                        <input type="text" id="new-task-input" placeholder="Add a specific task for today..." 
+                                            class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm dark:text-white rounded-xl px-4 py-3 pl-4 pr-32 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all placeholder:text-slate-400">
+                                    </div>
+                                    
+                                    <div class="flex gap-2">
+                                        <select id="new-task-type" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-600 dark:text-slate-300 rounded-xl px-3 py-3 outline-none cursor-pointer hover:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all">
+                                            <option value="main">Exam</option>
+                                            <option value="backlog">Backlog</option>
+                                        </select>
+
+                                        <select id="new-task-subject" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-600 dark:text-slate-300 rounded-xl px-3 py-3 outline-none cursor-pointer hover:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all" onchange="updateFooterProgress()">
+                                            <option value="General">General</option>
+                                            <option value="Physics">Physics</option>
+                                            <option value="Chemistry">Chemistry</option>
+                                            <option value="Botany">Botany</option>
+                                            <option value="Zoology">Zoology</option>
+                                        </select>
+
+                                        <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white px-6 rounded-xl font-semibold text-sm transition-all shadow-sm shadow-brand-200 dark:shadow-none flex items-center justify-center" aria-label="Add Task">
+                                            <i data-lucide="plus" class="w-5 h-5"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div id="view-target" class="hidden flex-1 flex flex-col overflow-hidden bg-white dark:bg-slate-900 transition-colors">
+            <header class="px-8 py-6 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row md:justify-between md:items-center gap-4 bg-slate-50/50 dark:bg-slate-900/50">
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-brand-100 dark:bg-brand-900 text-brand-700 dark:text-brand-300 tracking-wide">Main Track</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white" id="syllabus-title">Syllabus</h2>
+                </div>
+                
+                <div class="flex-1 max-w-md w-full relative group">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-lucide="search" class="w-4 h-4 text-slate-400 group-focus-within:text-brand-500 transition-colors"></i>
+                    </div>
+                    <input type="text" 
+                        onkeyup="handleSearch(this.value, 'main')" 
+                        placeholder="Search topics (e.g., 'Thermodynamics')..." 
+                        class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-800 dark:text-white rounded-xl py-2.5 pl-10 pr-4 outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all shadow-sm"
+                    >
+                </div>
+
+                <div class="text-right hidden md:block">
+                    <div class="text-sm font-medium text-slate-500 dark:text-slate-400">Exam Date</div>
+                    <div class="text-lg font-bold text-slate-900 dark:text-white" id="syllabus-date">...</div>
+                    <div class="text-xs font-bold text-brand-600 dark:text-brand-400 mt-1" id="syllabus-days-left">...</div>
+                </div>
+            </header>
+            <div id="main-syllabus-container" class="flex-1 overflow-y-auto p-8 custom-scroll space-y-4">
+                </div>
+        </div>
+
+        <div id="view-backlog" class="hidden flex-1 flex flex-col overflow-hidden bg-white dark:bg-slate-900 transition-colors">
+            <header class="px-8 py-6 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row md:justify-between md:items-center gap-4 bg-orange-50/30 dark:bg-orange-900/10">
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 tracking-wide">Recovery Plan</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Backlog: AIATS-5</h2>
+                </div>
+
+                <div class="flex-1 max-w-md w-full relative group">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-lucide="search" class="w-4 h-4 text-slate-400 group-focus-within:text-orange-500 transition-colors"></i>
+                    </div>
+                    <input type="text" 
+                        onkeyup="handleSearch(this.value, 'backlog')" 
+                        placeholder="Search backlog..." 
+                        class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-800 dark:text-white rounded-xl py-2.5 pl-10 pr-4 outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all shadow-sm"
+                    >
+                </div>
+
+                <div class="text-right hidden md:block">
+                    <div class="text-sm font-medium text-slate-500 dark:text-slate-400">Deadline</div>
+                    <div class="text-lg font-bold text-slate-900 dark:text-white">Feb 1, 2026</div>
+                    <div class="text-xs font-bold text-orange-600 dark:text-orange-400 mt-1" id="backlog-days-left">...</div>
+                </div>
+            </header>
+            <div id="backlog-syllabus-container" class="flex-1 overflow-y-auto p-8 custom-scroll space-y-4">
+                </div>
+        </div>
+
+        <div id="view-mistakes" class="hidden flex-1 flex flex-col overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors relative">
+    
+            <!-- SECTION A: THE BOOKSHELF (Visible initially) -->
+            <div id="notebook-shelf" class="flex-1 p-8 overflow-y-auto custom-scroll flex flex-col items-center justify-center">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Mistake Notebooks</h2>
+                    <p class="text-slate-500 dark:text-slate-400">Select a subject to open its error log.</p>
+                </div>
+        
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl w-full">
+                    <!-- Physics Book -->
+                    <div onclick="openNotebook('Physics')" class="group relative cursor-pointer transform transition-all hover:-translate-y-2 duration-300">
+                        <div class="absolute inset-0 bg-blue-600 rounded-r-2xl rounded-l-sm blur-lg opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                        <div class="relative bg-gradient-to-br from-blue-600 to-blue-800 h-64 rounded-r-2xl rounded-l-md shadow-xl flex flex-col items-center justify-center border-l-8 border-blue-900 overflow-hidden">
+                            <div class="absolute top-0 right-0 w-20 h-full bg-white/5 skew-x-12 transform origin-bottom"></div>
+                            <i data-lucide="atom" class="w-16 h-16 text-white/80 mb-4"></i>
+                            <h3 class="text-2xl font-bold text-white tracking-wider">PHYSICS</h3>
+                            <div class="mt-4 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold text-white border border-white/30" id="count-physics">0 Errors</div>
+                        </div>
+                    </div>
+        
+                    <!-- Chemistry Book -->
+                    <div onclick="openNotebook('Chemistry')" class="group relative cursor-pointer transform transition-all hover:-translate-y-2 duration-300">
+                        <div class="absolute inset-0 bg-amber-500 rounded-r-2xl rounded-l-sm blur-lg opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                        <div class="relative bg-gradient-to-br from-amber-500 to-orange-700 h-64 rounded-r-2xl rounded-l-md shadow-xl flex flex-col items-center justify-center border-l-8 border-orange-900 overflow-hidden">
+                            <div class="absolute top-0 right-0 w-20 h-full bg-white/5 skew-x-12 transform origin-bottom"></div>
+                            <i data-lucide="flask-conical" class="w-16 h-16 text-white/80 mb-4"></i>
+                            <h3 class="text-2xl font-bold text-white tracking-wider">CHEMISTRY</h3>
+                            <div class="mt-4 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold text-white border border-white/30" id="count-chemistry">0 Errors</div>
+                        </div>
+                    </div>
+        
+                    <!-- Biology Book -->
+                    <div onclick="openNotebook('Biology')" class="group relative cursor-pointer transform transition-all hover:-translate-y-2 duration-300">
+                        <div class="absolute inset-0 bg-emerald-600 rounded-r-2xl rounded-l-sm blur-lg opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                        <div class="relative bg-gradient-to-br from-emerald-600 to-green-800 h-64 rounded-r-2xl rounded-l-md shadow-xl flex flex-col items-center justify-center border-l-8 border-green-900 overflow-hidden">
+                            <div class="absolute top-0 right-0 w-20 h-full bg-white/5 skew-x-12 transform origin-bottom"></div>
+                            <i data-lucide="dna" class="w-16 h-16 text-white/80 mb-4"></i>
+                            <h3 class="text-2xl font-bold text-white tracking-wider">BIOLOGY</h3>
+                            <div class="mt-4 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold text-white border border-white/30" id="count-biology">0 Errors</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- SECTION B: THE OPEN NOTEBOOK (Hidden initially) -->
+            <div id="notebook-content" class="hidden flex-1 flex flex-col h-full bg-white dark:bg-slate-900">
+                <!-- Notebook Header -->
+                <div id="notebook-header-bg" class="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between transition-colors bg-slate-50 dark:bg-slate-800/50">
+                    <div class="flex items-center gap-4">
+                        <button onclick="closeNotebook()" class="p-2 hover:bg-white dark:hover:bg-slate-700 rounded-full transition-colors text-slate-500 dark:text-slate-400">
+                            <i data-lucide="arrow-left" class="w-6 h-6"></i>
+                        </button>
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900 dark:text-white" id="notebook-title">Subject Notebook</h2>
+                            <p class="text-xs font-medium text-slate-500" id="notebook-subtitle">Error Log</p>
+                        </div>
+                    </div>
+                    <button onclick="document.getElementById('add-mistake-modal').classList.remove('hidden')" class="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg text-sm font-bold shadow-lg hover:opacity-90 transition-opacity">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Log Mistake
+                    </button>
+                </div>
+        
+                <!-- Notebook Pages (List) -->
+                <div id="notebook-entries" class="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50 dark:bg-slate-950 custom-scroll">
+                    <!-- Entries injected here -->
+                </div>
+            </div>
+        
+            <!-- ADD MISTAKE MODAL (Overlay) -->
+            <div id="add-mistake-modal" class="hidden absolute inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+                <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-lg shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh]">
+                    <div class="p-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                        <h3 class="font-bold text-lg dark:text-white">Log New Error</h3>
+                        <button onclick="document.getElementById('add-mistake-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 dark:hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+                    </div>
+                    
+                    <div class="p-6 overflow-y-auto custom-scroll space-y-4">
+                        <form id="mistake-form" class="space-y-4">
+                            <!-- Hidden input to store image base64 -->
+                            <input type="hidden" id="mistake-image-base64">
+        
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Subject</label>
+                                <input type="text" id="mistake-subject-display" disabled class="w-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-xl px-4 py-2 text-sm font-bold border border-transparent">
+                            </div>
+        
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Type</label>
+                                    <select id="mistake-type" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm dark:text-white outline-none focus:border-brand-500">
+                                        <option value="Conceptual">Conceptual</option>
+                                        <option value="Silly">Silly/Calculation</option>
+                                        <option value="Memory">Fact/Formula</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Chapter</label>
+                                    <input type="text" id="mistake-chapter" placeholder="e.g. Thermodynamics" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm dark:text-white outline-none focus:border-brand-500">
+                                </div>
+                            </div>
+        
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Question / Mistake Description</label>
+                                <textarea id="mistake-desc" rows="3" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm dark:text-white outline-none focus:border-brand-500 resize-none" placeholder="What went wrong?"></textarea>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Correct Answer / Explanation</label>
+                                <textarea id="mistake-answer" rows="3" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm dark:text-white outline-none focus:border-brand-500 resize-none" placeholder="What is the correct solution?"></textarea>
+                            </div>
+        
+                            <!-- Image Upload Section -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Attach Image (Optional)</label>
+                                <div class="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-4 text-center hover:border-brand-500 transition-colors cursor-pointer relative" id="drop-zone">
+                                    <input type="file" id="mistake-file" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleImageUpload(this)">
+                                    <div id="upload-placeholder" class="flex flex-col items-center gap-2 text-slate-400">
+                                        <i data-lucide="image-plus" class="w-6 h-6"></i>
+                                        <span class="text-xs">Click to upload screenshot (Max 800KB)</span>
+                                    </div>
+                                    <div id="image-preview-container" class="hidden relative">
+                                        <img id="image-preview" src="" class="max-h-32 mx-auto rounded-lg shadow-sm">
+                                        <button type="button" onclick="clearImage()" class="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full shadow-md"><i data-lucide="x" class="w-3 h-3"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+        
+                            <button type="submit" class="w-full py-3 bg-brand-600 text-white font-bold rounded-xl shadow-lg hover:bg-brand-700 transition-all">Save to Notebook</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- IMAGE VIEWER MODAL (To see large images) -->
+            <div id="image-viewer-modal" class="hidden fixed inset-0 z-[60] bg-black/90 flex items-center justify-center p-4" onclick="this.classList.add('hidden')">
+                <img id="full-size-image" src="" class="max-w-full max-h-full rounded-lg shadow-2xl">
+            </div>
+        </div>
+
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // --- PASTE YOUR FIREBASE CONFIG HERE ---
+        const YOUR_FIREBASE_CONFIG = {
+            apiKey: "AIzaSyDcQsD4kPTl4KpU4wphfkNjizPsUMQO64M",
+            authDomain: "mystudyplan-74b62.firebaseapp.com",
+            projectId: "mystudyplan-74b62",
+            storageBucket: "mystudyplan-74b62.firebasestorage.app",
+            messagingSenderId: "196958661158",
+            appId: "1:196958661158:web:e553fa59e4f21f205e14e7"
+        };
+        // ----------------------------------------
+
+        let app, auth, db;
+        let isFirebaseActive = false;
+        let currentUser = null;
+        let unsubscribeDoc = null;
+        
+        // Use global app_id variable if available
+        const globalAppId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        // Premium Sound with Error Handling
+        const successSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3');
+        successSound.volume = 0.5;
+
+        // Determine Environment
+        const isCanvasEnv = typeof __firebase_config !== 'undefined';
+        const hasUserConfig = YOUR_FIREBASE_CONFIG.apiKey !== "";
+
+        if (isCanvasEnv) {
+            const canvasConfig = JSON.parse(__firebase_config);
+            app = initializeApp(canvasConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            isFirebaseActive = true;
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                signInAnonymously(auth);
+            }
+        } else if (hasUserConfig) {
+            app = initializeApp(YOUR_FIREBASE_CONFIG);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            isFirebaseActive = true;
+        }
+        
+        // Helper to safely get document reference based on environment rules
+        function getSafeDocRef(uid) {
+            const collectionName = "studyData";
+            const docName = "main";
+            
+            if (isCanvasEnv) {
+                // Rule: artifacts/{appId}/users/{userId}/{collectionName}
+                return doc(db, 'artifacts', globalAppId, 'users', uid, collectionName, docName);
+            } else {
+                // Default fallback for external hosting
+                return doc(db, 'users', uid, collectionName, docName);
+            }
+        }
+
+        // --- AUTH FUNCTIONS ---
+        window.handleAuth = async (mode) => {
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
+            const errEl = document.getElementById('auth-error');
+            const errMsg = document.getElementById('auth-error-msg');
+            const loader = document.getElementById('auth-loader');
+            const btnText = document.getElementById('auth-btn-text');
+
+            if(!email || !pass) {
+                errMsg.textContent = "Please fill in all fields.";
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            loader.classList.remove('hidden');
+            btnText.textContent = "Processing...";
+            errEl.classList.add('hidden');
+
+            try {
+                if(mode === 'login') {
+                    await signInWithEmailAndPassword(auth, email, pass);
+                } else {
+                    await createUserWithEmailAndPassword(auth, email, pass);
+                }
+                document.getElementById('auth-modal').classList.add('hidden');
+            } catch (error) {
+                errMsg.textContent = error.message.replace('Firebase: ', '');
+                errEl.classList.remove('hidden');
+            } finally {
+                loader.classList.add('hidden');
+                btnText.textContent = mode === 'login' ? "Log In" : "Create Account";
+            }
+        };
+
+        // FIXED: Added unsubscribeDoc() call to prevent memory leak
+        window.handleLogout = async () => {
+            if(isFirebaseActive) {
+                if (unsubscribeDoc) {
+                    unsubscribeDoc();
+                    unsubscribeDoc = null;
+                }
+                await signOut(auth);
+                state.tasks = {};
+                state.dailyTestsAttempted = {};
+                state.mistakes = []; // Reset mistakes on logout
+                state.expandedFocusGroups = {};
+                state.expandedTests = {};
+                renderAll();
+                document.getElementById('auth-modal').classList.remove('hidden');
+            } else {
+                if(confirm("Exit Demo Mode? This will revert to the login screen.")) {
+                    localStorage.removeItem('studyflow_demo_mode');
+                    location.reload();
+                }
+            }
+        };
+
+        window.startDemoMode = () => {
+            localStorage.setItem('studyflow_demo_mode', 'true');
+            document.getElementById('auth-modal').classList.add('hidden');
+            initLocalMode();
+        };
+
+        // --- DARK MODE LOGIC ---
+        window.toggleTheme = function() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                document.getElementById('theme-text').textContent = 'Light Mode';
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                document.getElementById('theme-text').textContent = 'Dark Mode';
+            }
+        };
+
+        // Initialize Theme (Default to Dark)
+        if (localStorage.theme === 'light') {
+            document.documentElement.classList.remove('dark');
+            document.getElementById('theme-text').textContent = 'Light Mode';
+        } else {
+            // Default path
+            document.documentElement.classList.add('dark');
+            document.getElementById('theme-text').textContent = 'Dark Mode';
+        }
+
+        // --- DATA ---
+        const mainSchedule = [
+             {
+                name: "AIATS-4",
+                date: new Date('2026-01-18T00:00:00'),
+                syllabus: [
+                    { 
+                        subject: "Physics", 
+                        topic: "Thermal Properties", 
+                        dailyTests: [
+                            {name:"DT-38 (XI)", subs:["Temp Scales", "Ideal Gas Eq", "Thermal Expansion (Linear, Area, Vol)"]}, 
+                            {name:"DT-39 (XI)", subs:["Specific Heat Capacity", "Calorimetry Principles", "Change of State (Latent Heat)"]}, 
+                            {name:"DT-40 (XI)", subs:["Heat Transfer: Conduction", "Thermal Conductivity", "Convection"]}, 
+                            {name:"DT-41 (XI)", subs:["Heat Transfer: Radiation", "Stefan-Boltzmann Law", "Newton's Law of Cooling", "Wien's Law"]}
+                        ] 
+                    },
+                    { 
+                        subject: "Physics", 
+                        topic: "Thermodynamics", 
+                        dailyTests: [
+                            {name:"DT-42 (XI)", subs:["Thermal Equilibrium", "Zeroth Law", "Internal Energy", "First Law of Thermodynamics"]}, 
+                            {name:"DT-43 (XI)", subs:["Thermodynamic Processes (Isochoric, Isobaric, Isothermal, Adiabatic)", "Work Done"]}, 
+                            {name:"DT-44 (XI)", subs:["Heat Engines", "Refrigerators", "Second Law", "Carnot Engine & Efficiency"]}
+                        ] 
+                    },
+                    { 
+                        subject: "Physics", 
+                        topic: "Kinetic Theory", 
+                        dailyTests: [
+                            {name:"DT-45 (XI)", subs:["Molecular Nature of Matter", "Behavior of Gases", "Kinetic Theory Postulates", "Law of Equipartition of Energy", "Mean Free Path"]}
+                        ] 
+                    },
+                    { 
+                        subject: "Physics", 
+                        topic: "Oscillations", 
+                        dailyTests: [
+                            {name:"DT-46 (XI)", subs:["Periodic & Oscillatory Motion", "SHM Equation", "Phase", "Uniform Circular Motion Reference"]}, 
+                            {name:"DT-47 (XI)", subs:["Velocity & Acceleration in SHM", "Force Law", "Energy in SHM"]}, 
+                            {name:"DT-48 (XI)", subs:["Simple Pendulum", "Spring-Block Systems", "Damped & Forced Oscillations", "Resonance"]}
+                        ] 
+                    },
+                    { 
+                        subject: "Physics", 
+                        topic: "Waves", 
+                        dailyTests: [
+                            {name:"DT-49 (XI)", subs:["Transverse & Longitudinal Waves", "Amplitude & Phase", "Wavelength & Frequency"]}, 
+                            {name:"DT-50 (XI)", subs:["Displacement Relation", "Speed of Travelling Wave", "Principle of Superposition"]}, 
+                            {name:"DT-51 (XI)", subs:["Reflection of Waves", "Standing Waves", "Beats", "Doppler Effect"]}
+                        ] 
+                    },
+                    { 
+                        subject: "Chemistry", 
+                        topic: "Solutions", 
+                        dailyTests: [
+                            {name:"DT-1 (XII)", subs:["Types of Solutions", "Concentration Terms", "Solubility (Henry's Law)", "Vapour Pressure (Raoult's Law)"]}, 
+                            {name:"DT-2 (XII)", subs:["Ideal & Non-Ideal Solutions", "Colligative Properties (RLVP, Elevation in BP, Depression in FP, Osmotic Pressure)", "Van't Hoff Factor"]}
+                        ] 
+                    },
+                    { 
+                        subject: "Chemistry", 
+                        topic: "Kinetics", 
+                        dailyTests: [
+                            {name:"DT-7 (XII)", subs:["Rate of Reaction", "Factors Affecting Rate", "Rate Law & Constant", "Order & Molecularity"]}, 
+                            {name:"DT-8 (XII)", subs:["Integrated Rate Equations (Zero & 1st Order)", "Half-Life", "Pseudo First Order", "Arrhenius Eq"]}, 
+                            {name:"DT-9 (XII)", subs:["Effect of Catalyst", "Collision Theory of Chemical Reactions"]}
+                        ] 
+                    },
+                    { 
+                        subject: "Chemistry", 
+                        topic: "Organic Basics", 
+                        dailyTests: [
+                            {name:"DT-23 (XI)", subs:["Classification of Organic Compounds", "Nomenclature (IUPAC)"]}, 
+                            {name:"DT-24 (XI)", subs:["Isomerism", "Fission of Bond", "Nucleophiles & Electrophiles"]}, 
+                            {name:"DT-25 (XI)", subs:["Inductive Effect", "Resonance Effect", "Electromeric Effect", "Hyperconjugation"]}, 
+                            {name:"DT-26 (XI)", subs:["Reaction Intermediates: Carbocations, Carbanions, Free Radicals"]}, 
+                            {name:"DT-27 (XI)", subs:["Types of Organic Reactions", "Purification Methods", "Qualitative & Quantitative Analysis"]}
+                        ] 
+                    },
+                    { 
+                        subject: "Botany", 
+                        topic: "Photosynthesis", 
+                        dailyTests: [
+                            {name:"DT-26 (XI)", subs:["Early Experiments", "Site of Photosynthesis", "Pigments", "Light Reaction", "Electron Transport", "Splitting of Water", "Cyclic & Non-cyclic Photophos"]}, 
+                            {name:"DT-27 (XI)", subs:["Chemiosmotic Hypothesis", "Biosynthetic Phase (C3 Cycle)", "C4 Pathway", "Photorespiration", "Factors affecting Photosynthesis"]}
+                        ] 
+                    },
+                    { 
+                        subject: "Botany", 
+                        topic: "Respiration", 
+                        dailyTests: [
+                            {name:"DT-28 (XI)", subs:["Do Plants Breathe?", "Glycolysis", "Fermentation", "Aerobic Respiration", "TCA Cycle"]}, 
+                            {name:"DT-29 (XI)", subs:["Electron Transport System (ETS)", "Oxidative Phosphorylation", "Amphibolic Pathway", "Respiratory Quotient"]}
+                        ] 
+                    },
+                    { 
+                        subject: "Botany", 
+                        topic: "Plant Growth", 
+                        dailyTests: [
+                            {name:"DT-30 (XI)", subs:["Growth Phases & Rates", "Differentiation, Dedifferentiation, Redifferentiation", "Development"]}, 
+                            {name:"DT-31 (XI)", subs:["Plant Growth Regulators: Auxins", "Gibberellins", "Cytokinins"]}, 
+                            {name:"DT-32 (XI)", subs:["Ethylene", "Abscisic Acid", "Photoperiodism", "Vernalisation"]}
+                        ] 
+                    },
+                    { 
+                        subject: "Zoology", 
+                        topic: "Chem Coordination", 
+                        dailyTests: [
+                            {name:"DT-25 (XI)", subs:["Endocrine Glands", "Hypothalamus", "Pituitary Gland"]}, 
+                            {name:"DT-26 (XI)", subs:["Pineal", "Thyroid", "Parathyroid", "Thymus", "Adrenal"]}, 
+                            {name:"DT-27 (XI)", subs:["Pancreas", "Testis", "Ovary"]}, 
+                            {name:"DT-28 (XI)", subs:["Hormones of Heart/Kidney/GIT", "Mechanism of Hormone Action"]}
+                        ] 
+                    },
+                    { 
+                        subject: "Zoology", 
+                        topic: "Animal Kingdom", 
+                        dailyTests: [
+                            {name:"DT-29 (XI)", subs:["Basis of Classification"]}, 
+                            {name:"DT-30 (XI)", subs:["Phylum Porifera"]}, 
+                            {name:"DT-31 (XI)", subs:["Phylum Coelenterata (Cnidaria)"]}, 
+                            {name:"DT-32 (XI)", subs:["Phylum Ctenophora", "Phylum Platyhelminthes"]}, 
+                            {name:"DT-33 (XI)", subs:["Phylum Aschelminthes", "Phylum Annelida"]}, 
+                            {name:"DT-34 (XI)", subs:["Phylum Arthropoda", "Phylum Mollusca"]}, 
+                            {name:"DT-35 (XI)", subs:["Phylum Echinodermata", "Phylum Hemichordata"]},
+                            {name:"DT-36 (XI)", subs:["Chordata Intro", "Cyclostomata", "Chondrichthyes", "Osteichthyes"]}, 
+                            {name:"DT-37 (XI)", subs:["Class Amphibia", "Class Reptilia"]},
+                            {name:"DT-39 (XI)", subs:["Class Aves"]}, 
+                            {name:"DT-40 (XI)", subs:["Class Mammalia"]}
+                        ] 
+                    },
+                    { 
+                        subject: "Zoology", 
+                        topic: "Morphology", 
+                        dailyTests: [
+                            {name:"DT-41 (XI)", subs:["Cockroach: Morphology"]}, 
+                            {name:"DT-42 (XI)", subs:["Cockroach: Digestive, Respiratory, Circulatory Systems"]}, 
+                            {name:"DT-43 (XI)", subs:["Cockroach: Excretory, Nervous, Reproductive Systems"]}, 
+                            {name:"DT-44 (XI)", subs:["Frog: Morphology & Anatomy (All Systems)"]}
+                        ] 
+                    }
+                ]
+            },
+            {
+                name: "UT-10",
+                date: new Date('2026-02-01T00:00:00'),
+                syllabus: [ /* Placeholder */ ]
+            }
+        ];
+
+        const backlogPlan = {
+            name: "AIATS-5 Backlog",
+            date: new Date('2026-02-01T00:00:00'),
+            syllabus: [
+                { 
+                    subject: "Chemistry", 
+                    topic: "Hydrocarbons", 
+                    dailyTests: [
+                        {name:"DT-28 (XI)", subs:["Alkanes: Nomenclature, Isomerism, Preparation", "Alkanes: Chemical Properties"]}, 
+                        {name:"DT-29 (XI)", subs:["Alkenes: Structure, Preparation", "Alkenes: Chemical Properties (Markovnikov)"]}, 
+                        {name:"DT-30 (XI)", subs:["Alkynes: Prep & Properties", "Aromatic Hydrocarbons: Benzene Structure & Prep", "Electrophilic Substitution", "Carcinogenicity"]}
+                    ] 
+                },
+                { 
+                    subject: "Chemistry", 
+                    topic: "Haloalkanes", 
+                    dailyTests: [
+                        {name:"DT-17 (XII)", subs:["Nomenclature", "Nature of C-X Bond", "Methods of Preparation"]}, 
+                        {name:"DT-18 (XII)", subs:["Chemical Reactions: Nucleophilic Substitution (SN1, SN2)", "Elimination Reactions", "Stereochemical Aspects"]}, 
+                        {name:"DT-19 (XII)", subs:["Reaction with Metals", "Polyhalogen Compounds"]}
+                    ] 
+                },
+                { 
+                    subject: "Chemistry", 
+                    topic: "Alcohols", 
+                    dailyTests: [
+                        {name:"DT-20 (XII)", subs:["Classification", "Nomenclature", "Preparation of Alcohols"]}, 
+                        {name:"DT-21 (XII)", subs:["Phenols: Preparation", "Physical Properties", "Chemical Properties (Acidity)"]}, 
+                        {name:"DT-22 (XII)", subs:["Ethers: Preparation", "Physical & Chemical Properties", "Uses"]}
+                    ] 
+                },
+                { 
+                    subject: "Chemistry", 
+                    topic: "Aldehydes", 
+                    dailyTests: [
+                        {name:"DT-23 (XII)", subs:["Aldehydes & Ketones: Prep", "Physical Properties", "Nucleophilic Addition"]}, 
+                        {name:"DT-24 (XII)", subs:["Carboxylic Acids: Nomenclature, Prep", "Physical & Chemical Properties"]}
+                    ] 
+                },
+                { 
+                    subject: "Botany", 
+                    topic: "Sexual Repro", 
+                    dailyTests: [
+                        {name:"DT-1 (XII)", subs:["Flower Structure", "Pre-fertilization: Stamen, Microsporangium", "Pollen Grain"]}, 
+                        {name:"DT-2 (XII)", subs:["Pistil, Megasporangium (Ovule)", "Embryo Sac"]}, 
+                        {name:"DT-3 (XII)", subs:["Pollination: Types, Agents", "Outbreeding Devices", "Pollen-Pistil Interaction"]}, 
+                        {name:"DT-4 (XII)", subs:["Double Fertilization", "Post-fertilization: Endosperm & Embryo"]}, 
+                        {name:"DT-5 (XII)", subs:["Seed & Fruit Formation", "Apomixis & Polyembryony"]}
+                    ] 
+                },
+                { 
+                    subject: "Botany", 
+                    topic: "Genetics I", 
+                    dailyTests: [
+                        {name:"DT-6 (XII)", subs:["Mendel's Laws of Inheritance", "Inheritance of One Gene"]}, 
+                        {name:"DT-7 (XII)", subs:["Incomplete Dominance", "Co-dominance", "Inheritance of Two Genes"]}, 
+                        {name:"DT-8 (XII)", subs:["Chromosomal Theory of Inheritance", "Linkage & Recombination", "Sex Determination"]}, 
+                        {name:"DT-9 (XII)", subs:["Mutation", "Pedigree Analysis", "Genetic Disorders (Mendelian & Chromosomal)"]}
+                    ] 
+                },
+                { 
+                    subject: "Zoology", 
+                    topic: "Human Repro", 
+                    dailyTests: [
+                        {name:"DT-1 (XII)", subs:["Male Reproductive System"]}, 
+                        {name:"DT-2 (XII)", subs:["Female Reproductive System", "Mammary Glands"]}, 
+                        {name:"DT-3 (XII)", subs:["Gametogenesis: Spermatogenesis & Oogenesis"]}, 
+                        {name:"DT-4 (XII)", subs:["Menstrual Cycle", "Fertilization & Implantation"]}, 
+                        {name:"DT-5 (XII)", subs:["Pregnancy & Embryonic Development", "Parturition & Lactation"]}
+                    ] 
+                },
+                { 
+                    subject: "Zoology", 
+                    topic: "Repro Health", 
+                    dailyTests: [
+                        {name:"DT-7 (XII)", subs:["Reproductive Health: Problems & Strategies", "Population Explosion"]}, 
+                        {name:"DT-8 (XII)", subs:["Birth Control Methods", "Medical Termination of Pregnancy (MTP)"]}, 
+                        {name:"DT-9 (XII)", subs:["Sexually Transmitted Infections (STIs)", "Infertility", "Assisted Reproductive Technologies (ART)"]}
+                    ] 
+                }
+            ]
+        };
+
+        // --- STATE MODIFICATION: USE REAL DATE ---
+        const state = {
+            // UPDATED: Now uses current real-world date
+            currentDate: new Date(), 
+            selectedDate: new Date(),
+            tasks: {}, 
+            activeView: 'overview',
+            nextExam: null,
+            dailyTestsAttempted: {},
+            expandedTests: {}, 
+            expandedFocusGroups: {},
+            goalCompletedToday: false, // Track if sound played
+            mistakes: [], // NEW: Array for mistakes
+            activeNotebook: null // NEW: Currently open subject
+        };
+
+        // --- FIXED: ADDED ESCAPE HELPERS FOR SECURITY ---
+        const escapeHtml = (unsafe) => {
+            if (typeof unsafe !== 'string') return '';
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        };
+
+        const escapeRegex = (string) => {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        };
+
+        // Escape function to prevent crashes with quotes
+        const escape = (str) => {
+            if (!str) return '';
+            return str
+                .replace(/\\/g, '\\\\')
+                .replace(/'/g, "\\'")
+                .replace(/"/g, '&quot;');
+        };
+
+        const formatDateKey = (d) => {
+            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        };
+
+        function getSubjectColor(subject) {
+            switch(subject) {
+                case 'Physics': return 'bg-phy-100 dark:bg-phy-700/30 text-phy-700 dark:text-phy-100';
+                case 'Chemistry': return 'bg-chem-100 dark:bg-chem-700/30 text-chem-700 dark:text-chem-100';
+                case 'Botany': return 'bg-bio-100 dark:bg-bio-700/30 text-bio-700 dark:text-bio-100';
+                case 'Zoology': return 'bg-bio-100 dark:bg-bio-700/30 text-bio-700 dark:text-bio-100';
+                default: return 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200';
+            }
+        }
+
+        function init() {
+            if (!isFirebaseActive && !localStorage.getItem('studyflow_demo_mode')) {
+                document.getElementById('auth-modal').classList.remove('hidden');
+                setupSchedule();
+                // Performance: only run icons if available, defer handles the rest
+                if(window.lucide) lucide.createIcons();
+                return;
+            }
+
+            if(isFirebaseActive) {
+                onAuthStateChanged(auth, (user) => {
+                    currentUser = user;
+                    if (user) {
+                        document.getElementById('desktop-user-email').textContent = user.isAnonymous ? "Guest" : user.email;
+                        document.getElementById('mobile-user-email').textContent = user.isAnonymous ? "Guest" : user.email;
+                        document.getElementById('desktop-user-avatar').textContent = user.email ? user.email[0].toUpperCase() : "G";
+                        document.getElementById('mobile-user-avatar').textContent = user.email ? user.email[0].toUpperCase() : "G";
+                        
+                        const statusText = isCanvasEnv ? "Canvas Sync" : "Cloud Sync";
+                        document.getElementById('desktop-sync-status').innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> ${statusText}`;
+                        document.getElementById('auth-modal').classList.add('hidden');
+
+                        const docRef = getSafeDocRef(user.uid);
+                        
+                        unsubscribeDoc = onSnapshot(docRef, (docSnap) => {
+                            if (docSnap.exists()) {
+                                const data = docSnap.data();
+                                state.tasks = data.tasks || {};
+                                state.dailyTestsAttempted = data.dailyTestsAttempted || {};
+                                state.mistakes = data.mistakes || []; // Load mistakes
+                                renderAll();
+                            } else {
+                                saveData();
+                            }
+                        }, (error) => {
+                            console.error("Firestore error fallback:", error);
+                            // Fallback to local mode if permission denied or error
+                            initLocalMode();
+                        });
+
+                    } else {
+                        document.getElementById('auth-modal').classList.remove('hidden');
+                    }
+                });
+            } else {
+                initLocalMode();
+            }
+
+            setupSchedule();
+        }
+
+        function initLocalMode() {
+            try {
+                const storedTasks = localStorage.getItem('studyflow_tasks_v2');
+                if (storedTasks) state.tasks = JSON.parse(storedTasks);
+                const storedAttempts = localStorage.getItem('studyflow_attempts_v2'); 
+                if (storedAttempts) state.dailyTestsAttempted = JSON.parse(storedAttempts);
+                const storedMistakes = localStorage.getItem('studyflow_mistakes'); // Load local mistakes
+                if (storedMistakes) state.mistakes = JSON.parse(storedMistakes);
+            } catch (e) {
+                console.error("Local data corrupted", e);
+                localStorage.removeItem('studyflow_tasks_v2');
+            }
+            renderAll();
+        }
+
+        function setupSchedule() {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            
+            // Find next exam based on REAL date
+            state.nextExam = mainSchedule.find(e => {
+                const ed = new Date(e.date); ed.setHours(0,0,0,0);
+                return ed >= today;
+            }) || mainSchedule[mainSchedule.length-1];
+
+            const addTaskForm = document.getElementById('add-task-form');
+            if(addTaskForm) {
+                const newForm = addTaskForm.cloneNode(true);
+                addTaskForm.parentNode.replaceChild(newForm, addTaskForm);
+                newForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const inp = document.getElementById('new-task-input');
+                    const typeSelect = document.getElementById('new-task-type');
+                    const subSelect = document.getElementById('new-task-subject');
+                    if(inp.value.trim()) { 
+                        addTask(inp.value.trim(), typeSelect.value, subSelect.value); 
+                        inp.value = ''; 
+                    }
+                });
+            }
+
+            // Setup Mistake Form Listener
+            const mistakeForm = document.getElementById('mistake-form');
+            if(mistakeForm) {
+                const newMForm = mistakeForm.cloneNode(true);
+                mistakeForm.parentNode.replaceChild(newMForm, mistakeForm);
+                newMForm.addEventListener('submit', window.saveMistake);
+            }
+        }
+
+        function saveData() {
+            if(isFirebaseActive && currentUser) {
+                const docRef = getSafeDocRef(currentUser.uid);
+                
+                // Show saving indicator
+                const statusEl = document.getElementById('desktop-sync-status');
+                if(statusEl) statusEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse"></span> Saving...`;
+
+                // FIXED: Added { merge: true } to prevent data loss
+                setDoc(docRef, {
+                    tasks: state.tasks,
+                    dailyTestsAttempted: state.dailyTestsAttempted,
+                    mistakes: state.mistakes || [] // Save mistakes
+                }, { merge: true }).then(() => {
+                    if(statusEl) statusEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Synced`;
+                }).catch(err => {
+                    console.error("Save failed, falling back to local:", err);
+                    if(statusEl) statusEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Save Failed (Local)`;
+                    localStorage.setItem('studyflow_tasks_v2', JSON.stringify(state.tasks));
+                    localStorage.setItem('studyflow_attempts_v2', JSON.stringify(state.dailyTestsAttempted));
+                    localStorage.setItem('studyflow_mistakes', JSON.stringify(state.mistakes || []));
+                });
+            } else {
+                localStorage.setItem('studyflow_tasks_v2', JSON.stringify(state.tasks));
+                localStorage.setItem('studyflow_attempts_v2', JSON.stringify(state.dailyTestsAttempted));
+                localStorage.setItem('studyflow_mistakes', JSON.stringify(state.mistakes || []));
+            }
+            renderAll();
+        }
+
+        // Global functions
+        window.addTask = function(text, type = 'main', subject = 'General', chapter = null) {
+            const key = formatDateKey(state.selectedDate);
+            if (!state.tasks[key]) state.tasks[key] = [];
+            state.tasks[key].push({
+                id: Date.now() + Math.random().toString(36).substr(2, 9), 
+                text, type, subject, chapter, completed: false 
+            });
+            saveData();
+        };
+
+        window.deleteTask = function(id) {
+            const key = formatDateKey(state.selectedDate);
+            if(state.tasks[key]) {
+                state.tasks[key] = state.tasks[key].filter(t => t.id !== id);
+                saveData();
+            }
+        };
+
+        window.deleteGroup = function(chapterName) {
+            const key = formatDateKey(state.selectedDate);
+            if(state.tasks[key]) {
+                 state.tasks[key] = state.tasks[key].filter(t => {
+                    let chap = t.chapter;
+                    if (!chap && t.text.startsWith("Study: ")) {
+                        const parts = t.text.replace("Study: ", "").split(" - ");
+                        if (parts.length > 1) chap = parts[0];
+                    }
+                    return chap !== chapterName;
+                });
+                saveData();
+                if (state.expandedFocusGroups[chapterName]) delete state.expandedFocusGroups[chapterName];
+            }
+        };
+
+        window.toggleTask = function(id) {
+            const key = formatDateKey(state.selectedDate);
+            if(state.tasks[key]) {
+                const t = state.tasks[key].find(x => x.id === id);
+                if(t) { t.completed = !t.completed; saveData(); }
+            }
+        };
+
+        window.toggleFocusGroup = function(chapterName) {
+            state.expandedFocusGroups[chapterName] = !state.expandedFocusGroups[chapterName];
+            renderTasks(); // Re-renders only the tasks list
+        };
+
+        window.toggleTestAttempt = function(testName) {
+            // FIXED: Explicitly set to false instead of deleting key so that { merge: true } updates the DB correctly
+            if (state.dailyTestsAttempted[testName]) {
+                 state.dailyTestsAttempted[testName] = false; 
+            } else {
+                 state.dailyTestsAttempted[testName] = true;
+            }
+            saveData();
+        };
+
+        window.switchView = function(view) {
+            state.activeView = view;
+            toggleMobileMenu(true); 
+            
+            // Handle Notebook reset
+            if(view === 'mistakes') {
+                closeNotebook(); 
+            }
+
+            ['overview','target','backlog', 'mistakes'].forEach(v => {
+                const btn = document.getElementById(`nav-${v}`);
+                if(btn) {
+                    if(v === view) btn.className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all bg-brand-50 dark:bg-brand-900/20 text-brand-700 dark:text-brand-400 shadow-sm";
+                    else btn.className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all";
+                }
+                const viewEl = document.getElementById(`view-${v}`);
+                if(viewEl) viewEl.classList.add('hidden');
+            });
+            const activeEl = document.getElementById(`view-${view}`);
+            if(activeEl) activeEl.classList.remove('hidden');
+            
+            // Optimization: Render specific view content only when switched to
+            renderAll();
+        };
+
+        window.toggleMobileMenu = function(forceClose = false) {
+            const body = document.getElementById('app-body');
+            if (forceClose) { body.classList.remove('menu-open'); body.classList.add('menu-closed'); } 
+            else {
+                if (body.classList.contains('menu-open')) { body.classList.remove('menu-open'); body.classList.add('menu-closed'); } 
+                else { body.classList.remove('menu-closed'); body.classList.add('menu-open'); }
+            }
+        };
+        
+        // --- BOOKSHELF FUNCTIONS ---
+
+        window.openNotebook = function(subject) {
+            state.activeNotebook = subject;
+            
+            // UI Transitions
+            document.getElementById('notebook-shelf').classList.add('hidden');
+            document.getElementById('notebook-content').classList.remove('hidden');
+            
+            // Set Headers
+            document.getElementById('notebook-title').textContent = `${subject} Notebook`;
+            document.getElementById('mistake-subject-display').value = subject;
+            
+            // Dynamic Header Colors
+            const headerBg = document.getElementById('notebook-header-bg');
+            if(subject === 'Physics') headerBg.className = "px-6 py-4 border-b border-blue-100 dark:border-blue-900 flex items-center justify-between transition-colors bg-blue-50 dark:bg-blue-900/20";
+            else if(subject === 'Chemistry') headerBg.className = "px-6 py-4 border-b border-orange-100 dark:border-orange-900 flex items-center justify-between transition-colors bg-orange-50 dark:bg-orange-900/20";
+            else headerBg.className = "px-6 py-4 border-b border-green-100 dark:border-green-900 flex items-center justify-between transition-colors bg-green-50 dark:bg-green-900/20";
+
+            renderNotebookEntries();
+        };
+
+        window.closeNotebook = function() {
+            state.activeNotebook = null;
+            document.getElementById('notebook-content').classList.add('hidden');
+            document.getElementById('notebook-shelf').classList.remove('hidden');
+            updateShelfCounts();
+        };
+
+        // --- IMAGE HANDLING ---
+
+        window.handleImageUpload = function(input) {
+            const file = input.files[0];
+            if (file) {
+                // INCREASED SIZE LIMIT: 800KB (approx 800,000 bytes)
+                // This balances larger images with storage stability.
+                if(file.size > 800000) {
+                    alert("Image is too large! Please use an image under 800KB.");
+                    input.value = ''; // clear
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Show preview
+                    document.getElementById('upload-placeholder').classList.add('hidden');
+                    document.getElementById('image-preview-container').classList.remove('hidden');
+                    document.getElementById('image-preview').src = e.target.result;
+                    // Store base64 string in hidden input
+                    document.getElementById('mistake-image-base64').value = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        window.clearImage = function() {
+            document.getElementById('mistake-file').value = '';
+            document.getElementById('mistake-image-base64').value = '';
+            document.getElementById('upload-placeholder').classList.remove('hidden');
+            document.getElementById('image-preview-container').classList.add('hidden');
+            // Prevent event bubbling if clicking the X
+            if(event) event.stopPropagation(); 
+        };
+
+        window.viewFullImage = function(src) {
+            document.getElementById('full-size-image').src = src;
+            document.getElementById('image-viewer-modal').classList.remove('hidden');
+        };
+
+        // --- MISTAKE RENDERING & SAVING ---
+
+        window.saveMistake = function(e) {
+            e.preventDefault();
+            if(!state.activeNotebook) return;
+
+            const type = document.getElementById('mistake-type').value;
+            const chapter = document.getElementById('mistake-chapter').value;
+            const desc = document.getElementById('mistake-desc').value;
+            const answer = document.getElementById('mistake-answer').value; // NEW
+            const imgData = document.getElementById('mistake-image-base64').value;
+
+            if(!chapter || !desc) {
+                alert("Please fill in Chapter and Question Description");
+                return;
+            }
+
+            const newMistake = {
+                id: Date.now().toString(),
+                date: new Date().toISOString(),
+                subject: state.activeNotebook,
+                chapter: chapter,
+                type: type,
+                desc: desc,
+                answer: answer, // NEW
+                image: imgData,
+                resolved: false
+            };
+
+            if(!state.mistakes) state.mistakes = [];
+            state.mistakes.unshift(newMistake);
+
+            // Reset Form
+            document.getElementById('mistake-form').reset();
+            clearImage();
+            document.getElementById('add-mistake-modal').classList.add('hidden');
+
+            saveData();
+            renderNotebookEntries();
+            updateShelfCounts();
+        };
+        
+        window.deleteMistake = function(id) {
+            if(confirm("Delete this entry?")) {
+                state.mistakes = state.mistakes.filter(m => m.id !== id);
+                saveData();
+                renderNotebookEntries();
+            }
+        };
+
+        window.toggleMistakeResolved = function(id) {
+            const m = state.mistakes.find(m => m.id === id);
+            if(m) {
+                m.resolved = !m.resolved;
+                saveData();
+                renderNotebookEntries();
+                updateShelfCounts();
+            }
+        };
+
+        window.renderNotebookEntries = function() {
+            const list = document.getElementById('notebook-entries');
+            if(!list || !state.activeNotebook) return;
+
+            list.innerHTML = '';
+            
+            // Filter by the currently open notebook (Subject)
+            const entries = (state.mistakes || []).filter(m => m.subject === state.activeNotebook);
+
+            if(entries.length === 0) {
+                list.innerHTML = `
+                    <div class="h-64 flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 opacity-60">
+                        <i data-lucide="book-open" class="w-12 h-12 mb-3"></i>
+                        <p>No errors logged in ${state.activeNotebook} yet.</p>
+                    </div>`;
+            }
+
+            entries.forEach(m => {
+                const dateStr = new Date(m.date).toLocaleDateString();
+                
+                let typeBadge = 'bg-slate-200 text-slate-700';
+                if(m.type === 'Conceptual') typeBadge = 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300';
+                if(m.type === 'Silly') typeBadge = 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300';
+                if(m.type === 'Memory') typeBadge = 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300';
+
+                const html = `
+                    <div class="bg-white dark:bg-slate-900 border ${m.resolved ? 'border-green-200 dark:border-green-900' : 'border-slate-200 dark:border-slate-800'} rounded-xl p-0 shadow-sm overflow-hidden group">
+                        <div class="p-4 flex flex-col md:flex-row gap-4">
+                            <!-- Text Content -->
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">${escapeHtml(m.chapter)}</span>
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded ${typeBadge}">${m.type}</span>
+                                    <span class="text-[10px] text-slate-300 ml-auto">${dateStr}</span>
+                                </div>
+                                
+                                <div class="mb-2">
+                                    <p class="text-xs font-bold text-slate-400 uppercase mb-1">Question / Mistake</p>
+                                    <p class="text-sm text-slate-800 dark:text-slate-200 whitespace-pre-wrap ${m.resolved ? 'line-through opacity-60' : ''}">${escapeHtml(m.desc)}</p>
+                                </div>
+                                
+                                <div id="answer-container-${m.id}" class="hidden mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 border-dashed">
+                                    <p class="text-xs font-bold text-green-600 dark:text-green-400 uppercase mb-1">Correct Answer / Explanation</p>
+                                    <p class="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">${escapeHtml(m.answer || 'No answer recorded.')}</p>
+                                </div>
+                                
+                                <button onclick="document.getElementById('answer-container-${m.id}').classList.remove('hidden'); this.classList.add('hidden')" class="mt-3 text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline flex items-center gap-1">
+                                    <i data-lucide="eye" class="w-3 h-3"></i> Reveal Answer
+                                </button>
+                            </div>
+                            
+                            <!-- Thumbnail (if exists) -->
+                            ${m.image ? `
+                                <div class="w-24 h-24 flex-shrink-0 cursor-zoom-in border border-slate-100 dark:border-slate-700 rounded-lg overflow-hidden bg-slate-50 relative group/img" onclick="viewFullImage('${m.image}')">
+                                    <img src="${m.image}" class="w-full h-full object-cover">
+                                    <div class="absolute inset-0 bg-black/0 group-hover/img:bg-black/10 transition-colors"></div>
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        <!-- Actions Footer -->
+                        <div class="bg-slate-50 dark:bg-slate-800/50 px-4 py-2 flex justify-between items-center border-t border-slate-100 dark:border-slate-800">
+                            <button onclick="deleteMistake('${m.id}')" class="text-xs text-slate-400 hover:text-red-500 font-medium flex items-center gap-1">
+                                <i data-lucide="trash-2" class="w-3 h-3"></i> Delete
+                            </button>
+                            <button onclick="toggleMistakeResolved('${m.id}')" class="text-xs font-bold flex items-center gap-1 ${m.resolved ? 'text-green-600 dark:text-green-400' : 'text-slate-500 hover:text-brand-600'}">
+                                <i data-lucide="${m.resolved ? 'check-circle-2' : 'circle'}" class="w-3 h-3"></i>
+                                ${m.resolved ? 'Resolved' : 'Mark Resolved'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                list.insertAdjacentHTML('beforeend', html);
+            });
+
+            if(window.lucide) lucide.createIcons({ root: list });
+        };
+
+        window.updateShelfCounts = function() {
+            const counts = { Physics: 0, Chemistry: 0, Biology: 0 };
+            (state.mistakes || []).forEach(m => {
+                if(counts[m.subject] !== undefined && !m.resolved) counts[m.subject]++;
+            });
+            
+            const pEl = document.getElementById('count-physics');
+            const cEl = document.getElementById('count-chemistry');
+            const bEl = document.getElementById('count-biology');
+
+            if(pEl) pEl.textContent = `${counts.Physics} Active Errors`;
+            if(cEl) cEl.textContent = `${counts.Chemistry} Active Errors`;
+            if(bEl) bEl.textContent = `${counts.Biology} Active Errors`;
+        };
+
+        window.updateFooterProgress = function() { renderStats(); };
+        window.toggleDailyTest = function(uniqueId) { state.expandedTests[uniqueId] = !state.expandedTests[uniqueId]; renderSyllabus(state.activeView === 'backlog' ? 'backlog' : 'main'); };
+        window.toggleChapter = function(uniqueId) { state.expandedTests[uniqueId] = !state.expandedTests[uniqueId]; renderSyllabus(state.activeView === 'backlog' ? 'backlog' : 'main'); };
+        window.addSyllabusTask = function(txt, type, subject, chapter) { addTask(`Study: ${txt}`, type, subject, chapter); };
+        
+        // FIXED: Immutable date operation
+        window.changeDay = function(d) { 
+            const newDate = new Date(state.selectedDate);
+            newDate.setDate(newDate.getDate() + d);
+            state.selectedDate = newDate;
+            renderAll(); 
+        };
+        
+        window.goToToday = function() {
+            state.selectedDate = new Date();
+            renderAll();
+        };
+
+        document.addEventListener('DOMContentLoaded', init);
+
+        // Optimization: FOUC listener - Triggered on DOMContentLoaded instead of Load for faster paint
+        document.addEventListener('DOMContentLoaded', () => {
+            // Small timeout to allow Tailwind CDN to parse initial classes
+            setTimeout(() => document.body.classList.add('loaded'), 50);
+        });
+
+        // UTILITY: Debounce for search performance
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        // Global search handler with debounce
+        const debouncedRender = debounce((query, type) => {
+            renderSyllabus(type, query);
+        }, 300); // 300ms delay
+
+        window.handleSearch = function(query, type) {
+            debouncedRender(query, type);
+        };
+
+        function renderAll() {
+            renderHeader();
+            renderStats();
+            
+            // Performance Optimization: Lazy Rendering
+            // Only render the DOM elements for the view that is currently visible.
+            if (state.activeView === 'overview') {
+                renderTasks();
+            } else if (state.activeView === 'target') {
+                renderSyllabus('main');
+            } else if (state.activeView === 'backlog') {
+                renderSyllabus('backlog');
+            } else if (state.activeView === 'mistakes') {
+                if(state.activeNotebook) {
+                    renderNotebookEntries();
+                } else {
+                    updateShelfCounts();
+                }
+            }
+            
+            // Re-scan icons if library is loaded (defer might make it delayed)
+            if(window.lucide) lucide.createIcons();
+        }
+
+        function renderHeader() {
+            const els = { date: document.getElementById('overview-date'), agendaDate: document.getElementById('agenda-date-display') };
+            const dateStr = state.selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+            if(els.date) els.date.textContent = state.selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+            if(els.agendaDate) els.agendaDate.textContent = dateStr;
+        }
+
+        function renderStats() {
+            const today = new Date(); today.setHours(0,0,0,0);
+            const exDate = new Date(state.nextExam.date); exDate.setHours(0,0,0,0);
+            const diff = Math.ceil((exDate - today)/(1000*60*60*24));
+            const formattedDate = state.nextExam.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            
+            // Text Updates
+            const elements = {
+                name: document.getElementById('card-main-name'),
+                date: document.getElementById('card-main-date-info'),
+                days: document.getElementById('card-main-days'),
+                sylTitle: document.getElementById('syllabus-title'),
+                sylDate: document.getElementById('syllabus-date'),
+                sylDays: document.getElementById('syllabus-days-left'),
+                blDays: document.getElementById('backlog-days-left'),
+                blLarge: document.getElementById('backlog-days-large')
+            };
+
+            if(elements.name) elements.name.textContent = state.nextExam.name;
+            if(elements.date) elements.date.textContent = `Exam Date: ${formattedDate}`;
+            if(elements.days) elements.days.textContent = diff; // Allow negatives to show passed
+            if(elements.sylTitle) elements.sylTitle.textContent = state.nextExam.name + " Syllabus";
+            if(elements.sylDate) elements.sylDate.textContent = formattedDate;
+            if(elements.sylDays) elements.sylDays.textContent = `${diff} Days Left`;
+
+            const blDate = new Date(backlogPlan.date); blDate.setHours(0,0,0,0);
+            const blDiff = Math.ceil((blDate - today)/(1000*60*60*24));
+            if(elements.blDays) elements.blDays.textContent = `${blDiff} Days Left`;
+            if(elements.blLarge) elements.blLarge.textContent = blDiff;
+
+            // Global Progress Calculation
+            const allCompleted = new Set(Object.values(state.tasks).flat().filter(t => t.completed).map(t => t.text));
+            
+            // Main Syllabus Progress
+            let mainTotal = 0, mainDone = 0;
+            state.nextExam.syllabus.forEach(s => s.dailyTests.forEach(dt => dt.subs.forEach(sub => {
+                mainTotal++;
+                if(allCompleted.has(`Study: ${s.topic} - ${sub}`)) mainDone++;
+            })));
+            const mainPct = mainTotal ? Math.round((mainDone/mainTotal)*100) : 0;
+            const mainBar = document.getElementById('card-main-bar');
+            if(mainBar) mainBar.style.width = `${mainPct}%`;
+            const mainText = document.getElementById('card-main-text');
+            if(mainText) mainText.textContent = `${mainPct}%`;
+
+            // Backlog Progress
+            let blTotal = 0, blDone = 0;
+            backlogPlan.syllabus.forEach(s => s.dailyTests.forEach(dt => dt.subs.forEach(sub => {
+                blTotal++;
+                if(allCompleted.has(`Study: ${s.topic} - ${sub}`)) blDone++;
+            })));
+            const blPct = blTotal ? Math.round((blDone/blTotal)*100) : 0;
+            const blBar = document.getElementById('card-backlog-bar');
+            if(blBar) blBar.style.width = `${blPct}%`;
+            const blText = document.getElementById('card-backlog-text');
+            if(blText) blText.textContent = `${blPct}%`;
+
+            // Sidebar / Daily Goal Logic
+            const subjectSelect = document.getElementById('new-task-subject');
+            const selectedSubject = subjectSelect ? subjectSelect.value : 'General';
+            const k = formatDateKey(state.selectedDate);
+            const todays = state.tasks[k] || [];
+            
+            let filteredTasks = todays;
+            if (selectedSubject !== 'General') filteredTasks = todays.filter(t => t.subject === selectedSubject);
+
+            const totalFiltered = filteredTasks.length;
+            const completedFiltered = filteredTasks.filter(t=>t.completed).length;
+            const dayPct = totalFiltered ? Math.round((completedFiltered / totalFiltered)*100) : 0;
+            
+            // CONFETTI & SOUND LOGIC
+            if (totalFiltered > 0 && dayPct === 100 && !state.goalCompletedToday) {
+                // Check if this completion just happened (avoid looping on re-render)
+                state.goalCompletedToday = true; 
+                try {
+                    // Realistic Confetti Fire
+                    var count = 200;
+                    var defaults = { origin: { y: 0.7 } };
+
+                    function fire(particleRatio, opts) {
+                        if (window.confetti) {
+                            confetti(Object.assign({}, defaults, opts, {
+                                particleCount: Math.floor(count * particleRatio)
+                            }));
+                        }
+                    }
+
+                    fire(0.25, { spread: 26, startVelocity: 55, });
+                    fire(0.2, { spread: 60, });
+                    fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+                    fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+                    fire(0.1, { spread: 120, startVelocity: 45, });
+                    
+                    // Sound
+                    successSound.currentTime = 0;
+                    successSound.play().catch(e => console.log("Audio play failed (interaction required first)"));
+                } catch(e) {
+                    console.log("Effects failed", e);
+                }
+            } else if (dayPct < 100) {
+                state.goalCompletedToday = false;
+            }
+
+            // Gradient Bar
+            let completedExamCount = filteredTasks.filter(t => t.completed && t.type === 'main').length;
+            let completedBacklogCount = filteredTasks.filter(t => t.completed && t.type === 'backlog').length;
+            let gradientStyle = `bg-brand-500`; 
+            
+            if (completedFiltered > 0) {
+                const totalScored = completedExamCount + completedBacklogCount;
+                if (totalScored > 0) {
+                    const examShare = (completedExamCount / totalScored) * 100;
+                    gradientStyle = `background: linear-gradient(90deg, #0ea5e9 0%, #0ea5e9 ${examShare}%, #f97316 ${examShare}%, #f97316 100%)`;
+                } else { gradientStyle = `background-color: #0ea5e9`; }
+            } else { gradientStyle = `background-color: #0ea5e9`; }
+
+            const sideBar = document.getElementById('sidebar-progress-bar');
+            if(sideBar) {
+                sideBar.style = `width: ${dayPct}%; ${gradientStyle}`;
+                sideBar.classList.remove('bg-brand-500'); 
+            }
+            
+            const sideText = document.getElementById('sidebar-progress-text');
+            if(sideText) sideText.textContent = `${dayPct}%`;
+            
+            const footerLabel = document.getElementById('footer-goal-label');
+            if(footerLabel) footerLabel.textContent = selectedSubject === 'General' ? 'Daily Goal' : `${selectedSubject} Goal`;
+        }
+
+        function createTaskElementHTML(t, isSubTask = false) {
+             let bgClass = 'bg-slate-50 dark:bg-slate-800 border-slate-100 dark:border-slate-700 hover:border-brand-200 dark:hover:border-slate-600';
+            if (t.type === 'main') {
+                bgClass = 'bg-brand-50 dark:bg-brand-900/10 border-brand-100 dark:border-brand-900 hover:border-brand-300';
+            } else if (t.type === 'backlog') {
+                bgClass = 'bg-orange-50 dark:bg-orange-900/10 border-orange-100 dark:border-orange-900 hover:border-orange-300';
+            }
+
+            let typeText = 'Custom';
+            let typeColorClass = 'text-slate-500 bg-slate-200 dark:bg-slate-700 dark:text-slate-300';
+            if (t.type === 'main') { typeText = 'Exam'; typeColorClass = 'text-brand-700 bg-brand-200 dark:bg-brand-900 dark:text-brand-300'; } 
+            else if (t.type === 'backlog') { typeText = 'Backlog'; typeColorClass = 'text-orange-700 bg-orange-200 dark:bg-orange-900 dark:text-orange-300'; }
+
+            let subClass = getSubjectColor(t.subject);
+
+            if (t.completed) {
+                bgClass = 'bg-slate-50 dark:bg-slate-800 border-slate-100 dark:border-slate-800 opacity-60';
+            }
+
+            const wrapperClass = isSubTask ? 
+                `flex items-center justify-between p-2 pl-3 rounded-lg border transition-all ${bgClass} shadow-sm mb-2 last:mb-0` : 
+                `flex items-center justify-between p-3 rounded-xl border transition-all ${bgClass} shadow-sm`;
+
+            let displayText = t.text;
+            if(isSubTask && t.chapter) {
+                 const prefix = `Study: ${t.chapter} - `;
+                 if(displayText.startsWith(prefix)) displayText = displayText.substring(prefix.length);
+            }
+
+            // FIXED: Added escapeHtml to sanitize displayText against XSS
+            return `
+                <div class="${wrapperClass}">
+                    <div class="flex items-center gap-3 overflow-hidden cursor-pointer flex-1" onclick="toggleTask('${t.id}')">
+                        <div class="w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors ${t.completed ? 'bg-brand-500 border-brand-500 text-white' : 'border-slate-300 dark:border-slate-600 text-transparent bg-white dark:bg-slate-700'}">
+                            <i data-lucide="check" class="w-3 h-3"></i>
+                        </div>
+                        <div class="flex flex-col min-w-0">
+                            <div class="flex items-center gap-2 mb-0.5">
+                                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${subClass}">${t.subject}</span>
+                                ${!isSubTask ? `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${typeColorClass}">${typeText}</span>` : ''}
+                            </div>
+                            <span class="truncate text-sm font-medium ${t.completed ? 'text-slate-400 dark:text-slate-600 line-through' : 'text-slate-800 dark:text-slate-200'}">${escapeHtml(displayText)}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="deleteTask('${t.id}')" class="text-slate-300 hover:text-red-500 transition-colors p-1" aria-label="Delete Task"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTasks() {
+            const list = document.getElementById('overview-task-list');
+            if(!list) return;
+            const k = formatDateKey(state.selectedDate);
+            const tasks = state.tasks[k] || [];
+            
+            list.innerHTML = '';
+            if(tasks.length === 0) {
+                list.innerHTML = `<div class="h-40 flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 text-sm"><i data-lucide="coffee" class="w-8 h-8 mb-2 opacity-50"></i>No focus targets set.</div>`;
+                if(window.lucide) lucide.createIcons({ root: list });
+                return;
+            }
+
+            const groups = {};
+            const standalone = [];
+            tasks.forEach(t => {
+                let chap = t.chapter;
+                if (!chap && t.text.startsWith("Study: ")) {
+                    const parts = t.text.replace("Study: ", "").split(" - ");
+                    if (parts.length > 1) chap = parts[0];
+                }
+                if (chap) {
+                    if (!groups[chap]) groups[chap] = { name: chap, tasks: [], subject: t.subject, type: t.type };
+                    groups[chap].tasks.push(t);
+                } else standalone.push(t);
+            });
+
+            standalone.forEach(t => {
+                const el = document.createElement('div');
+                el.innerHTML = createTaskElementHTML(t, false);
+                list.appendChild(el.firstElementChild);
+            });
+
+            Object.values(groups).forEach(group => {
+                const isExpanded = state.expandedFocusGroups[group.name];
+                const completedCount = group.tasks.filter(t => t.completed).length;
+                const totalCount = group.tasks.length;
+                const isAllDone = totalCount > 0 && completedCount === totalCount;
+                
+                let groupBorder = 'border-slate-200 dark:border-slate-800';
+                let groupBg = 'bg-white dark:bg-slate-900';
+                if(group.type === 'main') { groupBorder = 'border-brand-200 dark:border-brand-900'; groupBg = 'bg-brand-50/30 dark:bg-brand-900/10'; }
+                if(group.type === 'backlog') { groupBorder = 'border-orange-200 dark:border-orange-900'; groupBg = 'bg-orange-50/30 dark:bg-orange-900/10'; }
+                
+                let typeBadge = '';
+                if (group.type === 'main') typeBadge = `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-brand-100 dark:bg-brand-900 text-brand-700 dark:text-brand-300">Exam</span>`;
+                else if (group.type === 'backlog') typeBadge = `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300">Backlog</span>`;
+                
+                // FIXED: escape group name to prevent XSS
+                const safeGroupName = escapeHtml(group.name);
+
+                const groupContainer = document.createElement('div');
+                groupContainer.className = `rounded-xl border ${groupBorder} ${groupBg} overflow-hidden mb-2 transition-all shadow-sm group`;
+                
+                const headerHtml = `
+                    <div class="p-3 flex items-center justify-between cursor-pointer hover:bg-opacity-50 transition-colors" onclick="toggleFocusGroup('${escape(group.name)}')">
+                        <div class="flex items-center gap-3">
+                            <div class="p-1.5 rounded-lg ${isAllDone ? 'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-300' : 'bg-white dark:bg-slate-800 shadow-sm text-slate-500 dark:text-slate-400'}">
+                                <i data-lucide="${isAllDone ? 'check-circle' : 'book-open'}" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-800 dark:text-slate-200 leading-tight">${safeGroupName}</h4>
+                                <div class="flex items-center gap-2 mt-0.5">
+                                    <span class="text-[9px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">${group.subject}</span>
+                                    ${typeBadge}
+                                    <span class="text-[9px] font-medium text-slate-400">•</span>
+                                    <span class="text-[9px] font-medium ${isAllDone ? 'text-green-600 dark:text-green-400' : 'text-slate-500 dark:text-slate-400'}">${completedCount}/${totalCount} Done</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="deleteGroup('${escape(group.name)}'); event.stopPropagation();" class="text-slate-300 hover:text-red-500 transition-colors p-1 opacity-0 group-hover:opacity-100" title="Delete Chapter" aria-label="Delete Chapter">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}"></i>
+                        </div>
+                    </div>
+                `;
+                
+                let bodyHtml = '';
+                if (isExpanded) {
+                    const taskListHtml = group.tasks.map(t => createTaskElementHTML(t, true)).join('');
+                    bodyHtml = `
+                        <div class="border-t ${groupBorder} p-2 pl-4 bg-white/50 dark:bg-slate-900/50 animate-in fade-in slide-in-from-top-1 duration-200">
+                            ${taskListHtml}
+                        </div>
+                    `;
+                }
+                groupContainer.innerHTML = headerHtml + bodyHtml;
+                list.appendChild(groupContainer);
+            });
+            
+            // Optimization: Only scan this list for icons
+            if(window.lucide) lucide.createIcons({ root: list });
+        }
+
+        // Optimized Render Syllabus with Search & Fragments
+        function renderSyllabus(type, searchQuery = '') {
+            const container = document.getElementById(type === 'main' ? 'main-syllabus-container' : 'backlog-syllabus-container');
+            if(!container) return;
+            
+            // 1. Clear Container
+            container.innerHTML = '';
+
+            // 2. Prepare Data & Helpers
+            const rawData = type === 'main' ? state.nextExam.syllabus : backlogPlan.syllabus;
+            const allTasks = new Set(Object.values(state.tasks).flat().map(t => t.text)); 
+            const allCompleted = new Set(Object.values(state.tasks).flat().filter(t => t.completed).map(t => t.text));
+            const lowerQuery = searchQuery.toLowerCase().trim();
+
+            // 3. Performance: Create a DocumentFragment (Batch DOM insertions)
+            const fragment = document.createDocumentFragment();
+            let hasResults = false;
+
+            // FIXED: Safe Regex creation to prevent crashes
+            const safeQuery = escapeRegex(lowerQuery);
+            const queryRegex = safeQuery ? new RegExp(`(${safeQuery})`, 'gi') : null;
+
+            rawData.forEach((item, chapterIdx) => {
+                // --- SEARCH LOGIC ---
+                // Check if chapter matches
+                const chapterMatch = item.topic.toLowerCase().includes(lowerQuery) || item.subject.toLowerCase().includes(lowerQuery);
+                
+                // Check if any sub-tests match
+                const matchingTests = item.dailyTests.filter(dt => {
+                    if (chapterMatch) return true; // Keep all if chapter matches
+                    return dt.name.toLowerCase().includes(lowerQuery) || 
+                        dt.subs.some(sub => sub.toLowerCase().includes(lowerQuery));
+                });
+
+                // If searching and no matches, skip this card completely
+                if (lowerQuery && !chapterMatch && matchingTests.length === 0) return;
+                
+                hasResults = true;
+                // --------------------
+
+                const chapterId = `${type}-chapter-${chapterIdx}`;
+                // Auto-expand if user is searching, otherwise use saved state
+                const isChapterExpanded = lowerQuery ? true : state.expandedTests[chapterId];
+                
+                const allDailyTests = item.dailyTests || [];
+                const allDailyTestsCompleted = allDailyTests.every(dt => state.dailyTestsAttempted[dt.name]);
+                
+                // Styles
+                const chapterCardClass = allDailyTestsCompleted 
+                    ? "bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-900 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow card-transition mb-4"
+                    : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow card-transition mb-4";
+                
+                const chapterHeaderClass = allDailyTestsCompleted
+                    ? "bg-green-100 dark:bg-green-900/20 px-4 py-3 border-b border-green-200 dark:border-green-800 flex justify-between items-center cursor-pointer select-none"
+                    : "bg-slate-50 dark:bg-slate-800 px-4 py-3 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center cursor-pointer select-none";
+
+                // Create Card DOM
+                const card = document.createElement('div');
+                card.className = chapterCardClass;
+                
+                // FIXED: Sanitization + Safe Highlighting
+                const safeTopic = escapeHtml(item.topic);
+                const displayTopic = queryRegex 
+                    ? safeTopic.replace(queryRegex, '<span class="bg-yellow-200 dark:bg-yellow-900/50 text-slate-900 dark:text-white">$1</span>')
+                    : safeTopic;
+
+                let html = `
+                    <div class="${chapterHeaderClass}" onclick="toggleChapter('${chapterId}')">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider ${allDailyTestsCompleted ? 'text-green-700 dark:text-green-300' : 'text-slate-400 dark:text-slate-500'}">${item.subject}</span>
+                            <div class="flex items-center gap-2">
+                                <h4 class="font-bold text-slate-800 dark:text-white">${displayTopic}</h4> 
+                                ${allDailyTestsCompleted ? '<i data-lucide="check-circle" class="w-4 h-4 text-green-600 dark:text-green-400"></i>' : ''}
+                            </div>
+                        </div>
+                            <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 transition-transform duration-300 ${isChapterExpanded ? 'rotate-180' : ''}"></i>
+                    </div>
+                `;
+
+                if (isChapterExpanded) {
+                    html += `<div class="p-4 grid grid-cols-1 gap-3 animate-in fade-in slide-in-from-top-2 duration-300">`;
+                    
+                    // Only render tests that matched the search (or all if chapter matched)
+                    const testsToRender = lowerQuery ? matchingTests : item.dailyTests;
+
+                    testsToRender.forEach((dt, testIdx) => {
+                        // Determine original index to keep ID consistent
+                        const originalIndex = item.dailyTests.indexOf(dt);
+                        const testId = `${chapterId}-test-${originalIndex}`;
+                        
+                        // Auto-expand tests if searching
+                        const isTestExpanded = lowerQuery ? true : state.expandedTests[testId];
+                        
+                        const total = dt.subs.length;
+                        const doneCount = dt.subs.filter(s => allCompleted.has(`Study: ${item.topic} - ${s}`)).length;
+                        const isReady = total > 0 && doneCount === total;
+                        const isAttempted = state.dailyTestsAttempted[dt.name];
+
+                        let cardStyle = "border border-slate-100 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-800 hover:border-brand-100 dark:hover:border-brand-900 transition-colors relative";
+                        let cardContentStyle = ""; 
+                        
+                        if (isAttempted) {
+                            cardStyle = "border-0 rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 transition-colors relative shadow-md text-white";
+                            cardContentStyle = "text-white"; 
+                        }
+
+                        const showCheckbox = isReady || isAttempted;
+                        
+                        // FIXED: Safe Highlight for Test Name
+                        const safeTestName = escapeHtml(dt.name);
+                        const displayName = queryRegex 
+                            ? safeTestName.replace(queryRegex, '<span class="bg-yellow-200 dark:bg-yellow-600 text-black">$1</span>') 
+                            : safeTestName;
+
+                        html += `
+                            <div class="${cardStyle} overflow-hidden">
+                                <div class="p-3 flex justify-between items-center cursor-pointer" onclick="toggleDailyTest('${testId}')">
+                                    <div class="flex items-center gap-2">
+                                        <i data-lucide="chevron-right" class="w-4 h-4 ${isAttempted ? 'text-white/70' : 'text-slate-400 dark:text-slate-500'} transition-transform duration-200 ${isTestExpanded ? 'rotate-90' : ''}"></i>
+                                        <div class="flex items-center gap-2" onclick="event.stopPropagation()">
+                                                ${showCheckbox ? 
+                                                `<input type="checkbox" 
+                                                    ${isAttempted ? 'checked' : ''} 
+                                                    onchange="toggleTestAttempt('${dt.name}')"
+                                                    class="w-4 h-4 rounded border-slate-300 text-green-600 focus:ring-green-500 cursor-pointer"
+                                                >` : ''
+                                            }
+                                            <span class="text-xs font-bold ${isAttempted ? 'text-green-800 bg-white/90' : 'text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-700'} px-2 py-0.5 rounded backdrop-blur-sm select-text cursor-text">${displayName}</span>
+                                        </div>
+                                    </div>
+                                        ${isAttempted ? 
+                                        `<span class="text-[10px] font-bold text-green-700 bg-white px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm"><i data-lucide="award" class="w-3 h-3"></i> Done</span>` 
+                                    : isReady ? 
+                                        `<span class="text-[10px] font-bold text-green-600 dark:text-green-300 bg-green-50 dark:bg-green-900/30 px-2 py-0.5 rounded-full flex items-center gap-1 animate-pulse"><i data-lucide="check-circle" class="w-3 h-3"></i> Ready</span>` 
+                                    :
+                                        `<span class="text-[10px] font-medium ${isAttempted ? 'text-white/80' : 'text-slate-400 dark:text-slate-500'}">${doneCount}/${total}</span>`
+                                    }
+                                </div>
+                                ${isTestExpanded ? `
+                                    <div class="px-3 pb-3 pt-0 border-t ${isAttempted ? 'border-white/20' : 'border-slate-50 dark:border-slate-700'} animate-in fade-in slide-in-from-top-1 duration-200">
+                                        <div class="space-y-1 mt-2 ${cardContentStyle}">
+                                            ${dt.subs.map(sub => {
+                                                const taskName = `Study: ${item.topic} - ${sub}`;
+                                                const isAdded = allTasks.has(taskName);
+                                                const isDone = allCompleted.has(taskName);
+                                                
+                                                // FIXED: Safe Highlight for Subtasks
+                                                const safeSub = escapeHtml(sub);
+                                                const displaySub = queryRegex 
+                                                    ? safeSub.replace(queryRegex, '<span class="bg-yellow-200 dark:bg-yellow-600 text-black">$1</span>') 
+                                                    : safeSub;
+
+                                                let textClass = "text-slate-500 dark:text-slate-400";
+                                                if (isAttempted) textClass = "text-white/90";
+                                                if (isDone) textClass = isAttempted ? "line-through opacity-70 text-white/70" : "line-through opacity-50 decoration-slate-400 dark:decoration-slate-500";
+                                                
+                                                let btnClass = "text-brand-400 hover:text-brand-600 dark:hover:text-brand-300";
+                                                if (isAttempted) btnClass = "text-white/80 hover:text-white";
+                                                
+                                                // FIXED: Updated tooltip to 'Add to Selected Date'
+                                                return `
+                                                    <div class="flex items-center justify-between group pl-6 py-0.5">
+                                                        <span class="text-[11px] truncate w-3/4 ${textClass}" title="${safeSub}">• ${displaySub}</span>
+                                                        ${!isDone ? 
+                                                            `<button onclick="addSyllabusTask('${escape(item.topic)} - ${escape(sub)}', '${type}', '${item.subject}', '${escape(item.topic)}')" class="${btnClass} transition-colors p-1" title="${isAdded ? 'Already in Agenda' : 'Add to Selected Date'}" aria-label="Add to plan">
+                                                                <i data-lucide="${isAdded ? 'copy-check' : 'plus-circle'}" class="w-4 h-4"></i>
+                                                            </button>` : 
+                                                            `<i data-lucide="check" class="w-3 h-3 ${isAttempted ? 'text-white' : 'text-green-500 dark:text-green-400'}"></i>`
+                                                        }
+                                                    </div>
+                                                `;
+                                            }).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    });
+                    
+                    html += `</div>`;
+                }
+
+                card.innerHTML = html;
+                fragment.appendChild(card);
+            });
+
+            if (!hasResults && lowerQuery) {
+                container.innerHTML = `<div class="p-8 text-center text-slate-400 dark:text-slate-500">No topics found matching "${escapeHtml(searchQuery)}"</div>`;
+            } else {
+                container.appendChild(fragment); // Single reflow here
+            }
+            
+            // Optimization: Only scan this container for icons
+            if(window.lucide) lucide.createIcons({ root: container });
+        }
+    </script>
+</body>
+</html>
