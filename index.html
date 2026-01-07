@@ -102,47 +102,65 @@
         };
     </script>
 
-    <div id="auth-modal" class="fixed inset-0 z-[60] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center hidden">
-        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 relative overflow-hidden border border-slate-200 dark:border-slate-800">
-            <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-brand-400 to-brand-600"></div>
+    
+
+<div id="auth-modal" class="fixed inset-0 z-[60] bg-slate-500/30 dark:bg-black/40 backdrop-blur-xl flex items-center justify-center hidden transition-opacity duration-300">
+        
+        <div class="bg-white/80 dark:bg-[#1c1c1e]/90 backdrop-blur-2xl rounded-3xl shadow-2xl p-8 w-full max-w-[400px] mx-4 relative border border-white/20 dark:border-white/5 ring-1 ring-black/5">
             
-            <div class="mb-6 text-center">
-                <div class="inline-flex items-center justify-center p-3 bg-brand-50 dark:bg-slate-800 rounded-xl mb-4 text-brand-600 dark:text-brand-400">
-                    <i data-lucide="cloud" class="w-8 h-8"></i>
+            <div class="mb-8 text-center flex flex-col items-center">
+                <div class="w-16 h-16 bg-gradient-to-br from-brand-500 to-brand-600 rounded-2xl shadow-lg shadow-brand-500/30 flex items-center justify-center text-white mb-6">
+                    <i data-lucide="layers" class="w-8 h-8"></i>
                 </div>
-                <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Sync Your Progress</h2>
-                <p class="text-slate-500 dark:text-slate-400 text-sm mt-2">Log in to access your schedule across all your devices.</p>
+                <h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Welcome Back</h2>
+                <p class="text-slate-500 dark:text-slate-400 text-sm mt-2 font-medium">Sign in to sync your progress</p>
             </div>
 
             <form id="auth-form" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1.5">Email</label>
-                    <input type="email" id="auth-email" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm dark:text-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all placeholder:text-slate-400" placeholder="you@example.com">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1.5">Password</label>
-                    <input type="password" id="auth-pass" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm dark:text-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all placeholder:text-slate-400" placeholder="••••••••">
+                <div class="space-y-4">
+                    <div class="relative group">
+                        <input type="email" id="auth-email" required 
+                            class="w-full bg-slate-100 dark:bg-[#2c2c2e] border-0 rounded-xl px-4 py-4 text-[15px] font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-brand-500/50 transition-all outline-none" 
+                            placeholder="Email address">
+                    </div>
+                    
+                    <div class="relative group">
+                        <input type="password" id="auth-pass" required 
+                            class="w-full bg-slate-100 dark:bg-[#2c2c2e] border-0 rounded-xl px-4 py-4 text-[15px] font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-brand-500/50 transition-all outline-none" 
+                            placeholder="Password">
+                    </div>
                 </div>
                 
-                <div id="auth-error" class="text-red-500 text-xs font-bold hidden bg-red-50 dark:bg-red-900/20 p-3 rounded-lg flex items-center gap-2">
+                <div id="auth-error" class="hidden text-red-500 text-xs font-semibold bg-red-50 dark:bg-red-500/10 p-3 rounded-xl flex items-center gap-2 animate-in slide-in-from-top-1">
                     <i data-lucide="alert-circle" class="w-4 h-4"></i>
                     <span id="auth-error-msg">Error message</span>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3 pt-2">
-                    <button type="button" onclick="handleAuth('signup')" class="w-full py-3 px-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">Create Account</button>
-                    <button type="button" onclick="handleAuth('login')" class="w-full py-3 px-4 bg-brand-600 text-white font-bold rounded-xl text-sm hover:bg-brand-700 shadow-lg shadow-brand-200 dark:shadow-none transition-all flex justify-center items-center gap-2">
-                        <span id="auth-btn-text">Log In</span>
-                        <div id="auth-loader" class="loader hidden border-white/30 border-t-white"></div>
+                <div class="pt-2">
+                    <button type="button" onclick="handleAuth('login')" 
+                        class="w-full py-3.5 bg-slate-900 dark:bg-white text-white dark:text-black font-bold rounded-full text-[15px] hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-slate-500/20 dark:shadow-none transition-all duration-200 flex justify-center items-center gap-2">
+                        <span id="auth-btn-text">Sign In</span>
+                        <div id="auth-loader" class="loader hidden border-white/30 border-t-white dark:border-black/30 dark:border-t-black"></div>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 gap-3 pt-1 text-center">
+                    <button type="button" onclick="handleAuth('signup')" class="text-brand-600 dark:text-brand-400 text-sm font-semibold hover:opacity-80 transition-opacity">
+                        Create new account
                     </button>
                 </div>
             </form>
             
-            <div class="mt-6 text-center">
-                <button onclick="startDemoMode()" class="text-xs font-bold text-slate-400 hover:text-brand-600 transition-colors">Continue without Syncing (Local Only)</button>
+            <div class="my-6 border-t border-slate-200 dark:border-white/10"></div>
+            
+            <div class="text-center">
+                <button onclick="startDemoMode()" class="text-xs font-medium text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                    Use offline mode (Local only)
+                </button>
             </div>
         </div>
     </div>
+
 
     <div id="mobile-menu-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden" onclick="toggleMobileMenu()"></div>
     <div id="mobile-sidebar" class="fixed inset-y-0 left-0 w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 z-50 flex flex-col shadow-2xl md:hidden transform -translate-x-full">
@@ -158,23 +176,42 @@
                     <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
             </div>
-             <div class="space-y-1">
-                <button onclick="switchView('overview'); toggleMobileMenu()" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400" data-view="overview">
-                    <i data-lucide="layout-grid" class="w-5 h-5"></i> Overview
-                </button>
-                <button onclick="switchView('target'); toggleMobileMenu()" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400" data-view="target">
-                    <i data-lucide="crosshair" class="w-5 h-5"></i> Next Target
-                </button>
-                <button onclick="switchView('backlog'); toggleMobileMenu()" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400" data-view="backlog">
-                    <i data-lucide="history" class="w-5 h-5"></i> Backlog Plan
-                </button>
-                <button onclick="switchView('mistakes'); toggleMobileMenu()" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400" data-view="mistakes">
-                    <i data-lucide="book" class="w-5 h-5"></i> Mistake Notebook
-                </button>
-<button onclick="switchView('leaderboard'); toggleMobileMenu()" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400" data-view="leaderboard">
-    <i data-lucide="trophy" class="w-5 h-5"></i> Leaderboard
+            
+
+
+
+<button onclick="switchView('overview')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5" data-view="overview">
+    <i data-lucide="layout-grid" class="w-5 h-5"></i>
+    Overview
 </button>
-            </div>
+
+<button onclick="switchView('target')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5" data-view="target">
+    <i data-lucide="crosshair" class="w-5 h-5 text-blue-500 fill-blue-500/20"></i>
+    Next Target
+</button>
+
+<button onclick="switchView('backlog')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5" data-view="backlog">
+    <i data-lucide="history" class="w-5 h-5 text-orange-500 fill-orange-500/20"></i>
+    Backlog Plan
+</button>
+
+<button onclick="switchView('mistakes')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5" data-view="mistakes">
+    <i data-lucide="book" class="w-5 h-5 text-rose-500 fill-rose-500/20"></i>
+    Mistake Notebook
+</button>
+
+<button onclick="switchView('leaderboard')" id="nav-leaderboard" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5" data-view="leaderboard">
+    <i data-lucide="medal" class="w-5 h-5 text-amber-500 fill-amber-500/20"></i>
+    Leaderboard
+</button>    
+
+
+
+
+
+
+
+        </div>
              <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
                 <div class="flex items-center gap-3 px-2">
                     <div class="w-8 h-8 rounded-full bg-brand-100 dark:bg-slate-700 flex items-center justify-center text-brand-600 dark:text-brand-400 font-bold text-xs" id="mobile-user-avatar">?</div>
@@ -235,11 +272,15 @@
 
              <div class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800 p-2 rounded-xl border border-slate-200 dark:border-slate-700">
                 <div class="w-8 h-8 rounded-lg bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 flex items-center justify-center text-brand-600 dark:text-brand-400 font-bold text-xs shadow-sm" id="desktop-user-avatar">?</div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-xs font-bold text-slate-800 dark:text-slate-200 truncate" id="desktop-user-email">Guest</p>
-                    <p class="text-[9px] font-bold text-slate-400 flex items-center gap-1" id="desktop-sync-status"><span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span> Local</p>
-                </div>
-                <button onclick="handleLogout()" class="text-slate-400 hover:text-red-500 p-1" title="Log Out" aria-label="Log Out"><i data-lucide="log-out" class="w-4 h-4"></i></button>
+                            <div class="flex-1 min-w-0">
+    <div class="flex items-center justify-between mr-1">
+        <p class="text-xs font-bold text-slate-800 dark:text-slate-200 truncate max-w-[90px]" id="desktop-user-email">Guest</p>
+        <button onclick="openProfileModal()" class="shrink-0 p-1 bg-brand-100 dark:bg-brand-900 text-brand-700 dark:text-brand-300 rounded hover:bg-brand-200 transition-colors" title="Edit Name">
+            <i data-lucide="edit-3" class="w-3 h-3"></i>
+        </button>
+    </div>
+    <p class="text-[9px] font-bold text-slate-400 flex items-center gap-1" id="desktop-sync-status"><span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span> Local</p>
+</div>    <button onclick="handleLogout()" class="text-slate-400 hover:text-red-500 p-1" title="Log Out" aria-label="Log Out"><i data-lucide="log-out" class="w-4 h-4"></i></button>
             </div>
 
             <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700">
@@ -621,7 +662,22 @@
     </div>
 </div>
     </main>
-
+<div id="profile-modal" class="hidden fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-sm shadow-2xl border border-slate-200 dark:border-slate-800 p-6 animate-in fade-in zoom-in duration-200">
+        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Edit Profile</h3>
+        <p class="text-sm text-slate-500 mb-6">What should we call you?</p>
+        
+        <form onsubmit="event.preventDefault(); saveProfileName();">
+            <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Display Name</label>
+            <input type="text" id="profile-name-input" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm dark:text-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all placeholder:text-slate-400" placeholder="e.g. Dr. Future">
+            
+            <div class="flex gap-3 mt-6">
+                <button type="button" onclick="document.getElementById('profile-modal').classList.add('hidden')" class="flex-1 py-3 px-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold rounded-xl text-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">Cancel</button>
+                <button type="submit" class="flex-1 py-3 px-4 bg-brand-600 text-white font-bold rounded-xl text-sm hover:bg-brand-700 shadow-lg shadow-brand-200 dark:shadow-none transition-all">Save Name</button>
+            </div>
+        </form>
+    </div>
+</div>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -1009,6 +1065,8 @@
         // --- STATE MODIFICATION: USE REAL DATE ---
         const state = {
             // UPDATED: Now uses current real-world date
+            
+            displayName: null,
             currentDate: new Date(), 
             selectedDate: new Date(),
             tasks: {}, 
@@ -1487,13 +1545,15 @@ function saveData() {
                     <div class="bg-white dark:bg-slate-900 border ${m.resolved ? 'border-green-200 dark:border-green-900' : 'border-slate-200 dark:border-slate-800'} rounded-xl p-0 shadow-sm overflow-hidden group">
                         <div class="p-4 flex flex-col md:flex-row gap-4">
                             <!-- Text Content -->
-                            <div class="flex-1 min-w-0">
-                                <div class="flex items-center gap-2 mb-3">
-                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">${escapeHtml(m.chapter)}</span>
-                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded ${typeBadge}">${m.type}</span>
-                                    <span class="text-[10px] text-slate-300 ml-auto">${dateStr}</span>
-                                </div>
-                                
+                             <div class="flex-1 min-w-0">
+    <div class="flex items-center gap-2">
+        <p class="text-sm font-bold text-slate-900 dark:text-white truncate max-w-[110px]" id="mobile-user-email">Guest</p>
+        <button onclick="openProfileModal()" class="shrink-0 p-1.5 bg-brand-100 dark:bg-brand-900 text-brand-700 dark:text-brand-300 rounded-lg hover:bg-brand-200 transition-colors" aria-label="Edit Profile">
+            <i data-lucide="edit-3" class="w-4 h-4"></i>
+        </button>
+    </div>
+    <p class="text-[10px] font-medium text-slate-500 dark:text-slate-400" id="mobile-sync-status">Local Storage</p>
+</div>                               
                                 <div class="mb-2">
                                     <p class="text-xs font-bold text-slate-400 uppercase mb-1">Question / Mistake</p>
                                     <p class="text-sm text-slate-800 dark:text-slate-200 whitespace-pre-wrap ${m.resolved ? 'line-through opacity-60' : ''}">${escapeHtml(m.desc)}</p>
@@ -1622,9 +1682,9 @@ window.renderLeaderboardList = function() {
         else headerScore.textContent = 'Tests Taken';
     }
 
-    // My Stats Card Update
+    // My Stats Card Update (WITH NAME SUPPORT)
     const myNameEl = document.getElementById('lb-user-name');
-    if(myNameEl) myNameEl.textContent = currentUser ? (currentUser.email.split('@')[0]) : "Guest";
+    if(myNameEl) myNameEl.textContent = state.displayName || (currentUser ? currentUser.email.split('@')[0] : "Guest");
     
     const myExamEl = document.getElementById('lb-my-exam');
     if(myExamEl) myExamEl.textContent = `${myStats.mainPct}%`;
@@ -1662,17 +1722,20 @@ window.renderLeaderboardList = function() {
         const isMe = user.id === myId;
         const rankColor = index === 0 ? 'text-yellow-500' : (index === 1 ? 'text-slate-400' : (index === 2 ? 'text-orange-500' : 'text-slate-500'));
         const medal = index === 0 ? '<i data-lucide="crown" class="w-4 h-4 inline mb-1"></i>' : `#${index + 1}`;
-        const userName = user.email ? user.email.split('@')[0] : 'Anonymous';
+        
+        // CHECK FOR NAME FIRST, THEN EMAIL
+        const userName = user.displayName || (user.email ? user.email.split('@')[0] : 'Anonymous');
+        const firstLetter = userName.charAt(0).toUpperCase();
 
         return `
             <div class="grid grid-cols-12 gap-4 p-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${isMe ? 'bg-brand-50/50 dark:bg-brand-900/10' : ''}">
                 <div class="col-span-2 text-center font-black ${rankColor} text-sm">${medal}</div>
                 <div class="col-span-6 flex items-center gap-3">
                     <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-600 dark:text-slate-300">
-                        ${userName.charAt(0).toUpperCase()}
+                        ${firstLetter}
                     </div>
                     <p class="text-sm font-bold text-slate-800 dark:text-slate-200 truncate">
-                        ${userName} ${isMe ? '(You)' : ''}
+                        ${userName.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")} ${isMe ? '(You)' : ''}
                     </p>
                 </div>
                 <div class="col-span-4 text-right font-bold text-slate-700 dark:text-white">${scoreDisplay}</div>
@@ -1682,9 +1745,34 @@ window.renderLeaderboardList = function() {
 
     if(window.lucide) lucide.createIcons({ root: list });
 };
+     
+// --- PROFILE FUNCTIONS ---
+    window.openProfileModal = function() {
+        const input = document.getElementById('profile-name-input');
+        if(state.displayName) input.value = state.displayName;
+        document.getElementById('profile-modal').classList.remove('hidden');
+        input.focus();
+    };
 
+    window.saveProfileName = function() {
+        const input = document.getElementById('profile-name-input');
+        const newName = input.value.trim();
+        
+        if(newName) {
+            state.displayName = newName;
+            if(isFirebaseActive && currentUser) {
+                const docRef = getSafeDocRef(currentUser.uid);
+                setDoc(docRef, { displayName: newName }, { merge: true });
+            } else {
+                localStorage.setItem('studyflow_username', newName);
+            }
+            saveData();
+        }
+        document.getElementById('profile-modal').classList.add('hidden');
+        renderHeader(); 
+    };
 
-        document.addEventListener('DOMContentLoaded', init);
+ document.addEventListener('DOMContentLoaded', init);
 
         // Optimization: FOUC listener - Triggered on DOMContentLoaded instead of Load for faster paint
         document.addEventListener('DOMContentLoaded', () => {
