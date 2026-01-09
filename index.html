@@ -1470,21 +1470,36 @@ window.updateHeaderPrayerBtn = function() {
     else el.className = "bg-emerald-600 text-white text-[9px] px-1.5 py-0.5 rounded ml-1";
 };
 // --- SPIRITUAL DASHBOARD LOGIC ---
-// --- PASTE THIS ENTIRE BLOCK ---
-
 window.renderNamazView = function() {
-    // --- PART 1: RAMADAN TIMER ---
+    // --- PART 1: THE "HOLY LIGHT" RAMADAN TIMER ---
     if (typeof window.ramadanTimerInterval === 'undefined') window.ramadanTimerInterval = null;
     if (window.ramadanTimerInterval) clearInterval(window.ramadanTimerInterval);
 
     const countEl = document.getElementById('ramadan-days-left');
     const ramadanDate = new Date('2026-02-17T00:00:00');
 
+    // 1. VISUAL UPGRADE: Make the card glow
+    if (countEl) {
+        const card = countEl.closest('.rounded-3xl'); // Find the main card container
+        if (card) {
+            // Apply new "Ramadan" styling (Brighter Green + Gold Glow + Glass Border)
+            card.className = "bg-gradient-to-br from-emerald-500 via-teal-600 to-emerald-800 rounded-3xl p-8 text-white shadow-2xl shadow-emerald-400/40 relative overflow-hidden group border border-emerald-400/30 transition-all duration-500";
+            
+            // Find the background lantern and make it Golden
+            const lanternContainer = card.querySelector('.absolute');
+            if(lanternContainer) {
+                // Add a golden drop-shadow to the lantern icon
+                lanternContainer.innerHTML = '<i data-lucide="lamp-ceiling" class="w-64 h-64 text-amber-200/20 drop-shadow-[0_0_30px_rgba(251,191,36,0.4)] transform rotate-12 transition-transform duration-700 group-hover:rotate-0"></i>';
+                if(window.lucide) lucide.createIcons({ root: lanternContainer });
+            }
+        }
+    }
+
     const updateTimer = () => {
         const now = new Date();
         const diff = ramadanDate - now;
         if (diff <= 0) {
-            if(countEl) countEl.innerHTML = "<span class='text-emerald-200'>Ramadan Mubarak!</span>";
+            if(countEl) countEl.innerHTML = "<span class='text-amber-200 font-bold text-2xl drop-shadow-md'>Ramadan Mubarak! 🌙</span>";
             return;
         }
         const d = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -1492,32 +1507,39 @@ window.renderNamazView = function() {
         const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const s = Math.floor((diff % (1000 * 60)) / 1000);
         
+        // NEW STYLING: Gold Borders & Brighter Text
         const makeBox = (val, label) => `
-            <div class="flex flex-col items-center justify-center bg-black/20 rounded-lg border border-white/10 p-1.5 min-w-[50px] backdrop-blur-sm">
-                <span class="text-xl font-bold text-white font-mono leading-none">${String(val).padStart(2, '0')}</span>
-                <span class="text-[9px] font-bold text-emerald-200/80 uppercase mt-0.5">${label}</span>
+            <div class="flex flex-col items-center justify-center bg-black/20 rounded-xl border border-amber-200/30 p-2 min-w-[55px] md:min-w-[65px] backdrop-blur-md shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                <span class="text-2xl md:text-3xl font-bold text-white font-mono leading-none drop-shadow-sm">${String(val).padStart(2, '0')}</span>
+                <span class="text-[9px] font-bold text-amber-300 uppercase mt-1 tracking-widest">${label}</span>
             </div>`;
             
         if (countEl) {
             if (countEl.parentElement && countEl.nextElementSibling) {
                 countEl.nextElementSibling.style.display = 'none';
                 countEl.parentElement.classList.remove('p-4', 'min-w-[120px]');
-                countEl.parentElement.classList.add('p-3', 'pl-5');
+                countEl.parentElement.classList.add('p-0', 'pl-0', 'md:pl-6'); // Adjust alignment
             }
-            countEl.innerHTML = `<div class="flex gap-1.5">${makeBox(d,'Day')}<span class="text-emerald-200/50 py-1">:</span>${makeBox(h,'Hr')}<span class="text-emerald-200/50 py-1">:</span>${makeBox(m,'Min')}<span class="text-emerald-200/50 py-1">:</span>${makeBox(s,'Sec')}</div>`;
+            countEl.innerHTML = `
+                <div class="flex gap-2 items-center">
+                    ${makeBox(d,'Day')}
+                    <span class="text-amber-200/60 font-bold text-xl pb-4 animate-pulse">:</span>
+                    ${makeBox(h,'Hr')}
+                    <span class="text-amber-200/60 font-bold text-xl pb-4 animate-pulse">:</span>
+                    ${makeBox(m,'Min')}
+                    <span class="text-amber-200/60 font-bold text-xl pb-4 animate-pulse hidden md:block">:</span>
+                    ${makeBox(s,'Sec')}
+                </div>`;
         }
     };
     updateTimer();
     window.ramadanTimerInterval = setInterval(updateTimer, 1000);
 
 
-    // --- PART 2: DATA DASHBOARD ---
-    
-    // Helper function to calculate stats
+    // --- PART 2: DATA DASHBOARD (Preserved) ---
     const calculateStats = (days) => {
         const counts = { Fajr: 0, Dhuhr: 0, Asr: 0, Maghrib: 0, Isha: 0 };
         let total = 0, streak = 0, streakBroken = false;
-
         for(let i=0; i<days; i++) {
             const d = new Date(); d.setDate(d.getDate() - i);
             const k = formatDateKey(d);
@@ -1538,10 +1560,8 @@ window.renderNamazView = function() {
     };
 
     const stats = calculateStats(30);
-
-    // LOGIC: Find Best and Worst Prayers
     const entries = Object.entries(stats.counts);
-    entries.sort((a, b) => b[1] - a[1]); // Sort High to Low
+    entries.sort((a, b) => b[1] - a[1]);
 
     let bestName = "None yet";
     let worstName = "All";
@@ -1554,7 +1574,6 @@ window.renderNamazView = function() {
     const oldInsightCard = document.getElementById('insight-best');
     if (oldInsightCard) {
         const gridContainer = oldInsightCard.closest('.grid');
-        
         if (gridContainer && !gridContainer.classList.contains('dashboard-active')) {
             const dashboardHTML = `
                 <div class="grid grid-cols-3 gap-3 mb-4">
@@ -1574,56 +1593,31 @@ window.renderNamazView = function() {
 
                 <div class="grid grid-cols-2 gap-3 mb-4">
                     <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center gap-3 shadow-sm">
-                        <div class="p-3 bg-green-100 dark:bg-green-900/20 rounded-full text-green-600 dark:text-green-400">
-                            <i data-lucide="check-circle-2" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <div class="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Strongest</div>
-                            <div class="text-lg font-bold text-slate-900 dark:text-white">${bestName}</div>
-                        </div>
+                        <div class="p-3 bg-green-100 dark:bg-green-900/20 rounded-full text-green-600 dark:text-green-400"><i data-lucide="check-circle-2" class="w-5 h-5"></i></div>
+                        <div><div class="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Strongest</div><div class="text-lg font-bold text-slate-900 dark:text-white">${bestName}</div></div>
                     </div>
-                    
                     <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center gap-3 shadow-sm">
-                        <div class="p-3 bg-red-100 dark:bg-red-900/20 rounded-full text-red-600 dark:text-red-400">
-                            <i data-lucide="alert-circle" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <div class="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Needs Focus</div>
-                            <div class="text-lg font-bold text-slate-900 dark:text-white">${worstName}</div>
-                        </div>
+                        <div class="p-3 bg-red-100 dark:bg-red-900/20 rounded-full text-red-600 dark:text-red-400"><i data-lucide="alert-circle" class="w-5 h-5"></i></div>
+                        <div><div class="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Needs Focus</div><div class="text-lg font-bold text-slate-900 dark:text-white">${worstName}</div></div>
                     </div>
                 </div>
 
                 <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm mb-4">
-                    <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                        <i data-lucide="bar-chart-2" class="w-4 h-4 text-slate-400"></i> Prayer Frequency
-                    </h3>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2"><i data-lucide="bar-chart-2" class="w-4 h-4 text-slate-400"></i> Prayer Frequency</h3>
                     <div class="space-y-4">
                         ${['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'].map(p => {
                             const count = stats.counts[p] || 0;
                             const pct = (count / 30) * 100;
                             let color = pct >= 80 ? 'bg-emerald-500' : (pct >= 50 ? 'bg-brand-500' : 'bg-orange-400');
-                            return `
-                            <div>
-                                <div class="flex justify-between text-xs font-bold mb-1.5">
-                                    <span class="text-slate-600 dark:text-slate-300 w-16">${p}</span>
-                                    <span class="text-slate-400">${count}/30 days</span>
-                                </div>
-                                <div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                                    <div class="h-full ${color} transition-all duration-1000" style="width: ${pct}%"></div>
-                                </div>
-                            </div>`;
+                            return `<div><div class="flex justify-between text-xs font-bold mb-1.5"><span class="text-slate-600 dark:text-slate-300 w-16">${p}</span><span class="text-slate-400">${count}/30 days</span></div><div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden"><div class="h-full ${color} transition-all duration-1000" style="width: ${pct}%"></div></div></div>`;
                         }).join('')}
                     </div>
-                </div>
-            `;
-
-            const dashboardWrapper = document.createElement('div');
-            dashboardWrapper.innerHTML = dashboardHTML;
-            dashboardWrapper.classList.add('dashboard-active'); 
-            gridContainer.replaceWith(dashboardWrapper);
-            
-            if(window.lucide) lucide.createIcons({ root: dashboardWrapper });
+                </div>`;
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = dashboardHTML;
+            wrapper.classList.add('dashboard-active');
+            gridContainer.replaceWith(wrapper);
+            if(window.lucide) lucide.createIcons({ root: wrapper });
         }
     }
 
