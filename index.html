@@ -204,14 +204,13 @@
     <i data-lucide="medal" class="w-5 h-5 text-amber-500 fill-amber-500/20"></i>
     Leaderboard
 </button>    
-
-
-
-
-
-
+<button onclick="switchView('namaz')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5" data-view="namaz">
+    <i data-lucide="book-heart" class="w-5 h-5 text-emerald-500 fill-emerald-500/20"></i>
+    Spiritual Insights
+</button>
 
         </div>
+
            <div class="mt-auto p-6 border-t border-slate-100 dark:border-slate-800 space-y-3 bg-white dark:bg-slate-900">
             
             <button onclick="openProfileModal(); toggleMobileMenu();" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all group">
@@ -264,6 +263,10 @@
                     <i data-lucide="medal" class="w-5 h-5 text-amber-500 fill-amber-500/20"></i>
                     Leaderboard
                 </button>
+<button onclick="switchView('namaz')" id="nav-namaz" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all">
+    <i data-lucide="book-heart" class="w-5 h-5 text-emerald-500 fill-emerald-500/20"></i>
+    Spiritual Insights
+</button>
             </div>
         </div>
 <div class="mt-auto p-6 border-t border-slate-100 dark:border-slate-800 space-y-3">
@@ -329,6 +332,11 @@
                     <button onclick="goToToday()" class="px-4 h-8 flex items-center justify-center hover:bg-white dark:hover:bg-slate-700 rounded-full transition-all text-xs font-bold text-slate-700 dark:text-slate-200">Today</button>
                     <button onclick="changeDay(1)" class="w-8 h-8 flex items-center justify-center hover:bg-white dark:hover:bg-slate-700 rounded-full transition-all text-slate-600 dark:text-slate-300" aria-label="Next day"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
                 </div>
+<button onclick="openPrayerModal()" class="ml-4 flex items-center gap-2 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 rounded-full font-bold text-xs hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-all border border-emerald-200 dark:border-emerald-800/50">
+    <i data-lucide="moon-star" class="w-3.5 h-3.5"></i>
+    <span class="hidden md:inline">Prayers</span>
+    <span id="header-prayer-count" class="bg-emerald-600 text-white text-[9px] px-1.5 py-0.5 rounded ml-1">0/5</span>
+</button>
             </header>
 
             <div class="flex-1 overflow-y-auto custom-scroll p-4 md:p-8 relative z-10">
@@ -650,6 +658,74 @@
                 <img id="full-size-image" src="" class="max-w-full max-h-full rounded-lg shadow-2xl">
             </div>
         </div>
+<div id="view-namaz" class="hidden flex-1 flex flex-col overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors">
+    <header class="px-8 py-6 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <i data-lucide="moon-star" class="w-6 h-6 text-emerald-500"></i> Spiritual Growth
+        </h1>
+        <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Your journey towards consistency.</p>
+    </header>
+
+    <div class="flex-1 overflow-y-auto custom-scroll p-4 md:p-8">
+        <div class="max-w-4xl mx-auto space-y-6">
+            
+            <div class="bg-gradient-to-r from-emerald-800 to-teal-900 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden group">
+                <div class="absolute top-0 right-0 p-10 opacity-10">
+                    <i data-lucide="lamp-ceiling" class="w-64 h-64"></i>
+                </div>
+                <div class="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-700/50 border border-emerald-600/50 text-emerald-100 text-[10px] font-bold uppercase tracking-wider mb-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Upcoming
+                        </div>
+                        <h2 class="text-3xl font-bold">Ramadan 2026</h2>
+                        <p class="text-emerald-100/80 mt-1 max-w-md">"O you who have believed, decreed upon you is fasting... that you may become righteous."</p>
+                    </div>
+                    <div class="text-center bg-black/20 backdrop-blur-sm p-4 rounded-2xl border border-white/10 min-w-[120px]">
+                        <span class="block text-4xl font-black tracking-tight" id="ramadan-days-left">--</span>
+                        <span class="text-[10px] uppercase font-bold text-emerald-200 tracking-widest">Days Left</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
+                    <div class="p-4 bg-green-100 dark:bg-green-900/20 rounded-full text-green-600 dark:text-green-400">
+                        <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Strongest Habit</p>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white" id="insight-best">Analyzing...</h3>
+                        <p class="text-xs text-slate-500">Most consistent prayer this month.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
+                    <div class="p-4 bg-orange-100 dark:bg-orange-900/20 rounded-full text-orange-600 dark:text-orange-400">
+                        <i data-lucide="alert-circle" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Needs Focus</p>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white" id="insight-worst">Analyzing...</h3>
+                        <p class="text-xs text-slate-500">Often missed. You can fix this!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-amber-50 dark:bg-amber-900/10 rounded-3xl p-8 border border-amber-100 dark:border-amber-900/30 relative text-center">
+                <i data-lucide="quote" class="w-8 h-8 text-amber-300 dark:text-amber-800/50 absolute top-6 left-6"></i>
+                <h3 class="text-sm font-bold text-amber-600 dark:text-amber-500 uppercase tracking-widest mb-4">Daily Motivation</h3>
+                <p class="text-lg md:text-xl font-medium text-slate-800 dark:text-slate-200 font-serif leading-relaxed italic" id="daily-hadith-text">
+                    "Loading Hadith..."
+                </p>
+                <div class="mt-4 inline-block px-3 py-1 bg-amber-100 dark:bg-amber-900/40 rounded-lg text-xs font-bold text-amber-700 dark:text-amber-400" id="daily-hadith-source">
+                    Sahih Bukhari
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
 <div id="view-leaderboard" class="hidden flex-1 flex flex-col overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors">
     <header class="px-8 py-6 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex flex-col md:flex-row justify-between md:items-center gap-4">
         <div>
@@ -713,6 +789,21 @@
                 <button type="submit" class="flex-1 py-3 px-4 bg-brand-600 text-white font-bold rounded-xl text-sm hover:bg-brand-700 shadow-lg shadow-brand-200 dark:shadow-none transition-all">Save Name</button>
             </div>
         </form>
+    </div>
+</div>
+<div id="prayer-modal" class="hidden fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity animate-in fade-in duration-200">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-sm shadow-2xl border border-slate-200 dark:border-slate-800 p-6 relative">
+        <button onclick="document.getElementById('prayer-modal').classList.add('hidden')" class="absolute top-4 right-4 p-2 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-500 hover:text-red-500 transition-colors">
+            <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+        <div class="text-center mb-6 mt-2">
+            <div class="w-14 h-14 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                <i data-lucide="moon" class="w-7 h-7"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Daily Prayers</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium" id="modal-prayer-date">...</p>
+        </div>
+        <div class="grid grid-cols-1 gap-2" id="modal-prayer-list"></div>
     </div>
 </div>
     <script type="module">
@@ -1107,6 +1198,7 @@
             currentDate: new Date(), 
             selectedDate: new Date(),
             tasks: {}, 
+            prayers: {},
             activeView: 'overview',
             nextExam: null,
             dailyTestsAttempted: {},
@@ -1185,6 +1277,7 @@
                                 state.tasks = data.tasks || {};
                                 state.dailyTestsAttempted = data.dailyTestsAttempted || {};
                                 state.mistakes = data.mistakes || []; 
+                                state.prayers = data.prayers || {};
                                 state.displayName = data.displayName || null; // <--- LOAD SAVED NAME
                                 renderAll();
                             } else {
@@ -1206,6 +1299,8 @@
         }
 
     function initLocalMode() {
+const storedPrayers = localStorage.getItem('studyflow_prayers');
+    if (storedPrayers) state.prayers = JSON.parse(storedPrayers);
             try {
                 const storedTasks = localStorage.getItem('studyflow_tasks_v2');
                 if (storedTasks) state.tasks = JSON.parse(storedTasks);
@@ -1301,7 +1396,8 @@
                     tasks: state.tasks,
                     dailyTestsAttempted: state.dailyTestsAttempted,
                     mistakes: state.mistakes || [],
-                    displayName: state.displayName // <--- SAVING NAME PRIVATELY
+                    displayName: state.displayName,
+prayers: state.prayers || {} // <--- SAVING NAME PRIVATELY
                 }, { merge: true }).then(() => {
                     if(statusEl) statusEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Synced`;
                 }).catch(err => {
@@ -1323,11 +1419,288 @@
                 localStorage.setItem('studyflow_attempts_v2', JSON.stringify(state.dailyTestsAttempted));
                 localStorage.setItem('studyflow_mistakes', JSON.stringify(state.mistakes || []));
                 localStorage.setItem('studyflow_username', state.displayName); // Save locally
+localStorage.setItem('studyflow_prayers', JSON.stringify(state.prayers || {}));
             }
             renderAll();
         }      
 
- 
+ // --- PRAYER FUNCTIONS ---
+window.openPrayerModal = function() {
+    document.getElementById('modal-prayer-date').textContent = state.selectedDate.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' });
+    document.getElementById('prayer-modal').classList.remove('hidden');
+    renderPrayerModalItems();
+};
+
+window.togglePrayer = function(prayerName) {
+    const k = formatDateKey(state.selectedDate);
+    if (!state.prayers[k]) state.prayers[k] = {};
+    state.prayers[k][prayerName] = !state.prayers[k][prayerName];
+    saveData();
+    renderPrayerModalItems();
+    updateHeaderPrayerBtn();
+};
+
+window.renderPrayerModalItems = function() {
+    const list = document.getElementById('modal-prayer-list');
+    if(!list) return;
+    const k = formatDateKey(state.selectedDate);
+    const todayData = state.prayers[k] || {};
+    const prayers = [
+        { name: 'Fajr', time: 'Before Sunrise' }, { name: 'Dhuhr', time: 'After Noon' },
+        { name: 'Asr', time: 'Afternoon' }, { name: 'Maghrib', time: 'After Sunset' }, { name: 'Isha', time: 'Night' }
+    ];
+    list.innerHTML = prayers.map(p => {
+        const isDone = todayData[p.name] === true;
+        const bg = isDone ? "bg-emerald-500 border-emerald-600 text-white" : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400";
+        return `<button onclick="togglePrayer('${p.name}')" class="flex items-center justify-between p-3 rounded-xl border transition-all ${bg}">
+            <div class="text-left"><div class="font-bold text-sm ${isDone ? 'text-white' : 'text-slate-800 dark:text-white'}">${p.name}</div><div class="text-[10px] font-bold uppercase tracking-wider ${isDone ? 'text-emerald-100' : 'text-slate-400'}">${p.time}</div></div>
+            <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center ${isDone ? 'border-white bg-white text-emerald-600' : 'border-slate-300 dark:border-slate-600'}">${isDone ? '<i data-lucide="check" class="w-3.5 h-3.5"></i>' : ''}</div></button>`;
+    }).join('');
+    if(window.lucide) lucide.createIcons({ root: list });
+};
+
+window.updateHeaderPrayerBtn = function() {
+    const el = document.getElementById('header-prayer-count');
+    if(!el) return;
+    const k = formatDateKey(state.selectedDate);
+    const todayData = state.prayers[k] || {};
+    const count = Object.values(todayData).filter(v => v === true).length;
+    el.textContent = `${count}/5`;
+    if(count === 5) el.className = "bg-yellow-400 text-black text-[9px] px-1.5 py-0.5 rounded ml-1 font-bold shadow-sm";
+    else el.className = "bg-emerald-600 text-white text-[9px] px-1.5 py-0.5 rounded ml-1";
+};
+// --- SPIRITUAL DASHBOARD LOGIC ---
+// --- PASTE THIS ENTIRE BLOCK ---
+
+window.renderNamazView = function() {
+    // --- PART 1: RAMADAN TIMER ---
+    if (typeof window.ramadanTimerInterval === 'undefined') window.ramadanTimerInterval = null;
+    if (window.ramadanTimerInterval) clearInterval(window.ramadanTimerInterval);
+
+    const countEl = document.getElementById('ramadan-days-left');
+    const ramadanDate = new Date('2026-02-17T00:00:00');
+
+    const updateTimer = () => {
+        const now = new Date();
+        const diff = ramadanDate - now;
+        if (diff <= 0) {
+            if(countEl) countEl.innerHTML = "<span class='text-emerald-200'>Ramadan Mubarak!</span>";
+            return;
+        }
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        const makeBox = (val, label) => `
+            <div class="flex flex-col items-center justify-center bg-black/20 rounded-lg border border-white/10 p-1.5 min-w-[50px] backdrop-blur-sm">
+                <span class="text-xl font-bold text-white font-mono leading-none">${String(val).padStart(2, '0')}</span>
+                <span class="text-[9px] font-bold text-emerald-200/80 uppercase mt-0.5">${label}</span>
+            </div>`;
+            
+        if (countEl) {
+            if (countEl.parentElement && countEl.nextElementSibling) {
+                countEl.nextElementSibling.style.display = 'none';
+                countEl.parentElement.classList.remove('p-4', 'min-w-[120px]');
+                countEl.parentElement.classList.add('p-3', 'pl-5');
+            }
+            countEl.innerHTML = `<div class="flex gap-1.5">${makeBox(d,'Day')}<span class="text-emerald-200/50 py-1">:</span>${makeBox(h,'Hr')}<span class="text-emerald-200/50 py-1">:</span>${makeBox(m,'Min')}<span class="text-emerald-200/50 py-1">:</span>${makeBox(s,'Sec')}</div>`;
+        }
+    };
+    updateTimer();
+    window.ramadanTimerInterval = setInterval(updateTimer, 1000);
+
+
+    // --- PART 2: DATA DASHBOARD ---
+    
+    // Helper function to calculate stats
+    const calculateStats = (days) => {
+        const counts = { Fajr: 0, Dhuhr: 0, Asr: 0, Maghrib: 0, Isha: 0 };
+        let total = 0, streak = 0, streakBroken = false;
+
+        for(let i=0; i<days; i++) {
+            const d = new Date(); d.setDate(d.getDate() - i);
+            const k = formatDateKey(d);
+            let dailyCount = 0;
+            if(state.prayers && state.prayers[k]) {
+                const p = state.prayers[k];
+                ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'].forEach(name => {
+                    if(p[name]) { counts[name]++; dailyCount++; }
+                });
+            }
+            total += dailyCount;
+            if(!streakBroken) {
+                if(dailyCount > 0) streak++;
+                else if(i > 0) streakBroken = true;
+            }
+        }
+        return { counts, total, streak, rate: Math.round((total / (days * 5)) * 100) };
+    };
+
+    const stats = calculateStats(30);
+
+    // LOGIC: Find Best and Worst Prayers
+    const entries = Object.entries(stats.counts);
+    entries.sort((a, b) => b[1] - a[1]); // Sort High to Low
+
+    let bestName = "None yet";
+    let worstName = "All";
+    
+    if (stats.total > 0) {
+        bestName = entries[0][0]; 
+        worstName = stats.rate === 100 ? "None!" : entries[entries.length-1][0];
+    }
+
+    const oldInsightCard = document.getElementById('insight-best');
+    if (oldInsightCard) {
+        const gridContainer = oldInsightCard.closest('.grid');
+        
+        if (gridContainer && !gridContainer.classList.contains('dashboard-active')) {
+            const dashboardHTML = `
+                <div class="grid grid-cols-3 gap-3 mb-4">
+                    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-center shadow-sm">
+                        <div class="text-2xl md:text-3xl font-black text-brand-600 dark:text-brand-400">${stats.total}</div>
+                        <div class="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Prayers (30d)</div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-center shadow-sm">
+                        <div class="text-2xl md:text-3xl font-black text-emerald-500">${stats.rate}%</div>
+                        <div class="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Consistency</div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-center shadow-sm">
+                        <div class="text-2xl md:text-3xl font-black text-orange-500">${stats.streak}</div>
+                        <div class="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Day Streak</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center gap-3 shadow-sm">
+                        <div class="p-3 bg-green-100 dark:bg-green-900/20 rounded-full text-green-600 dark:text-green-400">
+                            <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <div class="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Strongest</div>
+                            <div class="text-lg font-bold text-slate-900 dark:text-white">${bestName}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center gap-3 shadow-sm">
+                        <div class="p-3 bg-red-100 dark:bg-red-900/20 rounded-full text-red-600 dark:text-red-400">
+                            <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <div class="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Needs Focus</div>
+                            <div class="text-lg font-bold text-slate-900 dark:text-white">${worstName}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm mb-4">
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                        <i data-lucide="bar-chart-2" class="w-4 h-4 text-slate-400"></i> Prayer Frequency
+                    </h3>
+                    <div class="space-y-4">
+                        ${['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'].map(p => {
+                            const count = stats.counts[p] || 0;
+                            const pct = (count / 30) * 100;
+                            let color = pct >= 80 ? 'bg-emerald-500' : (pct >= 50 ? 'bg-brand-500' : 'bg-orange-400');
+                            return `
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1.5">
+                                    <span class="text-slate-600 dark:text-slate-300 w-16">${p}</span>
+                                    <span class="text-slate-400">${count}/30 days</span>
+                                </div>
+                                <div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                    <div class="h-full ${color} transition-all duration-1000" style="width: ${pct}%"></div>
+                                </div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+
+            const dashboardWrapper = document.createElement('div');
+            dashboardWrapper.innerHTML = dashboardHTML;
+            dashboardWrapper.classList.add('dashboard-active'); 
+            gridContainer.replaceWith(dashboardWrapper);
+            
+            if(window.lucide) lucide.createIcons({ root: dashboardWrapper });
+        }
+    }
+
+    renderDailyHadith();
+};
+
+function calculatePrayerStats() {
+    if(!state.prayers) return;
+
+    const counts = { Fajr: 0, Dhuhr: 0, Asr: 0, Maghrib: 0, Isha: 0 };
+    const totalDays = 30; // Look back period
+    let daysChecked = 0;
+
+    // Iterate backwards 30 days
+    for(let i=0; i<totalDays; i++) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const k = formatDateKey(d);
+        
+        if(state.prayers[k]) {
+            daysChecked++;
+            const p = state.prayers[k];
+            if(p.Fajr) counts.Fajr++;
+            if(p.Dhuhr) counts.Dhuhr++;
+            if(p.Asr) counts.Asr++;
+            if(p.Maghrib) counts.Maghrib++;
+            if(p.Isha) counts.Isha++;
+        }
+    }
+
+    // Determine Best & Worst
+    let bestName = "None yet";
+    let bestCount = -1;
+    let worstName = "None";
+    let worstCount = 999;
+
+    Object.entries(counts).forEach(([name, count]) => {
+        if(count > bestCount) { bestCount = count; bestName = name; }
+        if(count < worstCount) { worstCount = count; worstName = name; }
+    });
+
+    // Update UI
+    const bestEl = document.getElementById('insight-best');
+    const worstEl = document.getElementById('insight-worst');
+
+    if(bestEl) {
+        if (bestCount === 0) bestEl.textContent = "Start Today";
+        else bestEl.textContent = bestName;
+    }
+
+    if(worstEl) {
+        if (bestCount === 0) worstEl.textContent = "All Prayers";
+        else if (worstCount === bestCount) worstEl.textContent = "Consistent"; // All equal
+        else worstEl.textContent = worstName;
+    }
+}
+
+function renderDailyHadith() {
+    const hadiths = [
+        { text: "The difference between a man and shirk and kufr is the abandoning of the Prayer.", source: "Sahih Muslim" },
+        { text: "The first matter that the slave will be brought to account for on the Day of Judgment is the Prayer.", source: "Sahih Al-Jami" },
+        { text: "He who prays the two cool prayers (Asr and Fajr) will enter Paradise.", source: "Sahih Bukhari" },
+        { text: "No one who prays before the rising of the sun and before its setting will enter the Fire.", source: "Sahih Muslim" },
+        { text: "Between faith and unbelief is abandoning the prayer.", source: "Sahih Muslim" },
+        { text: "Whoever misses the Asr prayer, it is as if he has lost his family and his wealth.", source: "Sahih Bukhari" }
+    ];
+
+    // Pick based on day of month to rotate consistently
+    const dayIndex = new Date().getDate() % hadiths.length;
+    const selected = hadiths[dayIndex];
+
+    const textEl = document.getElementById('daily-hadith-text');
+    const sourceEl = document.getElementById('daily-hadith-source');
+
+    if(textEl) textEl.textContent = `"${selected.text}"`;
+    if(sourceEl) sourceEl.textContent = selected.source;
+}
         // Global functions
         window.addTask = function(text, type = 'main', subject = 'General', chapter = null) {
             const key = formatDateKey(state.selectedDate);
@@ -1395,14 +1768,16 @@
         fetchLeaderboard();
         switchRankTab('overall'); 
     }
-
+if(view === 'namaz') {
+        renderNamazView();
+    }
     // Reset Notebook if leaving mistakes view
     if(view === 'mistakes') {
         closeNotebook(); 
     }
 
     // Updated list to include 'leaderboard'
-    ['overview','target','backlog', 'mistakes', 'leaderboard'].forEach(v => {
+    ['overview','target','backlog', 'mistakes', 'leaderboard', 'namaz'].forEach(v => {
         const btn = document.getElementById(`nav-${v}`);
         if(btn) {
             if(v === view) btn.className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all bg-brand-50 dark:bg-brand-900/20 text-brand-700 dark:text-brand-400 shadow-sm";
@@ -1843,6 +2218,7 @@ window.renderLeaderboardList = function() {
 
         function renderAll() {
             renderHeader();
+            updateHeaderPrayerBtn();
             renderStats();
             
             // Performance Optimization: Lazy Rendering
