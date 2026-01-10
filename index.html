@@ -227,21 +227,30 @@ window.showToast = function(message) {
         </div>
 
            <div class="mt-auto p-6 border-t border-slate-100 dark:border-slate-800 space-y-3 bg-white dark:bg-slate-900">
-            
-            <button onclick="openProfileModal(); toggleMobileMenu();" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all group">
-                <i data-lucide="user-circle" class="w-5 h-5 group-hover:text-brand-500 transition-colors"></i>
-                Profile Settings
-            </button>
 
-            <div class="flex items-center gap-3 px-2 pt-2">
-                <div class="w-8 h-8 rounded-full bg-brand-100 dark:bg-slate-700 flex items-center justify-center text-brand-600 dark:text-brand-400 font-bold text-xs" id="mobile-user-avatar">?</div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-sm font-bold text-slate-900 dark:text-white truncate" id="mobile-user-email">Guest</p>
-                    <p class="text-[10px] font-medium text-slate-500 dark:text-slate-400" id="mobile-sync-status">Local Storage</p>
-                </div>
-                <button onclick="handleLogout()" class="text-slate-400 hover:text-red-500" aria-label="Logout"><i data-lucide="log-out" class="w-4 h-4"></i></button>
+    <button onclick="openProfileModal(); toggleMobileMenu();" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all group">
+        <i data-lucide="user-circle" class="w-5 h-5 group-hover:text-brand-500 transition-colors"></i>
+        Profile Settings
+    </button>
+
+    <div id="mobile-user-card" onclick="handleProfileClick()" class="flex items-center gap-3 px-3 py-3 rounded-2xl border border-transparent transition-all cursor-pointer">
+        <div id="mobile-user-avatar-bg" class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-sm transition-colors">
+            <span id="mobile-user-avatar-text">?</span>
+        </div>
+
+        <div class="flex-1 min-w-0">
+            <p class="text-sm font-bold truncate transition-colors" id="mobile-user-name">Guest</p>
+            <div class="flex items-center gap-1.5">
+                <div id="mobile-status-dot" class="w-1.5 h-1.5 rounded-full bg-slate-400"></div>
+                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400" id="mobile-sync-status">Local Only</p>
             </div>
-        </div>  </div>
+        </div>
+
+        <button id="mobile-auth-btn" onclick="handleAuthAction(event)" class="p-2 rounded-xl transition-all">
+            <i data-lucide="log-in" class="w-5 h-5"></i>
+        </button>
+    </div>
+</div>        </div>  </div>
     </div>
 
   <nav class="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex-col flex-shrink-0 hidden md:flex z-20 transition-colors duration-300">
@@ -302,15 +311,23 @@ window.showToast = function(message) {
         </div>
     </button>
 
-    <div class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800 p-2 rounded-xl border border-slate-200 dark:border-slate-700">
-        <div class="w-8 h-8 rounded-lg bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 flex items-center justify-center text-brand-600 dark:text-brand-400 font-bold text-xs shadow-sm" id="desktop-user-avatar">?</div>
-        <div class="flex-1 min-w-0">
-            <p class="text-xs font-bold text-slate-800 dark:text-slate-200 truncate" id="desktop-user-email">Guest</p>
-            <p class="text-[9px] font-bold text-slate-400 flex items-center gap-1" id="desktop-sync-status"><span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span> Local</p>
+   <div id="desktop-user-card" onclick="handleProfileClick()" class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800 p-2 rounded-2xl border border-slate-200 dark:border-slate-700 cursor-pointer hover:border-brand-300 dark:hover:border-slate-500 transition-all group">
+        
+        <div id="desktop-user-avatar-bg" class="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold shadow-sm transition-colors">
+            <span id="desktop-user-avatar-text">?</span>
         </div>
-        <button onclick="handleLogout()" class="text-slate-400 hover:text-red-500 p-1" title="Log Out"><i data-lucide="log-out" class="w-4 h-4"></i></button>
+        
+        <div class="flex-1 min-w-0">
+            <p class="text-xs font-bold text-slate-800 dark:text-slate-200 truncate" id="desktop-user-name">Guest</p>
+            <p class="text-[9px] font-bold flex items-center gap-1" id="desktop-sync-status">
+                <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span> Not Synced
+            </p>
+        </div>
+        
+        <button id="desktop-auth-btn" onclick="handleAuthAction(event)" class="text-slate-400 hover:text-brand-600 dark:hover:text-white p-1.5 rounded-lg hover:bg-white dark:hover:bg-slate-700 transition-all" title="Log In / Out">
+            <i data-lucide="log-in" class="w-4 h-4"></i>
+        </button>
     </div>
-
     <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700">
         <div class="flex justify-between items-center mb-2">
             <span class="text-xs font-bold text-slate-400 uppercase" id="footer-goal-label">Daily Goal</span>
@@ -1266,12 +1283,77 @@ window.showToast = function(message) {
                 default: return 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200';
             }
         }
+// --- NEW PROFILE UI LOGIC ---
+window.updateProfileUI = function(user) {
+    const isGuest = !user || user.isAnonymous;
+    const name = state.displayName || (user && user.email ? user.email.split('@')[0] : "Guest User");
+    const initial = name.charAt(0).toUpperCase();
 
+    const guestStyle = {
+        cardBorder: "border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800",
+        avatarBg: "bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400",
+        icon: "log-in"
+    };
+
+    const userStyle = {
+        cardBorder: "border-brand-200 dark:border-brand-900/50 bg-brand-50/50 dark:bg-brand-900/10",
+        avatarBg: "bg-gradient-to-br from-brand-500 to-blue-600 text-white shadow-brand-500/30",
+        icon: "log-out"
+    };
+
+    const currentStyle = isGuest ? guestStyle : userStyle;
+
+    const updateElements = (prefix) => {
+        const card = document.getElementById(`${prefix}-user-card`);
+        const avatarBg = document.getElementById(`${prefix}-user-avatar-bg`);
+        const avatarText = document.getElementById(`${prefix}-user-avatar-text`);
+        const nameEl = document.getElementById(`${prefix}-user-name`);
+        const statusEl = document.getElementById(`${prefix}-sync-status`);
+        const btn = document.getElementById(`${prefix}-auth-btn`);
+
+        if(!card) return;
+
+        if(prefix === 'mobile') {
+            card.className = `flex items-center gap-3 px-3 py-3 rounded-2xl border transition-all cursor-pointer ${currentStyle.cardBorder}`;
+        }
+        
+        avatarBg.className = `flex items-center justify-center font-bold shadow-sm transition-colors ${prefix === 'mobile' ? 'w-10 h-10 rounded-full text-sm' : 'w-9 h-9 rounded-xl text-xs'} ${currentStyle.avatarBg}`;
+        avatarText.textContent = isGuest ? "?" : initial;
+        nameEl.textContent = name;
+        
+        statusEl.innerHTML = isGuest 
+            ? `<span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> <span class="text-slate-500 dark:text-slate-400">Local Only</span>`
+            : `<span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> <span class="text-green-600 dark:text-green-400">Synced</span>`;
+
+        btn.innerHTML = `<i data-lucide="${currentStyle.icon}" class="${prefix === 'mobile' ? 'w-5 h-5' : 'w-4 h-4'}"></i>`;
+        
+        if(isGuest) {
+            btn.className = `${prefix === 'mobile' ? 'p-2' : 'p-1.5'} rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-lg hover:scale-105 transition-all`;
+        } else {
+            btn.className = `${prefix === 'mobile' ? 'p-2' : 'p-1.5'} rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all`;
+        }
+    };
+
+    updateElements('mobile');
+    updateElements('desktop');
+    if(window.lucide) lucide.createIcons();
+};
+
+window.handleProfileClick = function() {
+    if (!currentUser || currentUser.isAnonymous) document.getElementById('auth-modal').classList.remove('hidden');
+};
+
+window.handleAuthAction = function(e) {
+    e.stopPropagation(); 
+    if (!currentUser || currentUser.isAnonymous) document.getElementById('auth-modal').classList.remove('hidden');
+    else handleLogout();
+};
         function init() {
+            // FIX: This must run FIRST to prevent the crash
+            setupSchedule(); 
+
             if (!isFirebaseActive && !localStorage.getItem('studyflow_demo_mode')) {
                 document.getElementById('auth-modal').classList.remove('hidden');
-                setupSchedule();
-                // Performance: only run icons if available, defer handles the rest
                 if(window.lucide) lucide.createIcons();
                 return;
             }
@@ -1279,35 +1361,32 @@ window.showToast = function(message) {
             if(isFirebaseActive) {
                 onAuthStateChanged(auth, (user) => {
                     currentUser = user;
+                    
                     if (user) {
-                        document.getElementById('desktop-user-email').textContent = user.isAnonymous ? "Guest" : user.email;
-                        document.getElementById('mobile-user-email').textContent = user.isAnonymous ? "Guest" : user.email;
-                        document.getElementById('desktop-user-avatar').textContent = user.email ? user.email[0].toUpperCase() : "G";
-                        document.getElementById('mobile-user-avatar').textContent = user.email ? user.email[0].toUpperCase() : "G";
-                        
-                        const statusText = isCanvasEnv ? "Canvas Sync" : "Cloud Sync";
-                        document.getElementById('desktop-sync-status').innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> ${statusText}`;
                         document.getElementById('auth-modal').classList.add('hidden');
-
                         const docRef = getSafeDocRef(user.uid);
                         
-                     unsubscribeDoc = onSnapshot(docRef, (docSnap) => {
+                        unsubscribeDoc = onSnapshot(docRef, (docSnap) => {
                             if (docSnap.exists()) {
                                 const data = docSnap.data();
                                 state.tasks = data.tasks || {};
                                 state.dailyTestsAttempted = data.dailyTestsAttempted || {};
                                 state.mistakes = data.mistakes || []; 
                                 state.prayers = data.prayers || {};
-                                state.displayName = data.displayName || null; // <--- LOAD SAVED NAME
+                                state.displayName = data.displayName || null;
+                                
+                                updateProfileUI(user); // Updates UI to "User Mode"
                                 renderAll();
                             } else {
                                 saveData();
+                                updateProfileUI(user);
                             }
                         }, (error) => {
                             console.error("Firestore error fallback:", error);
                             initLocalMode();
                         });   
                     } else {
+                        updateProfileUI(null); // Updates UI to "Guest Mode"
                         document.getElementById('auth-modal').classList.remove('hidden');
                     }
                 });
@@ -1315,31 +1394,36 @@ window.showToast = function(message) {
                 initLocalMode();
             }
 
-            setupSchedule();
-        }
-
-    function initLocalMode() {
-const storedPrayers = localStorage.getItem('studyflow_prayers');
-    if (storedPrayers) state.prayers = JSON.parse(storedPrayers);
-            try {
-                const storedTasks = localStorage.getItem('studyflow_tasks_v2');
-                if (storedTasks) state.tasks = JSON.parse(storedTasks);
-                
-                const storedAttempts = localStorage.getItem('studyflow_attempts_v2'); 
-                if (storedAttempts) state.dailyTestsAttempted = JSON.parse(storedAttempts);
-                
-                const storedMistakes = localStorage.getItem('studyflow_mistakes'); 
-                if (storedMistakes) state.mistakes = JSON.parse(storedMistakes);
-
-                const storedName = localStorage.getItem('studyflow_username');
-                if (storedName) state.displayName = storedName;
-                
-            } catch (e) {
-                console.error("Local data corrupted", e);
-                localStorage.removeItem('studyflow_tasks_v2');
+            // Setup Mistake Form Listener
+            const mistakeForm = document.getElementById('mistake-form');
+            if(mistakeForm) {
+                const newMForm = mistakeForm.cloneNode(true);
+                mistakeForm.parentNode.replaceChild(newMForm, mistakeForm);
+                newMForm.addEventListener('submit', window.saveMistake);
             }
-            renderAll();
-        }                
+        }
+function initLocalMode() {
+        const storedPrayers = localStorage.getItem('studyflow_prayers');
+        if (storedPrayers) state.prayers = JSON.parse(storedPrayers);
+        try {
+            const storedTasks = localStorage.getItem('studyflow_tasks_v2');
+            if (storedTasks) state.tasks = JSON.parse(storedTasks);
+            
+            const storedAttempts = localStorage.getItem('studyflow_attempts_v2'); 
+            if (storedAttempts) state.dailyTestsAttempted = JSON.parse(storedAttempts);
+            
+            const storedMistakes = localStorage.getItem('studyflow_mistakes'); 
+            if (storedMistakes) state.mistakes = JSON.parse(storedMistakes);
+
+            const storedName = localStorage.getItem('studyflow_username');
+            if (storedName) state.displayName = storedName;
+            
+        } catch (e) {
+            console.error("Local data corrupted", e);
+            localStorage.removeItem('studyflow_tasks_v2');
+        }
+        renderAll();
+    }
         function setupSchedule() {
             const today = new Date();
             today.setHours(0,0,0,0);
