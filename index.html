@@ -2331,7 +2331,13 @@ window.checkStudyPace = function() {
         if (!deadlineDate) return null;
 
         const dDate = new Date(deadlineDate);
-        const daysLeft = Math.max(1, Math.ceil((dDate - today) / (1000 * 60 * 60 * 24)));
+        
+        // FIXED: Calculate raw days and exclude exam day for Main Track only
+        let rawDays = Math.ceil((dDate - today) / (1000 * 60 * 60 * 24));
+        if (trackName === 'main') {
+            rawDays = rawDays > 0 ? rawDays - 1 : 0;
+        }
+        const daysLeft = Math.max(1, rawDays);
 
         // Organize buckets by specific type
         const buckets = {
@@ -2354,7 +2360,15 @@ window.checkStudyPace = function() {
                     // Determine Bucket Key based on Points & Subject
                     let key = chapter.subject;
                     if (chapter.subject === 'Chemistry') {
-                        if (pts === 3 && (chapter.topic.toLowerCase().includes('organic') || chapter.topic.toLowerCase().includes('hydro'))) key = 'Organic Chem';
+                        // FIXED: Added 'halo', 'alcohol', 'aldehyde' etc. to ensure they go to Organic, not Physical
+if (pts === 3 && (
+    chapter.topic.toLowerCase().includes('organic') || 
+    chapter.topic.toLowerCase().includes('hydro') || 
+    chapter.topic.toLowerCase().includes('halo') || 
+    chapter.topic.toLowerCase().includes('alcohol') ||
+    chapter.topic.toLowerCase().includes('aldehyde') ||
+    chapter.topic.toLowerCase().includes('amine')
+)) key = 'Organic Chem';
                         else if (pts === 3) key = 'Physical Chem';
                         else key = 'Inorganic Chem';
                     }
@@ -2378,8 +2392,8 @@ window.checkStudyPace = function() {
         if (totalItems === 0) return null;
 
         // Calculate Daily Target (Points per Day)
-        const dailyTarget = Math.ceil(totalPoints / daysLeft);
-        
+        // FIXED: Added 5% "Panic Buffer" (Tighter Schedule)
+        const dailyTarget = Math.ceil((totalPoints / daysLeft) * 1.05);
         // Round Robin Selection Logic
         // Order: Phy -> Phys Chem -> Org Chem -> Inorg Chem -> Bot -> Zoo
         const rotation = ['Physics', 'Physical Chem', 'Organic Chem', 'Inorganic Chem', 'Botany', 'Zoology'];
@@ -2427,8 +2441,16 @@ window.checkStudyPace = function() {
                 if(n === 'Botany') n = 'Bot';
                 if(n === 'Zoology') n = 'Zoo';
                 if(n === 'Chemistry') {
-                    if(item.points === 3 && item.topic.toLowerCase().includes('organic')) n = 'Org';
-                    else if(item.points === 3) n = 'Phys';
+// FIXED CODE: Matches the bucket logic
+if(item.points === 3 && (
+    item.topic.toLowerCase().includes('organic') || 
+    item.topic.toLowerCase().includes('hydro') || 
+    item.topic.toLowerCase().includes('halo') ||
+    item.topic.toLowerCase().includes('alcohol') ||
+    item.topic.toLowerCase().includes('aldehyde') ||
+    item.topic.toLowerCase().includes('amine')
+)) n = 'Org';
+else if(item.points === 3) n = 'Phys';                    
                     else n = 'Inorg';
                 }
                 acc[n] = (acc[n] || 0) + 1;
@@ -2588,12 +2610,14 @@ window.renderSyllabus = renderSyllabus;
             if(els.date) els.date.textContent = state.selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
             if(els.agendaDate) els.agendaDate.textContent = dateStr;
         }
-
-        function renderStats() {
+function renderStats() {
             const today = new Date(); today.setHours(0,0,0,0);
             const exDate = new Date(state.nextExam.date); exDate.setHours(0,0,0,0);
-            const diff = Math.ceil((exDate - today)/(1000*60*60*24));
-            const formattedDate = state.nextExam.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            
+            // FIXED: Exclude exam day from prep days for visual count
+            let rawDiff = Math.ceil((exDate - today)/(1000*60*60*24));
+            const diff = rawDiff > 0 ? rawDiff - 1 : rawDiff;
+                    const formattedDate = state.nextExam.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
             
             // Text Updates
             const elements = {
