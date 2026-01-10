@@ -22,6 +22,21 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
 
     <script>
+window.showToast = function(message) {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = "fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-2xl font-bold text-sm shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4 duration-300";
+    toast.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4 text-brand-500"></i> ${message}`;
+    
+    document.body.appendChild(toast);
+    if(window.lucide) lucide.createIcons({ root: toast });
+
+    // Remove after 4 seconds
+    setTimeout(() => {
+        toast.classList.add('animate-out', 'fade-out', 'slide-out-to-bottom-4');
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+};
         tailwind.config = {
             darkMode: 'class', // Enable manual dark mode toggle
             theme: {
@@ -2380,22 +2395,50 @@ window.checkStudyPace = function() {
     if (window.lucide) lucide.createIcons({ root: container });
 };
 
+
 window.acceptAiPlan = function(track) {
     const suggestions = currentAiSuggestions[track];
     if (!suggestions || suggestions.length === 0) return;
 
+    let addedCount = 0;
+    const key = formatDateKey(state.selectedDate);
+
     suggestions.forEach(item => {
-        const text = `${item.name}: ${item.topic}`;
-        const k = formatDateKey(state.selectedDate);
-        const exists = (state.tasks[k] || []).some(t => t.text.includes(item.name));
-        if (!exists) addTask(`Study: ${text}`, track, item.subject, item.topic);
+        // Find the full test data from the syllabus to get all sub-topics
+        const sourceData = track === 'main' ? state.nextExam.syllabus : backlogPlan.syllabus;
+        const chapter = sourceData.find(c => c.topic === item.topic);
+        const testData = chapter?.dailyTests.find(dt => dt.name === item.name);
+
+        if (testData) {
+            testData.subs.forEach(sub => {
+                const taskText = `Study: ${item.topic} - ${sub}`;
+                // Only add if the task isn't already on today's list
+                const exists = (state.tasks[key] || []).some(t => t.text === taskText);
+                
+                if (!exists) {
+                    addTask(taskText, track, item.subject, item.topic);
+                    addedCount++;
+                }
+            });
+        }
     });
+
+    // Save and Refresh
+    saveData();
     renderAll();
-    if(window.confetti) confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 }, colors: track === 'main' ? ['#8b5cf6', '#a78bfa'] : ['#f97316', '#fb923c'] });
+
+    // Feedback
+    if (window.confetti) {
+        confetti({ 
+            particleCount: 100, 
+            spread: 50, 
+            origin: { y: 0.8 },
+            colors: track === 'main' ? ['#8b5cf6'] : ['#f97316']
+        });
+    }
+
+    showToast(`📚 Added ${addedCount} sub-topics to your mission. Complete them to unlock the Daily Tests!`);
 };
-
-
-
  document.addEventListener('DOMContentLoaded', init);
 
         // Optimization: FOUC listener - Triggered on DOMContentLoaded instead of Load for faster paint
@@ -2451,8 +2494,10 @@ function renderAll() {
             // Re-scan icons if library is loaded
             if(window.lucide) lucide.createIcons();
         }
-
-
+// FIX: Make all these functions global so HTML buttons can see them
+window.renderAll = renderAll;
+window.renderTasks = renderTasks;
+window.renderSyllabus = renderSyllabus;
         function renderHeader() {
             const els = { date: document.getElementById('overview-date'), agendaDate: document.getElementById('agenda-date-display') };
             const dateStr = state.selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
