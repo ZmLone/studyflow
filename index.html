@@ -1008,7 +1008,7 @@ window.showToast = function(message) {
         }
 
         // --- DATA ---
-        const mainSchedule = [
+ const mainSchedule = [
              {
                 name: "AIATS-4",
                 date: new Date('2026-01-18T00:00:00'),
@@ -1020,7 +1020,8 @@ window.showToast = function(message) {
                             {name:"DT-38 (XI)", subs:["Temp Scales", "Ideal Gas Eq", "Thermal Expansion (Linear, Area, Vol)"]}, 
                             {name:"DT-39 (XI)", subs:["Specific Heat Capacity", "Calorimetry Principles", "Change of State (Latent Heat)"]}, 
                             {name:"DT-40 (XI)", subs:["Heat Transfer: Conduction", "Thermal Conductivity", "Convection"]}, 
-                            {name:"DT-41 (XI)", subs:["Heat Transfer: Radiation", "Stefan-Boltzmann Law", "Newton's Law of Cooling", "Wien's Law"]}
+                            // UPDATED: Removed Stefan-Boltzmann, Newton's Law, Wien's Law
+                            {name:"DT-41 (XI)", subs:["Heat Transfer: Radiation", "⚠️ NOTE: Stefan/Newton/Wien Laws Deleted"]}
                         ] 
                     },
                     { 
@@ -1029,7 +1030,8 @@ window.showToast = function(message) {
                         dailyTests: [
                             {name:"DT-42 (XI)", subs:["Thermal Equilibrium", "Zeroth Law", "Internal Energy", "First Law of Thermodynamics"]}, 
                             {name:"DT-43 (XI)", subs:["Thermodynamic Processes (Isochoric, Isobaric, Isothermal, Adiabatic)", "Work Done"]}, 
-                            {name:"DT-44 (XI)", subs:["Heat Engines", "Refrigerators", "Second Law", "Carnot Engine & Efficiency"]}
+                            // UPDATED: Removed Heat Engines, Refrigerators, Carnot
+                            {name:"DT-44 (XI)", subs:["Second Law of Thermodynamics", "⚠️ NOTE: Engines/Refrigerators/Carnot Deleted"]}
                         ] 
                     },
                     { 
@@ -1045,7 +1047,8 @@ window.showToast = function(message) {
                         dailyTests: [
                             {name:"DT-46 (XI)", subs:["Periodic & Oscillatory Motion", "SHM Equation", "Phase", "Uniform Circular Motion Reference"]}, 
                             {name:"DT-47 (XI)", subs:["Velocity & Acceleration in SHM", "Force Law", "Energy in SHM"]}, 
-                            {name:"DT-48 (XI)", subs:["Simple Pendulum", "Spring-Block Systems", "Damped & Forced Oscillations", "Resonance"]}
+                            // UPDATED: Removed Damped & Forced Oscillations
+                            {name:"DT-48 (XI)", subs:["Simple Pendulum", "Spring-Block Systems", "Resonance", "⚠️ NOTE: Damped/Forced Oscillations Deleted"]}
                         ] 
                     },
                     { 
@@ -1054,7 +1057,8 @@ window.showToast = function(message) {
                         dailyTests: [
                             {name:"DT-49 (XI)", subs:["Transverse & Longitudinal Waves", "Amplitude & Phase", "Wavelength & Frequency"]}, 
                             {name:"DT-50 (XI)", subs:["Displacement Relation", "Speed of Travelling Wave", "Principle of Superposition"]}, 
-                            {name:"DT-51 (XI)", subs:["Reflection of Waves", "Standing Waves", "Beats", "Doppler Effect"]}
+                            // UPDATED: Removed Doppler Effect
+                            {name:"DT-51 (XI)", subs:["Reflection of Waves", "Standing Waves", "Beats", "⚠️ NOTE: Doppler Effect Deleted"]}
                         ] 
                     },
                     { 
@@ -1154,7 +1158,8 @@ window.showToast = function(message) {
                 date: new Date('2026-02-01T00:00:00'),
                 syllabus: [ /* Placeholder */ ]
             }
-        ];
+        ];       
+
 
         const backlogPlan = {
             name: "AIATS-5 Backlog",
