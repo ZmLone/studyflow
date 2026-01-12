@@ -1472,75 +1472,104 @@ function initLocalMode() {
                 newMForm.addEventListener('submit', window.saveMistake);
             }
         }
-// --- NEW HELPER: CALCULATE STATS ---
-    function calculateUserStats() {
-        // 1. Calculate Main Exam %
-        const allCompleted = new Set(Object.values(state.tasks).flat().filter(t => t.completed).map(t => t.text));
-        let mainTotal = 0, mainDone = 0;
+// --- NEW HELPER: CALCULATE STATS (FIXED) ---
+function calculateUserStats() {
+    // 1. Build a list of ALL valid test names from your schedule
+    const validTests = new Set();
+    
+    // Add Main Schedule tests (Current + Future exams)
+    mainSchedule.forEach(exam => {
+        if(exam.syllabus) {
+            exam.syllabus.forEach(s => s.dailyTests.forEach(dt => validTests.add(dt.name)));
+        }
+    });
+
+    // Add Backlog tests
+    if(typeof backlogPlan !== 'undefined' && backlogPlan.syllabus) {
+        backlogPlan.syllabus.forEach(s => s.dailyTests.forEach(dt => validTests.add(dt.name)));
+    }
+
+    // 2. Calculate Counts based on VALID tests only
+    const allCompleted = new Set(Object.values(state.tasks).flat().filter(t => t.completed).map(t => t.text));
+    
+    // Main Exam Progress (active exam only)
+    let mainTotal = 0, mainDone = 0;
+    if(state.nextExam && state.nextExam.syllabus) {
         state.nextExam.syllabus.forEach(s => s.dailyTests.forEach(dt => dt.subs.forEach(sub => {
             mainTotal++;
             if(allCompleted.has(`Study: ${s.topic} - ${sub}`)) mainDone++;
         })));
-        const mainPct = mainTotal ? Math.round((mainDone/mainTotal)*100) : 0;
+    }
+    const mainPct = mainTotal ? Math.round((mainDone/mainTotal)*100) : 0;
 
-        // 2. Calculate Backlog %
-        let blTotal = 0, blDone = 0;
+    // Backlog Progress
+    let blTotal = 0, blDone = 0;
+    if(typeof backlogPlan !== 'undefined' && backlogPlan.syllabus) {
         backlogPlan.syllabus.forEach(s => s.dailyTests.forEach(dt => dt.subs.forEach(sub => {
             blTotal++;
             if(allCompleted.has(`Study: ${s.topic} - ${sub}`)) blDone++;
         })));
-        const blPct = blTotal ? Math.round((blDone/blTotal)*100) : 0;
-
-        // 3. Count Tests
-        const testCount = Object.keys(state.dailyTestsAttempted).filter(k => state.dailyTestsAttempted[k]).length;
-
-        // 4. Calculate Overall Score
-        const overallScore = (mainPct * 5) + (blPct * 3) + (testCount * 10);
-
-        return { mainPct, blPct, testCount, overallScore };
     }
- function saveData() {
-            const stats = calculateUserStats(); // Calculate stats first
+    const blPct = blTotal ? Math.round((blDone/blTotal)*100) : 0;
 
-            if(isFirebaseActive && currentUser) {
-                const docRef = getSafeDocRef(currentUser.uid);
-                
-                // Show saving indicator
-                const statusEl = document.getElementById('desktop-sync-status');
-                if(statusEl) statusEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse"></span> Saving...`;
+    // 3. CORRECTED TEST COUNT
+    // Only count if the key is true AND it exists in our validTests list
+    const testCount = Object.keys(state.dailyTestsAttempted).filter(k => 
+        state.dailyTestsAttempted[k] && validTests.has(k)
+    ).length;
 
-                // 1. Save Personal Data (Private)
-                setDoc(docRef, {
-                    tasks: state.tasks,
-                    dailyTestsAttempted: state.dailyTestsAttempted,
-                    mistakes: state.mistakes || [],
-                    displayName: state.displayName,
-prayers: state.prayers || {} // <--- SAVING NAME PRIVATELY
-                }, { merge: true }).then(() => {
-                    if(statusEl) statusEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Synced`;
-                }).catch(err => {
-                    console.error("Save failed:", err);
-                    if(statusEl) statusEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Save Failed`;
-                });
+    // 4. Calculate Overall Score
+    const overallScore = (mainPct * 5) + (blPct * 3) + (testCount * 10);
 
-                // 2. Save Leaderboard Entry (PUBLIC - This is what was missing)
-                const lbRef = doc(db, 'leaderboard', currentUser.uid);
-                setDoc(lbRef, {
-                    email: currentUser.email || 'Anonymous',
-                    displayName: state.displayName || 'Anonymous', // <--- SAVING NAME PUBLICLY
-                    ...stats,
-                    lastUpdated: new Date()
-                }, { merge: true });
+    return { mainPct, blPct, testCount, overallScore };
+}
 
-            } else {
-                localStorage.setItem('studyflow_tasks_v2', JSON.stringify(state.tasks));
-                localStorage.setItem('studyflow_attempts_v2', JSON.stringify(state.dailyTestsAttempted));
-                localStorage.setItem('studyflow_mistakes', JSON.stringify(state.mistakes || []));
-                localStorage.setItem('studyflow_username', state.displayName); // Save locally
-localStorage.setItem('studyflow_prayers', JSON.stringify(state.prayers || {}));
-            }
-            renderAll();
-        }      
+function saveData() {
+    const stats = calculateUserStats(); // Uses the fixed calculator above
+
+    if(isFirebaseActive && currentUser) {
+        const docRef = getSafeDocRef(currentUser.uid);
+        
+        const statusEl = document.getElementById('desktop-sync-status');
+        if(statusEl) statusEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse"></span> Saving...`;
+
+        // 1. Save Personal Data (Private)
+        setDoc(docRef, {
+            tasks: state.tasks,
+            dailyTestsAttempted: state.dailyTestsAttempted,
+            mistakes: state.mistakes || [],
+            displayName: state.displayName,
+            prayers: state.prayers || {} 
+        }, { merge: true }).then(() => {
+            if(statusEl) statusEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Synced`;
+        }).catch(err => {
+            console.error("Personal Save failed:", err);
+            if(statusEl) statusEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Save Failed`;
+        });
+
+        // 2. Save Leaderboard Entry (FIXED ERROR HANDLING)
+        const lbRef = doc(db, 'leaderboard', currentUser.uid);
+        setDoc(lbRef, {
+            email: currentUser.email || 'Anonymous',
+            displayName: state.displayName || 'Anonymous',
+            ...stats,
+            lastUpdated: new Date()
+        }, { merge: true }).catch(err => {
+            console.error("Leaderboard Save failed (Check Firestore Rules):", err);
+        });
+
+    } else {
+        // Local Storage Fallback
+        localStorage.setItem('studyflow_tasks_v2', JSON.stringify(state.tasks));
+        localStorage.setItem('studyflow_attempts_v2', JSON.stringify(state.dailyTestsAttempted));
+        localStorage.setItem('studyflow_mistakes', JSON.stringify(state.mistakes || []));
+        localStorage.setItem('studyflow_username', state.displayName);
+        localStorage.setItem('studyflow_prayers', JSON.stringify(state.prayers || {}));
+    }
+    renderAll();
+}
+ 
+
 
  // --- PRAYER FUNCTIONS ---
 window.openPrayerModal = function() {
@@ -3123,13 +3152,13 @@ window.renderSyllabus = function(type, searchQuery = '') {
                             <div class="flex items-center gap-2">
                                 <i data-lucide="chevron-right" class="w-4 h-4 ${isAttempted ? 'text-white/70' : 'text-slate-400 dark:text-slate-500'} transition-transform duration-200 ${isTestExpanded ? 'rotate-90' : ''}"></i>
                                 <div class="flex items-center gap-2" onclick="event.stopPropagation()">
-                                        ${showCheckbox ? 
-                                        `<input type="checkbox" 
-                                            ${isAttempted ? 'checked' : ''} 
-                                            onchange="toggleTestAttempt('${dt.name}')"
-                                            class="w-4 h-4 rounded border-slate-300 text-green-600 focus:ring-green-500 cursor-pointer"
-                                        >` : ''
-                                    }
+                               ${showCheckbox ? 
+    `<input type="checkbox" 
+        ${isAttempted ? 'checked' : ''} 
+        onchange="toggleTestAttempt('${escape(dt.name)}')"  class="w-4 h-4 rounded border-slate-300 text-green-600 focus:ring-green-500 cursor-pointer"
+    >` : ''
+}        
+
                                     <span class="text-xs font-bold ${isAttempted ? 'text-green-800 bg-white/90' : 'text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-700'} px-2 py-0.5 rounded backdrop-blur-sm select-text cursor-text">${displayName}</span>
                                 </div>
                             </div>
