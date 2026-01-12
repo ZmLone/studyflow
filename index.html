@@ -1006,241 +1006,238 @@ window.showToast = function(message) {
         }
 
         // --- DATA ---
+
+// --- DATA ---
 const mainSchedule = [
-             {
-                name: "AIATS-4",
-                date: new Date('2026-01-18T00:00:00'),
-                syllabus: [
-                    { 
-                        subject: "Physics", 
-                        topic: "Thermal Properties", 
-                        dailyTests: [
-                            {name:"DT-38 (XI)", subs:["Temp Scales", "Ideal Gas Eq", "Thermal Expansion (Linear, Area, Vol)"]}, 
-                            {name:"DT-39 (XI)", subs:["Specific Heat Capacity", "Calorimetry Principles", "Change of State (Latent Heat)"]}, 
-                            {name:"DT-40 (XI)", subs:["Heat Transfer: Conduction", "Thermal Conductivity", "Convection"]}, 
-                            // FIXED: Removed fake "Note" task. Warning is now in the Title.
-                            {name:"DT-41 (XI) [No Stefan/Newton/Wien]", subs:["Heat Transfer: Radiation"]}
-                        ] 
-                    },
-                    { 
-                        subject: "Physics", 
-                        topic: "Thermodynamics", 
-                        dailyTests: [
-                            {name:"DT-42 (XI)", subs:["Thermal Equilibrium", "Zeroth Law", "Internal Energy", "First Law of Thermodynamics"]}, 
-                            {name:"DT-43 (XI)", subs:["Thermodynamic Processes (Isochoric, Isobaric, Isothermal, Adiabatic)", "Work Done"]}, 
-                            // FIXED: Removed fake "Note" task. Warning is now in the Title.
-                            {name:"DT-44 (XI) [No Engines/Carnot]", subs:["Second Law of Thermodynamics", "Reversible & Irreversible Processes"]}
-                        ] 
-                    },
-                    { 
-                        subject: "Physics", 
-                        topic: "Kinetic Theory", 
-                        dailyTests: [
-                            {name:"DT-45 (XI)", subs:["Molecular Nature of Matter", "Behavior of Gases", "Kinetic Theory Postulates", "Law of Equipartition of Energy", "Mean Free Path"]}
-                        ] 
-                    },
-                    { 
-                        subject: "Physics", 
-                        topic: "Oscillations", 
-                        dailyTests: [
-                            {name:"DT-46 (XI)", subs:["Periodic & Oscillatory Motion", "SHM Equation", "Phase", "Uniform Circular Motion Reference"]}, 
-                            {name:"DT-47 (XI)", subs:["Velocity & Acceleration in SHM", "Force Law", "Energy in SHM"]}, 
-                            // FIXED: Removed fake "Note" task. Warning is now in the Title.
-                            {name:"DT-48 (XI) [No Damped/Forced]", subs:["Simple Pendulum", "Spring-Block Systems", "Resonance"]}
-                        ] 
-                    },
-                    { 
-                        subject: "Physics", 
-                        topic: "Waves", 
-                        dailyTests: [
-                            {name:"DT-49 (XI)", subs:["Transverse & Longitudinal Waves", "Amplitude & Phase", "Wavelength & Frequency"]}, 
-                            {name:"DT-50 (XI)", subs:["Displacement Relation", "Speed of Travelling Wave", "Principle of Superposition"]}, 
-                            // FIXED: Removed fake "Note" task. Warning is now in the Title.
-                            {name:"DT-51 (XI) [No Doppler]", subs:["Reflection of Waves", "Standing Waves", "Beats"]}
-                        ] 
-                    },
-                    { 
-                        subject: "Chemistry", 
-                        topic: "Solutions", 
-                        dailyTests: [
-                            {name:"DT-1 (XII)", subs:["Types of Solutions", "Concentration Terms", "Solubility (Henry's Law)", "Vapour Pressure (Raoult's Law)"]}, 
-                            {name:"DT-2 (XII)", subs:["Ideal & Non-Ideal Solutions", "Colligative Properties (RLVP, Elevation in BP, Depression in FP, Osmotic Pressure)", "Van't Hoff Factor"]}
-                        ] 
-                    },
-                    { 
-                        subject: "Chemistry", 
-                        topic: "Kinetics", 
-                        dailyTests: [
-                            {name:"DT-7 (XII)", subs:["Rate of Reaction", "Factors Affecting Rate", "Rate Law & Constant", "Order & Molecularity"]}, 
-                            {name:"DT-8 (XII)", subs:["Integrated Rate Equations (Zero & 1st Order)", "Half-Life", "Pseudo First Order", "Arrhenius Eq"]}, 
-                            {name:"DT-9 (XII)", subs:["Effect of Catalyst", "Collision Theory of Chemical Reactions"]}
-                        ] 
-                    },
-                    { 
-                        subject: "Chemistry", 
-                        topic: "Organic Basics", 
-                        dailyTests: [
-                            {name:"DT-23 (XI)", subs:["Classification of Organic Compounds", "Nomenclature (IUPAC)"]}, 
-                            {name:"DT-24 (XI)", subs:["Isomerism", "Fission of Bond", "Nucleophiles & Electrophiles"]}, 
-                            {name:"DT-25 (XI)", subs:["Inductive Effect", "Resonance Effect", "Electromeric Effect", "Hyperconjugation"]}, 
-                            {name:"DT-26 (XI)", subs:["Reaction Intermediates: Carbocations, Carbanions, Free Radicals"]}, 
-                            {name:"DT-27 (XI)", subs:["Types of Organic Reactions", "Purification Methods", "Qualitative & Quantitative Analysis"]}
-                        ] 
-                    },
-                    { 
-                        subject: "Botany", 
-                        topic: "Photosynthesis", 
-                        dailyTests: [
-                            {name:"DT-26 (XI)", subs:["Early Experiments", "Site of Photosynthesis", "Pigments", "Light Reaction", "Electron Transport", "Splitting of Water", "Cyclic & Non-cyclic Photophos"]}, 
-                            {name:"DT-27 (XI)", subs:["Chemiosmotic Hypothesis", "Biosynthetic Phase (C3 Cycle)", "C4 Pathway", "Photorespiration", "Factors affecting Photosynthesis"]}
-                        ] 
-                    },
-                    { 
-                        subject: "Botany", 
-                        topic: "Respiration", 
-                        dailyTests: [
-                            {name:"DT-28 (XI)", subs:["Do Plants Breathe?", "Glycolysis", "Fermentation", "Aerobic Respiration", "TCA Cycle"]}, 
-                            {name:"DT-29 (XI)", subs:["Electron Transport System (ETS)", "Oxidative Phosphorylation", "Amphibolic Pathway", "Respiratory Quotient"]}
-                        ] 
-                    },
-                    { 
-                        subject: "Botany", 
-                        topic: "Plant Growth", 
-                        dailyTests: [
-                            {name:"DT-30 (XI)", subs:["Growth Phases & Rates", "Differentiation, Dedifferentiation, Redifferentiation", "Development"]}, 
-                            {name:"DT-31 (XI)", subs:["Plant Growth Regulators: Auxins", "Gibberellins", "Cytokinins"]}, 
-                            {name:"DT-32 (XI)", subs:["Ethylene", "Abscisic Acid", "Photoperiodism", "Vernalisation"]}
-                        ] 
-                    },
-                    { 
-                        subject: "Zoology", 
-                        topic: "Chem Coordination", 
-                        dailyTests: [
-                            {name:"DT-25 (XI)", subs:["Endocrine Glands", "Hypothalamus", "Pituitary Gland"]}, 
-                            {name:"DT-26 (XI)", subs:["Pineal", "Thyroid", "Parathyroid", "Thymus", "Adrenal"]}, 
-                            {name:"DT-27 (XI)", subs:["Pancreas", "Testis", "Ovary"]}, 
-                            {name:"DT-28 (XI)", subs:["Hormones of Heart/Kidney/GIT", "Mechanism of Hormone Action"]}
-                        ] 
-                    },
-                    { 
-                        subject: "Zoology", 
-                        topic: "Animal Kingdom", 
-                        dailyTests: [
-                            {name:"DT-29 (XI)", subs:["Basis of Classification"]}, 
-                            {name:"DT-30 (XI)", subs:["Phylum Porifera"]}, 
-                            {name:"DT-31 (XI)", subs:["Phylum Coelenterata (Cnidaria)"]}, 
-                            {name:"DT-32 (XI)", subs:["Phylum Ctenophora", "Phylum Platyhelminthes"]}, 
-                            {name:"DT-33 (XI)", subs:["Phylum Aschelminthes", "Phylum Annelida"]}, 
-                            {name:"DT-34 (XI)", subs:["Phylum Arthropoda", "Phylum Mollusca"]}, 
-                            {name:"DT-35 (XI)", subs:["Phylum Echinodermata", "Phylum Hemichordata"]},
-                            {name:"DT-36 (XI)", subs:["Chordata Intro", "Cyclostomata", "Chondrichthyes", "Osteichthyes"]}, 
-                            {name:"DT-37 (XI)", subs:["Class Amphibia", "Class Reptilia"]},
-                            {name:"DT-39 (XI)", subs:["Class Aves"]}, 
-                            {name:"DT-40 (XI)", subs:["Class Mammalia"]}
-                        ] 
-                    },
-                    { 
-                        subject: "Zoology", 
-                        topic: "Morphology", 
-                        dailyTests: [
-                            {name:"DT-41 (XI)", subs:["Cockroach: Morphology"]}, 
-                            {name:"DT-42 (XI)", subs:["Cockroach: Digestive, Respiratory, Circulatory Systems"]}, 
-                            {name:"DT-43 (XI)", subs:["Cockroach: Excretory, Nervous, Reproductive Systems"]}, 
-                            {name:"DT-44 (XI)", subs:["Frog: Morphology & Anatomy (All Systems)"]}
-                        ] 
-                    }
-                ]
-            },
-            {
-                name: "UT-10",
-                date: new Date('2026-02-01T00:00:00'),
-                syllabus: [ /* Placeholder */ ]
-            }
-        ];
-      
+    {
+       name: "AIATS-4",
+       date: new Date('2026-01-18T00:00:00'),
+       syllabus: [
+           { 
+               subject: "Physics", 
+               topic: "Thermal Properties", 
+               dailyTests: [
+                   {name:"DT-38 (Phy-XI)", subs:["Temp Scales", "Ideal Gas Eq", "Thermal Expansion (Linear, Area, Vol)"]}, 
+                   {name:"DT-39 (Phy-XI)", subs:["Specific Heat Capacity", "Calorimetry Principles", "Change of State (Latent Heat)"]}, 
+                   {name:"DT-40 (Phy-XI)", subs:["Heat Transfer: Conduction", "Thermal Conductivity", "Convection"]}, 
+                   {name:"DT-41 (Phy-XI)", subs:["Heat Transfer: Radiation"]}
+               ] 
+           },
+           { 
+               subject: "Physics", 
+               topic: "Thermodynamics", 
+               dailyTests: [
+                   {name:"DT-42 (Phy-XI)", subs:["Thermal Equilibrium", "Zeroth Law", "Internal Energy", "First Law of Thermodynamics"]}, 
+                   {name:"DT-43 (Phy-XI)", subs:["Thermodynamic Processes (Isochoric, Isobaric, Isothermal, Adiabatic)", "Work Done"]}, 
+                   {name:"DT-44 (Phy-XI)", subs:["Second Law of Thermodynamics", "Reversible & Irreversible Processes"]}
+               ] 
+           },
+           { 
+               subject: "Physics", 
+               topic: "Kinetic Theory", 
+               dailyTests: [
+                   {name:"DT-45 (Phy-XI)", subs:["Molecular Nature of Matter", "Behavior of Gases", "Kinetic Theory Postulates", "Law of Equipartition of Energy", "Mean Free Path"]}
+               ] 
+           },
+           { 
+               subject: "Physics", 
+               topic: "Oscillations", 
+               dailyTests: [
+                   {name:"DT-46 (Phy-XI)", subs:["Periodic & Oscillatory Motion", "SHM Equation", "Phase", "Uniform Circular Motion Reference"]}, 
+                   {name:"DT-47 (Phy-XI)", subs:["Velocity & Acceleration in SHM", "Force Law", "Energy in SHM"]}, 
+                   {name:"DT-48 (Phy-XI)", subs:["Simple Pendulum", "Spring-Block Systems", "Resonance"]}
+               ] 
+           },
+           { 
+               subject: "Physics", 
+               topic: "Waves", 
+               dailyTests: [
+                   {name:"DT-49 (Phy-XI)", subs:["Transverse & Longitudinal Waves", "Amplitude & Phase", "Wavelength & Frequency"]}, 
+                   {name:"DT-50 (Phy-XI)", subs:["Displacement Relation", "Speed of Travelling Wave", "Principle of Superposition"]}, 
+                   {name:"DT-51 (Phy-XI)", subs:["Reflection of Waves", "Standing Waves", "Beats"]}
+               ] 
+           },
+           { 
+               subject: "Chemistry", 
+               topic: "Solutions", 
+               dailyTests: [
+                   {name:"DT-1 (Chem-XII)", subs:["Types of Solutions", "Concentration Terms", "Solubility (Henry's Law)", "Vapour Pressure (Raoult's Law)"]}, 
+                   {name:"DT-2 (Chem-XII)", subs:["Ideal & Non-Ideal Solutions", "Colligative Properties (RLVP, Elevation in BP, Depression in FP, Osmotic Pressure)", "Van't Hoff Factor"]}
+               ] 
+           },
+           { 
+               subject: "Chemistry", 
+               topic: "Kinetics", 
+               dailyTests: [
+                   {name:"DT-7 (Chem-XII)", subs:["Rate of Reaction", "Factors Affecting Rate", "Rate Law & Constant", "Order & Molecularity"]}, 
+                   {name:"DT-8 (Chem-XII)", subs:["Integrated Rate Equations (Zero & 1st Order)", "Half-Life", "Pseudo First Order", "Arrhenius Eq"]}, 
+                   {name:"DT-9 (Chem-XII)", subs:["Effect of Catalyst", "Collision Theory of Chemical Reactions"]}
+               ] 
+           },
+           { 
+               subject: "Chemistry", 
+               topic: "Organic Basics", 
+               dailyTests: [
+                   {name:"DT-23 (Chem-XI)", subs:["Classification of Organic Compounds", "Nomenclature (IUPAC)"]}, 
+                   {name:"DT-24 (Chem-XI)", subs:["Isomerism", "Fission of Bond", "Nucleophiles & Electrophiles"]}, 
+                   {name:"DT-25 (Chem-XI)", subs:["Inductive Effect", "Resonance Effect", "Electromeric Effect", "Hyperconjugation"]}, 
+                   {name:"DT-26 (Chem-XI)", subs:["Reaction Intermediates: Carbocations, Carbanions, Free Radicals"]}, 
+                   {name:"DT-27 (Chem-XI)", subs:["Types of Organic Reactions", "Purification Methods", "Qualitative & Quantitative Analysis"]}
+               ] 
+           },
+           { 
+               subject: "Botany", 
+               topic: "Photosynthesis", 
+               dailyTests: [
+                   {name:"DT-26 (Bot-XI)", subs:["Early Experiments", "Site of Photosynthesis", "Pigments", "Light Reaction", "Electron Transport", "Splitting of Water", "Cyclic & Non-cyclic Photophos"]}, 
+                   {name:"DT-27 (Bot-XI)", subs:["Chemiosmotic Hypothesis", "Biosynthetic Phase (C3 Cycle)", "C4 Pathway", "Photorespiration", "Factors affecting Photosynthesis"]}
+               ] 
+           },
+           { 
+               subject: "Botany", 
+               topic: "Respiration", 
+               dailyTests: [
+                   {name:"DT-28 (Bot-XI)", subs:["Do Plants Breathe?", "Glycolysis", "Fermentation", "Aerobic Respiration", "TCA Cycle"]}, 
+                   {name:"DT-29 (Bot-XI)", subs:["Electron Transport System (ETS)", "Oxidative Phosphorylation", "Amphibolic Pathway", "Respiratory Quotient"]}
+               ] 
+           },
+           { 
+               subject: "Botany", 
+               topic: "Plant Growth", 
+               dailyTests: [
+                   {name:"DT-30 (Bot-XI)", subs:["Growth Phases & Rates", "Differentiation, Dedifferentiation, Redifferentiation", "Development"]}, 
+                   {name:"DT-31 (Bot-XI)", subs:["Plant Growth Regulators: Auxins", "Gibberellins", "Cytokinins"]}, 
+                   {name:"DT-32 (Bot-XI)", subs:["Ethylene", "Abscisic Acid", "Photoperiodism", "Vernalisation"]}
+               ] 
+           },
+           { 
+               subject: "Zoology", 
+               topic: "Chem Coordination", 
+               dailyTests: [
+                   {name:"DT-25 (Zoo-XI)", subs:["Endocrine Glands", "Hypothalamus", "Pituitary Gland"]}, 
+                   {name:"DT-26 (Zoo-XI)", subs:["Pineal", "Thyroid", "Parathyroid", "Thymus", "Adrenal"]}, 
+                   {name:"DT-27 (Zoo-XI)", subs:["Pancreas", "Testis", "Ovary"]}, 
+                   {name:"DT-28 (Zoo-XI)", subs:["Hormones of Heart/Kidney/GIT", "Mechanism of Hormone Action"]}
+               ] 
+           },
+           { 
+               subject: "Zoology", 
+               topic: "Animal Kingdom", 
+               dailyTests: [
+                   {name:"DT-29 (Zoo-XI)", subs:["Basis of Classification"]}, 
+                   {name:"DT-30 (Zoo-XI)", subs:["Phylum Porifera"]}, 
+                   {name:"DT-31 (Zoo-XI)", subs:["Phylum Coelenterata (Cnidaria)"]}, 
+                   {name:"DT-32 (Zoo-XI)", subs:["Phylum Ctenophora", "Phylum Platyhelminthes"]}, 
+                   {name:"DT-33 (Zoo-XI)", subs:["Phylum Aschelminthes", "Phylum Annelida"]}, 
+                   {name:"DT-34 (Zoo-XI)", subs:["Phylum Arthropoda", "Phylum Mollusca"]}, 
+                   {name:"DT-35 (Zoo-XI)", subs:["Phylum Echinodermata", "Phylum Hemichordata"]},
+                   {name:"DT-36 (Zoo-XI)", subs:["Chordata Intro", "Cyclostomata", "Chondrichthyes", "Osteichthyes"]}, 
+                   {name:"DT-37 (Zoo-XI)", subs:["Class Amphibia", "Class Reptilia"]},
+                   {name:"DT-39 (Zoo-XI)", subs:["Class Aves"]}, 
+                   {name:"DT-40 (Zoo-XI)", subs:["Class Mammalia"]}
+               ] 
+           },
+           { 
+               subject: "Zoology", 
+               topic: "Morphology", 
+               dailyTests: [
+                   {name:"DT-41 (Zoo-XI)", subs:["Cockroach: Morphology"]}, 
+                   {name:"DT-42 (Zoo-XI)", subs:["Cockroach: Digestive, Respiratory, Circulatory Systems"]}, 
+                   {name:"DT-43 (Zoo-XI)", subs:["Cockroach: Excretory, Nervous, Reproductive Systems"]}, 
+                   {name:"DT-44 (Zoo-XI)", subs:["Frog: Morphology & Anatomy (All Systems)"]}
+               ] 
+           }
+       ]
+   },
+   {
+       name: "UT-10",
+       date: new Date('2026-02-01T00:00:00'),
+       syllabus: [ /* Placeholder */ ]
+   }
+];
+
 const backlogPlan = {
-            name: "AIATS-5 Backlog",
-            date: new Date('2026-02-01T00:00:00'),
-            syllabus: [
-                { 
-                    subject: "Chemistry", 
-                    topic: "Hydrocarbons", 
-                    dailyTests: [
-                        // UPDATED: Renamed these to (XI-Chem) to avoid conflict with Zoology
-                        {name:"DT-28 (XI-Chem)", subs:["Alkanes: Nomenclature, Isomerism, Preparation", "Alkanes: Chemical Properties"]}, 
-                        {name:"DT-29 (XI-Chem)", subs:["Alkenes: Structure, Preparation", "Alkenes: Chemical Properties (Markovnikov)"]}, 
-                        {name:"DT-30 (XI-Chem)", subs:["Alkynes: Prep & Properties", "Aromatic Hydrocarbons: Benzene Structure & Prep", "Electrophilic Substitution", "Carcinogenicity"]}
-                    ] 
-                },
-                { 
-                    subject: "Chemistry", 
-                    topic: "Haloalkanes", 
-                    dailyTests: [
-                        {name:"DT-17 (XII)", subs:["Nomenclature", "Nature of C-X Bond", "Methods of Preparation"]}, 
-                        {name:"DT-18 (XII)", subs:["Chemical Reactions: Nucleophilic Substitution (SN1, SN2)", "Elimination Reactions", "Stereochemical Aspects"]}, 
-                        {name:"DT-19 (XII)", subs:["Reaction with Metals", "Polyhalogen Compounds"]}
-                    ] 
-                },
-                { 
-                    subject: "Chemistry", 
-                    topic: "Alcohols", 
-                    dailyTests: [
-                        {name:"DT-20 (XII)", subs:["Classification", "Nomenclature", "Preparation of Alcohols"]}, 
-                        {name:"DT-21 (XII)", subs:["Phenols: Preparation", "Physical Properties", "Chemical Properties (Acidity)"]}, 
-                        {name:"DT-22 (XII)", subs:["Ethers: Preparation", "Physical & Chemical Properties", "Uses"]}
-                    ] 
-                },
-                { 
-                    subject: "Chemistry", 
-                    topic: "Aldehydes", 
-                    dailyTests: [
-                        {name:"DT-23 (XII)", subs:["Aldehydes & Ketones: Prep", "Physical Properties", "Nucleophilic Addition"]}, 
-                        {name:"DT-24 (XII)", subs:["Carboxylic Acids: Nomenclature, Prep", "Physical & Chemical Properties"]}
-                    ] 
-                },
-                { 
-                    subject: "Botany", 
-                    topic: "Sexual Repro", 
-                    dailyTests: [
-                        {name:"DT-1 (XII)", subs:["Flower Structure", "Pre-fertilization: Stamen, Microsporangium", "Pollen Grain"]}, 
-                        {name:"DT-2 (XII)", subs:["Pistil, Megasporangium (Ovule)", "Embryo Sac"]}, 
-                        {name:"DT-3 (XII)", subs:["Pollination: Types, Agents", "Outbreeding Devices", "Pollen-Pistil Interaction"]}, 
-                        {name:"DT-4 (XII)", subs:["Double Fertilization", "Post-fertilization: Endosperm & Embryo"]}, 
-                        {name:"DT-5 (XII)", subs:["Seed & Fruit Formation", "Apomixis & Polyembryony"]}
-                    ] 
-                },
-                { 
-                    subject: "Botany", 
-                    topic: "Genetics I", 
-                    dailyTests: [
-                        {name:"DT-6 (XII)", subs:["Mendel's Laws of Inheritance", "Inheritance of One Gene"]}, 
-                        {name:"DT-7 (XII)", subs:["Incomplete Dominance", "Co-dominance", "Inheritance of Two Genes"]}, 
-                        {name:"DT-8 (XII)", subs:["Chromosomal Theory of Inheritance", "Linkage & Recombination", "Sex Determination"]}, 
-                        {name:"DT-9 (XII)", subs:["Mutation", "Pedigree Analysis", "Genetic Disorders (Mendelian & Chromosomal)"]}
-                    ] 
-                },
-                { 
-                    subject: "Zoology", 
-                    topic: "Human Repro", 
-                    dailyTests: [
-                        {name:"DT-1 (XII)", subs:["Male Reproductive System"]}, 
-                        {name:"DT-2 (XII)", subs:["Female Reproductive System", "Mammary Glands"]}, 
-                        {name:"DT-3 (XII)", subs:["Gametogenesis: Spermatogenesis & Oogenesis"]}, 
-                        {name:"DT-4 (XII)", subs:["Menstrual Cycle", "Fertilization & Implantation"]}, 
-                        {name:"DT-5 (XII)", subs:["Pregnancy & Embryonic Development", "Parturition & Lactation"]}
-                    ] 
-                },
-                { 
-                    subject: "Zoology", 
-                    topic: "Repro Health", 
-                    dailyTests: [
-                        {name:"DT-7 (XII)", subs:["Reproductive Health: Problems & Strategies", "Population Explosion"]}, 
-                        {name:"DT-8 (XII)", subs:["Birth Control Methods", "Medical Termination of Pregnancy (MTP)"]}, 
-                        {name:"DT-9 (XII)", subs:["Sexually Transmitted Infections (STIs)", "Infertility", "Assisted Reproductive Technologies (ART)"]}
-                    ] 
-                }
-            ]
-        };
+   name: "AIATS-5 Backlog",
+   date: new Date('2026-02-01T00:00:00'),
+   syllabus: [
+       { 
+           subject: "Chemistry", 
+           topic: "Hydrocarbons", 
+           dailyTests: [
+               {name:"DT-28 (Chem-XI)", subs:["Alkanes: Nomenclature, Isomerism, Preparation", "Alkanes: Chemical Properties"]}, 
+               {name:"DT-29 (Chem-XI)", subs:["Alkenes: Structure, Preparation", "Alkenes: Chemical Properties (Markovnikov)"]}, 
+               {name:"DT-30 (Chem-XI)", subs:["Alkynes: Prep & Properties", "Aromatic Hydrocarbons: Benzene Structure & Prep", "Electrophilic Substitution", "Carcinogenicity"]}
+           ] 
+       },
+       { 
+           subject: "Chemistry", 
+           topic: "Haloalkanes", 
+           dailyTests: [
+               {name:"DT-17 (Chem-XII)", subs:["Nomenclature", "Nature of C-X Bond", "Methods of Preparation"]}, 
+               {name:"DT-18 (Chem-XII)", subs:["Chemical Reactions: Nucleophilic Substitution (SN1, SN2)", "Elimination Reactions", "Stereochemical Aspects"]}, 
+               {name:"DT-19 (Chem-XII)", subs:["Reaction with Metals", "Polyhalogen Compounds"]}
+           ] 
+       },
+       { 
+           subject: "Chemistry", 
+           topic: "Alcohols", 
+           dailyTests: [
+               {name:"DT-20 (Chem-XII)", subs:["Classification", "Nomenclature", "Preparation of Alcohols"]}, 
+               {name:"DT-21 (Chem-XII)", subs:["Phenols: Preparation", "Physical Properties", "Chemical Properties (Acidity)"]}, 
+               {name:"DT-22 (Chem-XII)", subs:["Ethers: Preparation", "Physical & Chemical Properties", "Uses"]}
+           ] 
+       },
+       { 
+           subject: "Chemistry", 
+           topic: "Aldehydes", 
+           dailyTests: [
+               {name:"DT-23 (Chem-XII)", subs:["Aldehydes & Ketones: Prep", "Physical Properties", "Nucleophilic Addition"]}, 
+               {name:"DT-24 (Chem-XII)", subs:["Carboxylic Acids: Nomenclature, Prep", "Physical & Chemical Properties"]}
+           ] 
+       },
+       { 
+           subject: "Botany", 
+           topic: "Sexual Repro", 
+           dailyTests: [
+               {name:"DT-1 (Bot-XII)", subs:["Flower Structure", "Pre-fertilization: Stamen, Microsporangium", "Pollen Grain"]}, 
+               {name:"DT-2 (Bot-XII)", subs:["Pistil, Megasporangium (Ovule)", "Embryo Sac"]}, 
+               {name:"DT-3 (Bot-XII)", subs:["Pollination: Types, Agents", "Outbreeding Devices", "Pollen-Pistil Interaction"]}, 
+               {name:"DT-4 (Bot-XII)", subs:["Double Fertilization", "Post-fertilization: Endosperm & Embryo"]}, 
+               {name:"DT-5 (Bot-XII)", subs:["Seed & Fruit Formation", "Apomixis & Polyembryony"]}
+           ] 
+       },
+       { 
+           subject: "Botany", 
+           topic: "Genetics I", 
+           dailyTests: [
+               {name:"DT-6 (Bot-XII)", subs:["Mendel's Laws of Inheritance", "Inheritance of One Gene"]}, 
+               {name:"DT-7 (Bot-XII)", subs:["Incomplete Dominance", "Co-dominance", "Inheritance of Two Genes"]}, 
+               {name:"DT-8 (Bot-XII)", subs:["Chromosomal Theory of Inheritance", "Linkage & Recombination", "Sex Determination"]}, 
+               {name:"DT-9 (Bot-XII)", subs:["Mutation", "Pedigree Analysis", "Genetic Disorders (Mendelian & Chromosomal)"]}
+           ] 
+       },
+       { 
+           subject: "Zoology", 
+           topic: "Human Repro", 
+           dailyTests: [
+               {name:"DT-1 (Zoo-XII)", subs:["Male Reproductive System"]}, 
+               {name:"DT-2 (Zoo-XII)", subs:["Female Reproductive System", "Mammary Glands"]}, 
+               {name:"DT-3 (Zoo-XII)", subs:["Gametogenesis: Spermatogenesis & Oogenesis"]}, 
+               {name:"DT-4 (Zoo-XII)", subs:["Menstrual Cycle", "Fertilization & Implantation"]}, 
+               {name:"DT-5 (Zoo-XII)", subs:["Pregnancy & Embryonic Development", "Parturition & Lactation"]}
+           ] 
+       },
+       { 
+           subject: "Zoology", 
+           topic: "Repro Health", 
+           dailyTests: [
+               {name:"DT-7 (Zoo-XII)", subs:["Reproductive Health: Problems & Strategies", "Population Explosion"]}, 
+               {name:"DT-8 (Zoo-XII)", subs:["Birth Control Methods", "Medical Termination of Pregnancy (MTP)"]}, 
+               {name:"DT-9 (Zoo-XII)", subs:["Sexually Transmitted Infections (STIs)", "Infertility", "Assisted Reproductive Technologies (ART)"]}
+           ] 
+       }
+   ]
+};
 
 
 
