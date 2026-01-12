@@ -3017,10 +3017,7 @@ function renderTasks() {
             
             if(window.lucide) lucide.createIcons({ root: list });
         }
-
-
-
-          // Optimized Render Syllabus with Search & Fragments
+// Optimized Render Syllabus with Search & Fragments
         function renderSyllabus(type, searchQuery = '') {
             const container = document.getElementById(type === 'main' ? 'main-syllabus-container' : 'backlog-syllabus-container');
             if(!container) return;
@@ -3030,8 +3027,17 @@ function renderTasks() {
 
             // 2. Prepare Data & Helpers
             const rawData = type === 'main' ? state.nextExam.syllabus : backlogPlan.syllabus;
-            const allTasks = new Set(Object.values(state.tasks).flat().map(t => t.text)); 
+            
+            // --- FIX START: Scope 'allTasks' to ONLY the current selected date ---
+            // Previously: Checked all dates (Object.values(state.tasks).flat()...)
+            // Now: Only checks today's list.
+            const k = formatDateKey(state.selectedDate);
+            const allTasks = new Set((state.tasks[k] || []).map(t => t.text)); 
+            // --- FIX END ---
+
+            // Keep 'allCompleted' Global: We still want to see if we finished a topic in the past
             const allCompleted = new Set(Object.values(state.tasks).flat().filter(t => t.completed).map(t => t.text));
+            
             const lowerQuery = searchQuery.toLowerCase().trim();
 
             // 3. Performance: Create a DocumentFragment (Batch DOM insertions)
@@ -3163,7 +3169,9 @@ function renderTasks() {
                                         <div class="space-y-1 mt-2 ${cardContentStyle}">
                                             ${dt.subs.map(sub => {
                                                 const taskName = `Study: ${item.topic} - ${sub}`;
-                                                const isAdded = allTasks.has(taskName);
+                                                // --- FIX: Use date-specific set ---
+                                                const isAdded = allTasks.has(taskName); 
+                                                // ----------------------------------
                                                 const isDone = allCompleted.has(taskName);
                                                 
                                                 // FIXED: Safe Highlight for Subtasks
@@ -3179,12 +3187,11 @@ function renderTasks() {
                                                 let btnClass = "text-brand-400 hover:text-brand-600 dark:hover:text-brand-300";
                                                 if (isAttempted) btnClass = "text-white/80 hover:text-white";
                                                 
-                                                // FIXED: Updated tooltip to 'Add to Selected Date'
                                                 return `
                                                     <div class="flex items-center justify-between group pl-6 py-0.5">
                                                         <span class="text-[11px] truncate w-3/4 ${textClass}" title="${safeSub}">• ${displaySub}</span>
                                                         ${!isDone ? 
-                                                            `<button onclick="addSyllabusTask('${escape(item.topic)} - ${escape(sub)}', '${type}', '${item.subject}', '${escape(item.topic)}')" class="${btnClass} transition-colors p-1" title="${isAdded ? 'Already in Agenda' : 'Add to Selected Date'}" aria-label="Add to plan">
+                                                            `<button onclick="addSyllabusTask('${escape(item.topic)} - ${escape(sub)}', '${type}', '${item.subject}', '${escape(item.topic)}')" class="${btnClass} transition-colors p-1" title="${isAdded ? 'Already in Agenda for Today' : 'Add to Today'}" aria-label="Add to plan">
                                                                 <i data-lucide="${isAdded ? 'copy-check' : 'plus-circle'}" class="w-4 h-4"></i>
                                                             </button>` : 
                                                             `<i data-lucide="check" class="w-3 h-3 ${isAttempted ? 'text-white' : 'text-green-500 dark:text-green-400'}"></i>`
@@ -3215,6 +3222,9 @@ function renderTasks() {
             // Optimization: Only scan this container for icons
             if(window.lucide) lucide.createIcons({ root: container });
         }
+
+
+      
     </script>
 </body>
 </html>
