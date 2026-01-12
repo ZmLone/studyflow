@@ -2620,7 +2620,6 @@ function renderAll() {
 // FIX: Make all these functions global so HTML buttons can see them
 window.renderAll = renderAll;
 window.renderTasks = renderTasks;
-window.renderSyllabus = renderSyllabus;
         function renderHeader() {
             const els = { date: document.getElementById('overview-date'), agendaDate: document.getElementById('agenda-date-display') };
             const dateStr = state.selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
