@@ -218,7 +218,11 @@ window.showToast = function(message) {
 <button onclick="switchView('leaderboard')" id="nav-leaderboard" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5" data-view="leaderboard">
     <i data-lucide="medal" class="w-5 h-5 text-amber-500 fill-amber-500/20"></i>
     Leaderboard
-</button>    
+</button>  
+<button onclick="switchView('planner')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5" data-view="planner">
+    <i data-lucide="calendar-range" class="w-5 h-5 text-indigo-500 fill-indigo-500/20"></i>
+    Day Planner
+</button>  
 <button onclick="switchView('namaz')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5" data-view="namaz">
     <i data-lucide="book-heart" class="w-5 h-5 text-emerald-500 fill-emerald-500/20"></i>
     Spiritual Insights
@@ -296,6 +300,10 @@ window.showToast = function(message) {
                     <i data-lucide="medal" class="w-5 h-5 text-amber-500 fill-amber-500/20"></i>
                     Leaderboard
                 </button>
+<button onclick="switchView('planner')" id="nav-planner" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all">
+    <i data-lucide="calendar-range" class="w-5 h-5 text-indigo-500 fill-indigo-500/20"></i>
+    Day Planner
+</button>
 <button onclick="switchView('namaz')" id="nav-namaz" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-all">
     <i data-lucide="book-heart" class="w-5 h-5 text-emerald-500 fill-emerald-500/20"></i>
     Spiritual Insights
@@ -461,9 +469,13 @@ window.showToast = function(message) {
                             </div>
                         </div>
 <div class="flex items-end justify-between mb-4 px-1">
-        </div>
+    </div>
 
-    <div id="ai-strategy-container" class="mb-6 hidden animate-in slide-in-from-top-4 duration-500"></div>
+<div id="ai-strategy-container" class="mb-6 hidden animate-in slide-in-from-top-4 duration-500"></div>
+
+<div id="overview-task-list" class="space-y-3 pb-32 min-h-[200px]">
+    </div>
+
                             <div id="overview-task-list" class="space-y-3 pb-32 min-h-[200px]">
                             </div>
                     </div>
@@ -773,6 +785,71 @@ window.showToast = function(message) {
         </div>
     </div>
 </div>
+<div id="view-planner" class="hidden flex-1 flex flex-col overflow-hidden bg-white dark:bg-slate-950 transition-colors">
+    <header class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-20">
+        <div class="flex justify-between items-center max-w-2xl mx-auto w-full">
+            <div>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i data-lucide="calendar-range" class="w-5 h-5 text-indigo-500"></i> Planner
+                </h2>
+                <p class="text-xs text-slate-500">Design your perfect day.</p>
+            </div>
+            <div class="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
+                <button onclick="setPlannerTab('unscheduled')" id="tab-unscheduled" class="px-3 py-1.5 rounded-md text-xs font-bold transition-all bg-white dark:bg-slate-700 shadow-sm text-indigo-600 dark:text-indigo-300">
+                    To Plan
+                </button>
+                <button onclick="setPlannerTab('scheduled')" id="tab-scheduled" class="px-3 py-1.5 rounded-md text-xs font-bold transition-all text-slate-500 hover:text-slate-800">
+                    Schedule
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex-1 overflow-y-auto custom-scroll p-4 pb-24">
+        <div class="max-w-2xl mx-auto space-y-6">
+            
+            <div id="planner-section-unscheduled" class="animate-in fade-in duration-300">
+                <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-xl p-4 mb-6 border border-indigo-100 dark:border-indigo-800/50 flex gap-3 items-start">
+                    <i data-lucide="info" class="w-5 h-5 text-indigo-500 shrink-0 mt-0.5"></i>
+                    <p class="text-xs text-indigo-800 dark:text-indigo-200 leading-relaxed">
+                        <strong>How to use:</strong> Tap the <i data-lucide="clock" class="w-3 h-3 inline"></i> icon on any Chapter or Topic below to set its duration (e.g., 3 hours). The app will calculate the time range for you.
+                    </p>
+                </div>
+                
+                <div id="planner-pool-list" class="space-y-4 min-h-[200px]">
+                    </div>
+                
+                <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
+                    <h3 class="font-bold text-sm text-slate-700 dark:text-slate-300 mb-3">Quick Add Task</h3>
+                    <form onsubmit="event.preventDefault(); addPlannerTask();" class="flex gap-2">
+                        <input type="text" id="planner-new-text" placeholder="Add custom task..." class="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm dark:text-white outline-none focus:border-indigo-500">
+                        <button type="submit" class="bg-slate-800 dark:bg-slate-700 hover:bg-slate-700 text-white px-4 rounded-xl font-bold transition-all">
+                            <i data-lucide="plus" class="w-5 h-5"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="planner-section-scheduled" class="hidden animate-in fade-in duration-300">
+                <div id="planner-schedule-list" class="space-y-4">
+                    </div>
+
+                <div id="planner-completed-container" class="mt-8 hidden">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="h-px flex-1 bg-slate-200 dark:bg-slate-800"></div>
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Completed</span>
+                        <div class="h-px flex-1 bg-slate-200 dark:bg-slate-800"></div>
+                    </div>
+                    <div id="planner-completed-list" class="space-y-2 opacity-60 hover:opacity-100 transition-opacity">
+                        </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
 <div id="view-leaderboard" class="hidden flex-1 flex flex-col overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors">
     <header class="px-8 py-6 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex flex-col md:flex-row justify-between md:items-center gap-4">
         <div>
@@ -853,6 +930,53 @@ window.showToast = function(message) {
         <div class="grid grid-cols-1 gap-2" id="modal-prayer-list"></div>
     </div>
 </div>
+<div id="scheduler-modal" class="hidden fixed inset-0 z-[90] bg-black/80 backdrop-blur-sm flex items-end md:items-center justify-center sm:p-4">
+    <div class="bg-white dark:bg-slate-900 w-full md:w-[400px] md:rounded-2xl rounded-t-2xl border-t md:border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden animate-in slide-in-from-bottom-10 duration-200">
+        
+        <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
+            <div>
+                <h3 class="font-bold text-lg text-slate-900 dark:text-white">Plan This Session</h3>
+                <p class="text-xs text-slate-500" id="scheduler-subtitle">Set your timing</p>
+            </div>
+            <button onclick="closeScheduler()" class="p-2 bg-slate-200 dark:bg-slate-800 rounded-full text-slate-500 hover:text-red-500">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        <div class="p-6 space-y-6">
+            <input type="hidden" id="scheduler-task-id">
+            <input type="hidden" id="scheduler-is-chapter">
+            <input type="hidden" id="scheduler-chapter-name">
+
+            <div class="space-y-2">
+                <label class="text-xs font-bold uppercase tracking-wider text-slate-500">Start Time</label>
+                <div class="relative">
+                    <input type="time" id="scheduler-start" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-lg font-bold text-slate-900 dark:text-white outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all">
+                    <i data-lucide="clock" class="absolute right-4 top-3.5 w-5 h-5 text-slate-400"></i>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-xs font-bold uppercase tracking-wider text-slate-500">Duration (Hours)</label>
+                <div class="grid grid-cols-4 gap-2">
+                    <button type="button" onclick="setDuration(0.5)" class="dur-btn p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-sm font-medium transition-colors">0.5h</button>
+                    <button type="button" onclick="setDuration(1)" class="dur-btn p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-sm font-medium transition-colors">1h</button>
+                    <button type="button" onclick="setDuration(2)" class="dur-btn p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-sm font-medium transition-colors">2h</button>
+                    <button type="button" onclick="setDuration(3)" class="dur-btn p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-sm font-medium transition-colors">3h</button>
+                </div>
+                <div class="flex items-center gap-3 mt-2">
+                    <input type="number" id="scheduler-duration" placeholder="Custom" class="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-lg font-bold text-slate-900 dark:text-white outline-none focus:border-indigo-500">
+                    <span class="text-sm font-bold text-slate-500">Hours</span>
+                </div>
+            </div>
+
+            <button onclick="confirmSchedule()" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-lg shadow-lg shadow-indigo-500/30 transition-all transform active:scale-95 flex items-center justify-center gap-2">
+                <i data-lucide="calendar-check" class="w-5 h-5"></i>
+                Set Schedule
+            </button>
+        </div>
+    </div>
+</div>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -917,40 +1041,72 @@ window.showToast = function(message) {
             }
         }
 
-        // --- AUTH FUNCTIONS ---
-        window.handleAuth = async (mode) => {
-            const email = document.getElementById('auth-email').value;
-            const pass = document.getElementById('auth-pass').value;
-            const errEl = document.getElementById('auth-error');
-            const errMsg = document.getElementById('auth-error-msg');
-            const loader = document.getElementById('auth-loader');
-            const btnText = document.getElementById('auth-btn-text');
+ // ==========================================
+ // ==========================================
+    // 🔐 VIP AUTHENTICATION (Final Fixed Version)
+    // ==========================================
 
-            if(!email || !pass) {
-                errMsg.textContent = "Please fill in all fields.";
-                errEl.classList.remove('hidden');
-                return;
-            }
+    // 1. VIP GUEST LIST
+    const allowedEmails = [
+        "neo719076@gmail.com"  // <--- REPLACE WITH YOUR EMAIL
+            ];
 
-            loader.classList.remove('hidden');
-            btnText.textContent = "Processing...";
-            errEl.classList.add('hidden');
+    window.handleAuth = async (mode) => {
+        const emailField = document.getElementById('auth-email');
+        const passField = document.getElementById('auth-pass');
+        const loader = document.getElementById('auth-loader');
+        const btnText = document.getElementById('auth-btn-text');
 
-            try {
-                if(mode === 'login') {
-                    await signInWithEmailAndPassword(auth, email, pass);
-                } else {
-                    await createUserWithEmailAndPassword(auth, email, pass);
+        const email = emailField.value.toLowerCase().trim();
+        const pass = passField.value;
+
+        // START SPINNER: Show loader, hide text
+        if(loader) loader.classList.remove('hidden');
+        if(btnText) btnText.classList.add('opacity-0');
+
+        try {
+            // 🛑 BOUNCER CHECK (Only runs if mode is 'signup')
+            if (mode === 'signup' || mode === 'register') {
+                const isAllowed = allowedEmails.some(allowed => allowed.toLowerCase() === email);
+                
+                if (!isAllowed) {
+                    throw new Error("VIP_ONLY"); 
                 }
-                document.getElementById('auth-modal').classList.add('hidden');
-            } catch (error) {
-                errMsg.textContent = error.message.replace('Firebase: ', '');
-                errEl.classList.remove('hidden');
-            } finally {
-                loader.classList.add('hidden');
-                btnText.textContent = mode === 'login' ? "Log In" : "Create Account";
+                
+                // Create User
+                await createUserWithEmailAndPassword(auth, email, pass);
+                
+                showPopup('success', 'Welcome Aboard! 🚀', 'Your account has been created successfully!');
+            } 
+            else {
+                // Login User
+                await signInWithEmailAndPassword(auth, email, pass);
             }
-        };
+
+        } catch (error) {
+            console.error("Auth Error:", error);
+
+            // 🚨 HANDLE ERRORS WITH POPUPS
+            if (error.message === "VIP_ONLY") {
+                showPopup('error', 'Invite Only', 'Sorry! This app is currently exclusively for VIP members.\n\nPlease contact the developer to get access.');
+            } else if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                showPopup('error', 'Account Not Found', 'It looks like you are a new user or the password is wrong.\n\nIf you are new, please create an account first!');
+            } else if (error.code === 'auth/email-already-in-use') {
+                showPopup('info', 'Already Registered', 'This email is already registered.\nPlease Log In instead.');
+            } else if (error.code === 'auth/weak-password') {
+                showPopup('error', 'Weak Password', 'Password must be at least 6 characters.');
+            } else if (error.code === 'auth/too-many-requests') {
+                showPopup('error', 'Too Many Attempts', 'Access blocked due to many failed attempts. Try again later.');
+            } else {
+                showPopup('error', 'Authentication Failed', error.message);
+            }
+        } finally {
+            // ✅ STOP SPINNER (This runs no matter what!)
+            if(loader) loader.classList.add('hidden');
+            if(btnText) btnText.classList.remove('opacity-0');
+        }
+    };  
+
 
         // FIXED: Added unsubscribeDoc() call to prevent memory leak
         window.handleLogout = async () => {
@@ -1006,240 +1162,757 @@ window.showToast = function(message) {
         }
 
         // --- DATA ---
-
-// --- DATA ---
 const mainSchedule = [
-    {
+   // --- CURRENT ACTIVE TARGET: AIATS-4 (JAN 18) ---
+   {
        name: "AIATS-4",
        date: new Date('2026-01-18T00:00:00'),
        syllabus: [
+           // --- PHYSICS ---
            { 
                subject: "Physics", 
-               topic: "Thermal Properties", 
+               topic: "Thermal Properties of Matter", 
                dailyTests: [
-                   {name:"DT-38 (Phy-XI)", subs:["Temp Scales", "Ideal Gas Eq", "Thermal Expansion (Linear, Area, Vol)"]}, 
-                   {name:"DT-39 (Phy-XI)", subs:["Specific Heat Capacity", "Calorimetry Principles", "Change of State (Latent Heat)"]}, 
-                   {name:"DT-40 (Phy-XI)", subs:["Heat Transfer: Conduction", "Thermal Conductivity", "Convection"]}, 
-                   {name:"DT-41 (Phy-XI)", subs:["Heat Transfer: Radiation"]}
+                   {name:"DT-38 (Phy-XI)", subs:["Temperature", "Ideal Gas Equation", "Thermal Expansion"]},
+                   {name:"DT-39 (Phy-XI)", subs:["Calorimetry", "Change of State"]},
+                   {name:"DT-40 (Phy-XI)", subs:["Heat Transfer: Conduction", "Heat Transfer: Convection"]},
+                   {name:"DT-41 (Phy-XI)", subs:["Heat Transfer: Radiation", "Stefan's Law", "Wien's Law"]}
                ] 
            },
            { 
                subject: "Physics", 
                topic: "Thermodynamics", 
                dailyTests: [
-                   {name:"DT-42 (Phy-XI)", subs:["Thermal Equilibrium", "Zeroth Law", "Internal Energy", "First Law of Thermodynamics"]}, 
-                   {name:"DT-43 (Phy-XI)", subs:["Thermodynamic Processes (Isochoric, Isobaric, Isothermal, Adiabatic)", "Work Done"]}, 
-                   {name:"DT-44 (Phy-XI)", subs:["Second Law of Thermodynamics", "Reversible & Irreversible Processes"]}
+                   {name:"DT-42 (Phy-XI)", subs:["First Law of Thermodynamics", "Internal Energy"]},
+                   {name:"DT-43 (Phy-XI)", subs:["Thermodynamic Processes"]},
+                   {name:"DT-44 (Phy-XI)", subs:["Heat Engines", "Carnot Engine", "Second Law of Thermodynamics"]}
                ] 
            },
            { 
                subject: "Physics", 
                topic: "Kinetic Theory", 
                dailyTests: [
-                   {name:"DT-45 (Phy-XI)", subs:["Molecular Nature of Matter", "Behavior of Gases", "Kinetic Theory Postulates", "Law of Equipartition of Energy", "Mean Free Path"]}
+                   {name:"DT-45 (Phy-XI)", subs:["Kinetic Theory Postulates", "Law of Equipartition of Energy", "Mean Free Path"]}
                ] 
            },
            { 
                subject: "Physics", 
                topic: "Oscillations", 
                dailyTests: [
-                   {name:"DT-46 (Phy-XI)", subs:["Periodic & Oscillatory Motion", "SHM Equation", "Phase", "Uniform Circular Motion Reference"]}, 
-                   {name:"DT-47 (Phy-XI)", subs:["Velocity & Acceleration in SHM", "Force Law", "Energy in SHM"]}, 
-                   {name:"DT-48 (Phy-XI)", subs:["Simple Pendulum", "Spring-Block Systems", "Resonance"]}
+                   {name:"DT-46 (Phy-XI)", subs:["SHM Equation", "Uniform Circular Motion"]},
+                   {name:"DT-47 (Phy-XI)", subs:["Energy in SHM", "Force Law"]},
+                   {name:"DT-48 (Phy-XI)", subs:["Simple Pendulum", "Spring Systems"]}
                ] 
            },
            { 
                subject: "Physics", 
                topic: "Waves", 
                dailyTests: [
-                   {name:"DT-49 (Phy-XI)", subs:["Transverse & Longitudinal Waves", "Amplitude & Phase", "Wavelength & Frequency"]}, 
-                   {name:"DT-50 (Phy-XI)", subs:["Displacement Relation", "Speed of Travelling Wave", "Principle of Superposition"]}, 
-                   {name:"DT-51 (Phy-XI)", subs:["Reflection of Waves", "Standing Waves", "Beats"]}
+                   {name:"DT-49 (Phy-XI)", subs:["Transverse Waves", "Longitudinal Waves"]},
+                   {name:"DT-50 (Phy-XI)", subs:["Speed of Travelling Wave"]},
+                   {name:"DT-51 (Phy-XI)", subs:["Superposition Principle", "Reflection of Waves", "Beats"]}
                ] 
            },
+
+           // --- CHEMISTRY ---
            { 
                subject: "Chemistry", 
                topic: "Solutions", 
                dailyTests: [
-                   {name:"DT-1 (Chem-XII)", subs:["Types of Solutions", "Concentration Terms", "Solubility (Henry's Law)", "Vapour Pressure (Raoult's Law)"]}, 
-                   {name:"DT-2 (Chem-XII)", subs:["Ideal & Non-Ideal Solutions", "Colligative Properties (RLVP, Elevation in BP, Depression in FP, Osmotic Pressure)", "Van't Hoff Factor"]}
+                   {name:"DT-1 (Chem-XII)", subs:["Henry's Law", "Raoult's Law"]},
+                   {name:"DT-2 (Chem-XII)", subs:["Colligative Properties", "Van't Hoff Factor"]}
                ] 
            },
            { 
                subject: "Chemistry", 
-               topic: "Kinetics", 
+               topic: "Chemical Kinetics", 
                dailyTests: [
-                   {name:"DT-7 (Chem-XII)", subs:["Rate of Reaction", "Factors Affecting Rate", "Rate Law & Constant", "Order & Molecularity"]}, 
-                   {name:"DT-8 (Chem-XII)", subs:["Integrated Rate Equations (Zero & 1st Order)", "Half-Life", "Pseudo First Order", "Arrhenius Eq"]}, 
-                   {name:"DT-9 (Chem-XII)", subs:["Effect of Catalyst", "Collision Theory of Chemical Reactions"]}
+                   {name:"DT-7 (Chem-XII)", subs:["Rate Laws", "Order of Reaction", "Integrated Rate Equation"]},
+                   {name:"DT-8 (Chem-XII)", subs:["Pseudo 1st Order Reaction", "Arrhenius Equation"]},
+                   {name:"DT-9 (Chem-XII)", subs:["Effect of Catalyst", "Collision Theory"]}
                ] 
            },
            { 
                subject: "Chemistry", 
-               topic: "Organic Basics", 
+               topic: "GOC: Organic Basics", 
                dailyTests: [
-                   {name:"DT-23 (Chem-XI)", subs:["Classification of Organic Compounds", "Nomenclature (IUPAC)"]}, 
-                   {name:"DT-24 (Chem-XI)", subs:["Isomerism", "Fission of Bond", "Nucleophiles & Electrophiles"]}, 
-                   {name:"DT-25 (Chem-XI)", subs:["Inductive Effect", "Resonance Effect", "Electromeric Effect", "Hyperconjugation"]}, 
-                   {name:"DT-26 (Chem-XI)", subs:["Reaction Intermediates: Carbocations, Carbanions, Free Radicals"]}, 
-                   {name:"DT-27 (Chem-XI)", subs:["Types of Organic Reactions", "Purification Methods", "Qualitative & Quantitative Analysis"]}
+                   {name:"DT-23 (Chem-XI)", subs:["IUPAC Nomenclature"]},
+                   {name:"DT-24 (Chem-XI)", subs:["Isomerism", "Nucleophiles & Electrophiles"]},
+                   {name:"DT-25 (Chem-XI)", subs:["Inductive Effect", "Resonance", "Hyperconjugation"]},
+                   {name:"DT-26 (Chem-XI)", subs:["Carbocation", "Carbanion", "Free Radicals"]},
+                   {name:"DT-27 (Chem-XI)", subs:["Purification Methods", "Qualitative Analysis", "Quantitative Analysis"]}
+               ] 
+           },
+
+           // --- BOTANY ---
+           { 
+               subject: "Botany", 
+               topic: "Photosynthesis in Higher Plants", 
+               dailyTests: [
+                   {name:"DT-26 (Bot-XI)", subs:["Light Reaction", "Electron Transport System (ETS)"]},
+                   {name:"DT-27 (Bot-XI)", subs:["C3 Cycle", "C4 Cycle", "Photorespiration"]}
                ] 
            },
            { 
                subject: "Botany", 
-               topic: "Photosynthesis", 
+               topic: "Respiration in Plants", 
                dailyTests: [
-                   {name:"DT-26 (Bot-XI)", subs:["Early Experiments", "Site of Photosynthesis", "Pigments", "Light Reaction", "Electron Transport", "Splitting of Water", "Cyclic & Non-cyclic Photophos"]}, 
-                   {name:"DT-27 (Bot-XI)", subs:["Chemiosmotic Hypothesis", "Biosynthetic Phase (C3 Cycle)", "C4 Pathway", "Photorespiration", "Factors affecting Photosynthesis"]}
+                   {name:"DT-28 (Bot-XI)", subs:["Glycolysis", "Fermentation", "Krebs Cycle"]},
+                   {name:"DT-29 (Bot-XI)", subs:["ETS", "Oxidative Phosphorylation", "Respiratory Quotient"]}
                ] 
            },
            { 
                subject: "Botany", 
-               topic: "Respiration", 
+               topic: "Plant Growth & Development", 
                dailyTests: [
-                   {name:"DT-28 (Bot-XI)", subs:["Do Plants Breathe?", "Glycolysis", "Fermentation", "Aerobic Respiration", "TCA Cycle"]}, 
-                   {name:"DT-29 (Bot-XI)", subs:["Electron Transport System (ETS)", "Oxidative Phosphorylation", "Amphibolic Pathway", "Respiratory Quotient"]}
+                   {name:"DT-30 (Bot-XI)", subs:["Growth Phases", "Growth Rates", "Differentiation"]},
+                   {name:"DT-31 (Bot-XI)", subs:["Auxins", "Gibberellins", "Cytokinins"]},
+                   {name:"DT-32 (Bot-XI)", subs:["Ethylene", "Abscisic Acid (ABA)", "Seed Germination"]}
                ] 
            },
-           { 
-               subject: "Botany", 
-               topic: "Plant Growth", 
-               dailyTests: [
-                   {name:"DT-30 (Bot-XI)", subs:["Growth Phases & Rates", "Differentiation, Dedifferentiation, Redifferentiation", "Development"]}, 
-                   {name:"DT-31 (Bot-XI)", subs:["Plant Growth Regulators: Auxins", "Gibberellins", "Cytokinins"]}, 
-                   {name:"DT-32 (Bot-XI)", subs:["Ethylene", "Abscisic Acid", "Photoperiodism", "Vernalisation"]}
-               ] 
-           },
+
+           // --- ZOOLOGY ---
            { 
                subject: "Zoology", 
-               topic: "Chem Coordination", 
+               topic: "Chemical Coordination", 
                dailyTests: [
-                   {name:"DT-25 (Zoo-XI)", subs:["Endocrine Glands", "Hypothalamus", "Pituitary Gland"]}, 
-                   {name:"DT-26 (Zoo-XI)", subs:["Pineal", "Thyroid", "Parathyroid", "Thymus", "Adrenal"]}, 
-                   {name:"DT-27 (Zoo-XI)", subs:["Pancreas", "Testis", "Ovary"]}, 
-                   {name:"DT-28 (Zoo-XI)", subs:["Hormones of Heart/Kidney/GIT", "Mechanism of Hormone Action"]}
+                   {name:"DT-25 (Zoo-XI)", subs:["Hypothalamus", "Pituitary Gland"]},
+                   {name:"DT-26 (Zoo-XI)", subs:["Thyroid Gland", "Parathyroid Gland", "Adrenal Gland"]},
+                   {name:"DT-27 (Zoo-XI)", subs:["Pineal Gland", "Thymus", "Pancreas"]},
+                   {name:"DT-28 (Zoo-XI)", subs:["Gonads", "Mechanism of Hormone Action"]}
                ] 
            },
            { 
                subject: "Zoology", 
                topic: "Animal Kingdom", 
                dailyTests: [
-                   {name:"DT-29 (Zoo-XI)", subs:["Basis of Classification"]}, 
-                   {name:"DT-30 (Zoo-XI)", subs:["Phylum Porifera"]}, 
-                   {name:"DT-31 (Zoo-XI)", subs:["Phylum Coelenterata (Cnidaria)"]}, 
-                   {name:"DT-32 (Zoo-XI)", subs:["Phylum Ctenophora", "Phylum Platyhelminthes"]}, 
-                   {name:"DT-33 (Zoo-XI)", subs:["Phylum Aschelminthes", "Phylum Annelida"]}, 
-                   {name:"DT-34 (Zoo-XI)", subs:["Phylum Arthropoda", "Phylum Mollusca"]}, 
-                   {name:"DT-35 (Zoo-XI)", subs:["Phylum Echinodermata", "Phylum Hemichordata"]},
-                   {name:"DT-36 (Zoo-XI)", subs:["Chordata Intro", "Cyclostomata", "Chondrichthyes", "Osteichthyes"]}, 
-                   {name:"DT-37 (Zoo-XI)", subs:["Class Amphibia", "Class Reptilia"]},
-                   {name:"DT-39 (Zoo-XI)", subs:["Class Aves"]}, 
-                   {name:"DT-40 (Zoo-XI)", subs:["Class Mammalia"]}
+                   {name:"DT-29 (Zoo-XI)", subs:["Basis of Classification"]},
+                   {name:"DT-30 (Zoo-XI)", subs:["Porifera (Sponges)"]},
+                   {name:"DT-31 (Zoo-XI)", subs:["Cnidaria (Coelenterata)"]},
+                   {name:"DT-32 (Zoo-XI)", subs:["Ctenophora", "Platyhelminthes"]},
+                   {name:"DT-33 (Zoo-XI)", subs:["Aschelminthes", "Annelida"]},
+                   {name:"DT-34 (Zoo-XI)", subs:["Arthropoda", "Mollusca"]},
+                   {name:"DT-35 (Zoo-XI)", subs:["Echinodermata", "Hemichordata"]},
+                   {name:"DT-36 (Zoo-XI)", subs:["Chordata Basics", "Cyclostomata", "Pisces"]},
+                   {name:"DT-37 (Zoo-XI)", subs:["Amphibia"]},
+                   {name:"DT-38 (Zoo-XI)", subs:["Reptilia"]},
+                   {name:"DT-39 (Zoo-XI)", subs:["Aves (Birds)"]},
+                   {name:"DT-40 (Zoo-XI)", subs:["Mammalia"]}
                ] 
            },
            { 
                subject: "Zoology", 
-               topic: "Morphology", 
+               topic: "Structural Org (Animals)", 
                dailyTests: [
-                   {name:"DT-41 (Zoo-XI)", subs:["Cockroach: Morphology"]}, 
-                   {name:"DT-42 (Zoo-XI)", subs:["Cockroach: Digestive, Respiratory, Circulatory Systems"]}, 
-                   {name:"DT-43 (Zoo-XI)", subs:["Cockroach: Excretory, Nervous, Reproductive Systems"]}, 
-                   {name:"DT-44 (Zoo-XI)", subs:["Frog: Morphology & Anatomy (All Systems)"]}
+                   {name:"DT-41 (Zoo-XI)", subs:["Cockroach: Morphology"]},
+                   {name:"DT-42 (Zoo-XI)", subs:["Cockroach: Digestive System", "Cockroach: Respiratory System", "Cockroach: Circulatory System"]},
+                   {name:"DT-43 (Zoo-XI)", subs:["Cockroach: Nervous System", "Cockroach: Reproductive System", "Cockroach: Excretory System"]},
+                   {name:"DT-44 (Zoo-XI)", subs:["Frog: Morphology", "Frog: Anatomy (All Systems)"]}
                ] 
            }
        ]
    },
+
+   // --- UT-10 (FEB 1) ---
    {
        name: "UT-10",
        date: new Date('2026-02-01T00:00:00'),
-       syllabus: [ /* Placeholder */ ]
+       syllabus: [
+           {
+               subject: "Physics",
+               topic: "Wave Optics",
+               dailyTests: [
+                   {name:"DT-31 (Phy-XII)", subs:["Huygens Principle", "Interference (Young's Experiment)"]},
+                   {name:"DT-32 (Phy-XII)", subs:["Diffraction", "Polarization"]}
+               ]
+           },
+           {
+               subject: "Physics",
+               topic: "Dual Nature of Matter",
+               dailyTests: [
+                   {name:"DT-33 (Phy-XII)", subs:["Photoelectric Effect"]},
+                   {name:"DT-34 (Phy-XII)", subs:["Wave Nature of Matter", "Davisson Germer Experiment"]}
+               ]
+           },
+           {
+               subject: "Physics",
+               topic: "Atoms",
+               dailyTests: [
+                   {name:"DT-35 (Phy-XII)", subs:["Bohr Model", "Hydrogen Spectrum"]}
+               ]
+           },
+           {
+               subject: "Chemistry",
+               topic: "p-Block Elements (Group 15-18)",
+               dailyTests: [
+                   {name:"DT-10 (Chem-XII)", subs:["Nitrogen Family (Grp 15)", "Ammonia & Nitric Acid"]},
+                   {name:"DT-11 (Chem-XII)", subs:["Oxygen Family (Grp 16)", "Sulphuric Acid"]},
+                   {name:"DT-12 (Chem-XII)", subs:["Halogens (Grp 17)", "Noble Gases (Grp 18)"]}
+               ]
+           },
+           {
+               subject: "Chemistry",
+               topic: "Practical Chemistry",
+               dailyTests: [
+                   {name:"Rev (Chem-XII)", subs:["Principles of Practical Chemistry"]}
+               ]
+           },
+           {
+               subject: "Botany",
+               topic: "Biodiversity & Conservation",
+               dailyTests: [
+                   {name:"DT-21 (Bot-XII)", subs:["Biodiversity Patterns"]},
+                   {name:"DT-22 (Bot-XII)", subs:["Loss of Biodiversity", "Conservation Strategies"]}
+               ]
+           },
+           {
+               subject: "Zoology",
+               topic: "Biotech: Applications",
+               dailyTests: [
+                   {name:"DT-23 (Zoo-XII)", subs:["Biotech in Agriculture", "Bt Cotton"]},
+                   {name:"DT-24 (Zoo-XII)", subs:["Biotech in Medicine", "Insulin", "Gene Therapy"]}
+               ]
+           },
+           {
+               subject: "Zoology",
+               topic: "Evolution",
+               dailyTests: [
+                   {name:"DT-10 (Zoo-XII)", subs:["Origin of Life", "Miller's Experiment"]},
+                   {name:"DT-11 (Zoo-XII)", subs:["Evidences of Evolution"]},
+                   {name:"DT-12 (Zoo-XII)", subs:["Hardy Weinberg Principle", "Natural Selection"]},
+                   {name:"DT-13 (Zoo-XII)", subs:["Speciation"]},
+                   {name:"DT-14 (Zoo-XII)", subs:["Human Evolution"]}
+               ]
+           }
+       ]
+   },
+
+   // --- AIATS-5 (FEB 8) ---
+   {
+       name: "AIATS-5",
+       date: new Date('2026-02-08T00:00:00'),
+       syllabus: [
+           {
+               subject: "Physics",
+               topic: "Electrostatics",
+               dailyTests: [
+                   {name:"DT-1 (Phy-XII)", subs:["Electric Charges"]},
+                   {name:"DT-2 (Phy-XII)", subs:["Coulomb's Law"]},
+                   {name:"DT-3 (Phy-XII)", subs:["Electric Field"]},
+                   {name:"DT-4 (Phy-XII)", subs:["Field Lines", "Electric Dipole"]},
+                   {name:"DT-5 (Phy-XII)", subs:["Electric Flux", "Gauss's Law"]},
+                   {name:"DT-6 (Phy-XII)", subs:["Electrostatic Potential"]},
+                   {name:"DT-7 (Phy-XII)", subs:["Equipotential Surfaces"]},
+                   {name:"DT-8 (Phy-XII)", subs:["Conductors", "Dielectrics", "Polarization"]},
+                   {name:"DT-9 (Phy-XII)", subs:["Capacitors"]},
+                   {name:"DT-10 (Phy-XII)", subs:["Combination of Capacitors", "Van de Graff Generator"]}
+               ]
+           },
+           {
+               subject: "Physics",
+               topic: "Current Electricity",
+               dailyTests: [
+                   {name:"DT-11 (Phy-XII)", subs:["Ohm's Law", "Drift Velocity"]},
+                   {name:"DT-12 (Phy-XII)", subs:["Resistors Combination"]},
+                   {name:"DT-13 (Phy-XII)", subs:["Cells", "EMF", "Internal Resistance"]},
+                   {name:"DT-14 (Phy-XII)", subs:["Kirchhoff's Laws"]},
+                   {name:"DT-15 (Phy-XII)", subs:["Wheatstone Bridge", "Potentiometer"]}
+               ]
+           },
+           {
+               subject: "Chemistry",
+               topic: "Hydrocarbons (XI)",
+               dailyTests: [
+                   {name:"DT-28 (Chem-XI)", subs:["Alkanes: Prep & Properties"]},
+                   {name:"DT-29 (Chem-XI)", subs:["Alkenes: Prep & Properties"]},
+                   {name:"DT-30 (Chem-XI)", subs:["Alkynes", "Aromatic Hydrocarbons"]}
+               ]
+           },
+           {
+               subject: "Chemistry",
+               topic: "Haloalkanes & Haloarenes",
+               dailyTests: [
+                   {name:"DT-16 (Chem-XII)", subs:["Haloalkanes: Prep", "Physical Properties"]},
+                   {name:"DT-17 (Chem-XII)", subs:["SN1 Mechanism", "SN2 Mechanism"]},
+                   {name:"DT-18 (Chem-XII)", subs:["Elimination Reactions", "Reaction with Metals"]},
+                   {name:"DT-19 (Chem-XII)", subs:["Haloarenes"]}
+               ]
+           },
+           {
+               subject: "Chemistry",
+               topic: "Alcohols, Phenols & Ethers",
+               dailyTests: [
+                   {name:"DT-20 (Chem-XII)", subs:["Alcohols Prep", "Nomenclature"]},
+                   {name:"DT-21 (Chem-XII)", subs:["Phenols Prep", "Phenols Reactions"]},
+                   {name:"DT-22 (Chem-XII)", subs:["Ethers Prep", "Ethers Properties"]}
+               ]
+           },
+           {
+               subject: "Chemistry",
+               topic: "Aldehydes, Ketones & Carboxylic",
+               dailyTests: [
+                   {name:"DT-23 (Chem-XII)", subs:["Aldehydes Prep", "Ketones Prep", "Nucleophilic Addition"]},
+                   {name:"DT-24 (Chem-XII)", subs:["Carboxylic Acids", "Aldehyde Oxidation"]}
+               ]
+           },
+           {
+               subject: "Botany",
+               topic: "Sexual Reproduction in Plants",
+               dailyTests: [
+                   {name:"DT-1 (Bot-XII)", subs:["Flower Structure", "Microsporogenesis"]},
+                   {name:"DT-2 (Bot-XII)", subs:["Pistil", "Megasporangium (Ovule)"]},
+                   {name:"DT-3 (Bot-XII)", subs:["Pollination"]},
+                   {name:"DT-4 (Bot-XII)", subs:["Outbreeding Devices", "Double Fertilization"]},
+                   {name:"DT-5 (Bot-XII)", subs:["Seed", "Fruit", "Apomixis"]}
+               ]
+           },
+           {
+               subject: "Botany",
+               topic: "Principles of Inheritance",
+               dailyTests: [
+                   {name:"DT-6 (Bot-XII)", subs:["Mendelian Genetics", "Incomplete Dominance"]},
+                   {name:"DT-7 (Bot-XII)", subs:["Co-dominance", "Epistasis"]},
+                   {name:"DT-8 (Bot-XII)", subs:["Linkage", "Mutation"]},
+                   {name:"DT-9 (Bot-XII)", subs:["Genetic Disorders", "Pedigree Analysis"]}
+               ]
+           },
+           {
+               subject: "Zoology",
+               topic: "Human Reproduction",
+               dailyTests: [
+                   {name:"DT-1 (Zoo-XII)", subs:["Male Reproductive System"]},
+                   {name:"DT-2 (Zoo-XII)", subs:["Female Reproductive System"]},
+                   {name:"DT-3 (Zoo-XII)", subs:["Spermatogenesis"]},
+                   {name:"DT-4 (Zoo-XII)", subs:["Oogenesis"]},
+                   {name:"DT-5 (Zoo-XII)", subs:["Menstrual Cycle"]},
+                   {name:"DT-6 (Zoo-XII)", subs:["Pregnancy", "Parturition"]}
+               ]
+           },
+           {
+               subject: "Zoology",
+               topic: "Reproductive Health",
+               dailyTests: [
+                   {name:"DT-7 (Zoo-XII)", subs:["Population Stabilization"]},
+                   {name:"DT-8 (Zoo-XII)", subs:["Contraception Methods"]},
+                   {name:"DT-9 (Zoo-XII)", subs:["Infertility", "STIs", "ART"]}
+               ]
+           }
+       ]
+   },
+
+   // --- UT-11 (FEB 22) ---
+   {
+       name: "UT-11",
+       date: new Date('2026-02-22T00:00:00'),
+       syllabus: [
+           {
+               subject: "Physics",
+               topic: "Nuclei",
+               dailyTests: [
+                   {name:"DT-36 (Phy-XII)", subs:["Binding Energy", "Radioactivity"]}
+               ]
+           },
+           {
+               subject: "Physics",
+               topic: "Semiconductors",
+               dailyTests: [
+                   {name:"DT-37 (Phy-XII)", subs:["Diode Basics", "PN Junction"]},
+                   {name:"DT-38 (Phy-XII)", subs:["Rectifiers", "Transistors (Intro)"]}
+               ]
+           },
+           {
+               subject: "Chemistry",
+               topic: "Equilibrium (XI)",
+               dailyTests: [
+                   {name:"DT-17 (Chem-XI)", subs:["Chemical Equilibrium"]},
+                   {name:"DT-18 (Chem-XI)", subs:["Ionic Equilibrium", "pH Scale"]},
+                   {name:"DT-19 (Chem-XI)", subs:["Buffer Solutions", "Solubility Product"]}
+               ]
+           },
+           {
+               subject: "Chemistry",
+               topic: "p-Block Elements (XII Rev)",
+               dailyTests: [
+                   {name:"Rev (Chem-XII)", subs:["Group 15 Revision", "Group 16 Revision", "Group 17 Revision", "Group 18 Revision"]}
+               ]
+           },
+           {
+               subject: "Chemistry",
+               topic: "Organic Revision",
+               dailyTests: [
+                   {name:"Rev (Chem-XII)", subs:["Aldehydes Revision", "Ketones Revision", "Carboxylic Acids Revision"]}
+               ]
+           },
+           {
+               subject: "Botany",
+               topic: "Organisms & Populations",
+               dailyTests: [
+                   {name:"DT-17 (Bot-XII)", subs:["Abiotic Factors"]},
+                   {name:"DT-18 (Bot-XII)", subs:["Population Interactions", "Growth Models"]}
+               ]
+           },
+           {
+               subject: "Botany",
+               topic: "Ecosystem",
+               dailyTests: [
+                   {name:"DT-19 (Bot-XII)", subs:["Structure", "Productivity"]},
+                   {name:"DT-20 (Bot-XII)", subs:["Energy Flow", "Ecological Pyramids"]}
+               ]
+           },
+           {
+               subject: "Botany",
+               topic: "Biodiversity (Rev)",
+               dailyTests: [
+                   {name:"Rev (Bot-XII)", subs:["Biodiversity Revision", "Conservation Revision"]}
+               ]
+           },
+           {
+               subject: "Zoology",
+               topic: "Biotech: Principles",
+               dailyTests: [
+                   {name:"DT-21 (Zoo-XII)", subs:["Tools (Enzymes)", "Vectors"]},
+                   {name:"DT-22 (Zoo-XII)", subs:["Processes (PCR)", "Downstream Processing"]}
+               ]
+           },
+           {
+               subject: "Zoology",
+               topic: "Biotech Apps (Rev)",
+               dailyTests: [
+                   {name:"Rev (Zoo-XII)", subs:["Biotech Applications Revision"]}
+               ]
+           },
+           {
+               subject: "Zoology",
+               topic: "Human Repro (Rev)",
+               dailyTests: [
+                   {name:"Rev (Zoo-XII)", subs:["Human Reproduction Revision"]}
+               ]
+           }
+       ]
+   },
+
+   // --- AIATS-6 (MAR 8) ---
+   {
+       name: "AIATS-6",
+       date: new Date('2026-03-08T00:00:00'),
+       syllabus: [
+           {
+               subject: "Physics",
+               topic: "Moving Charges & Magnetism",
+               dailyTests: [
+                   {name:"DT-16 (Phy-XII)", subs:["Magnetic Force"]},
+                   {name:"DT-17 (Phy-XII)", subs:["Biot-Savart Law"]},
+                   {name:"DT-18 (Phy-XII)", subs:["Ampere's Law"]},
+                   {name:"DT-19 (Phy-XII)", subs:["Torque on Loop", "Galvanometer"]}
+               ]
+           },
+           {
+               subject: "Physics",
+               topic: "Magnetism & Matter",
+               dailyTests: [
+                   {name:"DT-20 (Phy-XII)", subs:["Magnetic Dipole", "Magnetic Flux"]},
+                   {name:"DT-21 (Phy-XII)", subs:["Earth's Magnetism", "Magnetic Properties"]}
+               ]
+           },
+           {
+               subject: "Physics",
+               topic: "EMI",
+               dailyTests: [
+                   {name:"DT-22 (Phy-XII)", subs:["Faraday's Law", "Lenz's Law"]},
+                   {name:"DT-23 (Phy-XII)", subs:["Inductance", "Eddy Currents"]}
+               ]
+           },
+           {
+               subject: "Physics",
+               topic: "Alternating Current",
+               dailyTests: [
+                   {name:"DT-24 (Phy-XII)", subs:["LCR Circuit", "Phasors"]},
+                   {name:"DT-25 (Phy-XII)", subs:["Power in AC", "Transformers"]}
+               ]
+           },
+           {
+               subject: "Physics",
+               topic: "EM Waves",
+               dailyTests: [
+                   {name:"DT-26 (Phy-XII)", subs:["EM Spectrum", "Properties of EM Waves"]}
+               ]
+           },
+           {
+               subject: "Chemistry",
+               topic: "d & f Block Elements",
+               dailyTests: [
+                   {name:"DT-13 (Chem-XII)", subs:["d-Block Properties", "KMnO4 / K2Cr2O7"]},
+                   {name:"DT-14 (Chem-XII)", subs:["f-Block (Lanthanoids)", "Actinoids"]}
+               ]
+           },
+           {
+               subject: "Chemistry",
+               topic: "Coordination Compounds",
+               dailyTests: [
+                   {name:"DT-15 (Chem-XII)", subs:["Nomenclature", "Isomerism"]},
+                   {name:"DT-16 (Chem-XII)", subs:["Bonding (VBT)", "Crystal Field Theory (CFT)"]}
+               ]
+           },
+           {
+               subject: "Chemistry",
+               topic: "Amines",
+               dailyTests: [
+                   {name:"DT-25 (Chem-XII)", subs:["Amines Preparation", "Physical Properties"]},
+                   {name:"DT-26 (Chem-XII)", subs:["Chemical Reactions", "Diazonium Salts"]}
+               ]
+           },
+           {
+               subject: "Botany",
+               topic: "Molecular Basis of Inheritance",
+               dailyTests: [
+                   {name:"DT-10 (Bot-XII)", subs:["DNA Structure", "Packaging"]},
+                   {name:"DT-11 (Bot-XII)", subs:["Replication", "RNA World"]},
+                   {name:"DT-12 (Bot-XII)", subs:["Transcription"]},
+                   {name:"DT-13 (Bot-XII)", subs:["Translation", "Genetic Code"]},
+                   {name:"DT-14 (Bot-XII)", subs:["Regulation (Lac Operon)", "DNA Fingerprinting"]}
+               ]
+           },
+           {
+               subject: "Botany",
+               topic: "Microbes in Human Welfare",
+               dailyTests: [
+                   {name:"DT-15 (Bot-XII)", subs:["Household Products", "Industrial Products"]},
+                   {name:"DT-16 (Bot-XII)", subs:["Sewage Treatment", "Biogas Production"]}
+               ]
+           },
+           {
+               subject: "Zoology",
+               topic: "Human Health & Disease",
+               dailyTests: [
+                   {name:"DT-15 (Zoo-XII)", subs:["Pathogens (Bacteria/Virus/Fungi)"]},
+                   {name:"DT-16 (Zoo-XII)", subs:["Immunity", "Malaria Life Cycle"]},
+                   {name:"DT-17 (Zoo-XII)", subs:["Vaccination", "Allergy"]},
+                   {name:"DT-18 (Zoo-XII)", subs:["AIDS"]},
+                   {name:"DT-19 (Zoo-XII)", subs:["Cancer"]},
+                   {name:"DT-20 (Zoo-XII)", subs:["Drugs", "Alcohol Abuse"]}
+               ]
+           }
+       ]
+   },
+
+   // --- AIATS-7 (MAR 22) ---
+   {
+       name: "AIATS-7",
+       date: new Date('2026-03-22T00:00:00'),
+       syllabus: [
+           {
+               subject: "Physics",
+               topic: "Ray Optics",
+               dailyTests: [
+                   {name:"DT-27 (Phy-XII)", subs:["Reflection (Mirrors)"]},
+                   {name:"DT-28 (Phy-XII)", subs:["Refraction (Lenses)"]},
+                   {name:"DT-29 (Phy-XII)", subs:["Prism", "Dispersion"]},
+                   {name:"DT-30 (Phy-XII)", subs:["Optical Instruments"]}
+               ]
+           },
+           {
+               subject: "Physics",
+               topic: "Modern Physics (Rev)",
+               dailyTests: [
+                   {name:"Rev (Phy-XII)", subs:["Dual Nature Revision", "Atoms Revision", "Nuclei Revision"]}
+               ]
+           },
+           {
+               subject: "Chemistry",
+               topic: "Biomolecules",
+               dailyTests: [
+                   {name:"DT-27 (Chem-XII)", subs:["Carbohydrates", "Proteins", "Nucleic Acids"]}
+               ]
+           },
+           {
+               subject: "Chemistry",
+               topic: "p-Block (Rev)",
+               dailyTests: [
+                   {name:"Rev (Chem-XII)", subs:["p-Block Revision"]}
+               ]
+           },
+           {
+               subject: "Botany",
+               topic: "Ecology (Rev)",
+               dailyTests: [
+                   {name:"Rev (Bot-XII)", subs:["Ecology Revision"]}
+               ]
+           },
+           {
+               subject: "Zoology",
+               topic: "Biotech (Rev)",
+               dailyTests: [
+                   {name:"DT-25 (Zoo-XII)", subs:["Transgenic Animals", "Biopiracy"]},
+                   {name:"Rev (Zoo-XII)", subs:["Biotech Revision"]}
+               ]
+           }
+       ]
+   },
+
+   // --- FULL SYLLABUS MOCK TESTS ---
+   {
+       name: "FST-1",
+       date: new Date('2026-03-27T00:00:00'),
+       syllabus: [ { subject: "General", topic: "Full Syllabus (XI + XII)", dailyTests: [{name:"Mock-1", subs:["Complete Physics", "Complete Chemistry", "Complete Biology"]}] } ]
+   },
+   {
+       name: "AIATS-8",
+       date: new Date('2026-04-05T00:00:00'),
+       syllabus: [ { subject: "General", topic: "Full Syllabus NEET Pattern", dailyTests: [{name:"Mock-2", subs:["Complete Physics", "Complete Chemistry", "Complete Biology"]}] } ]
+   },
+   {
+       name: "FST-2",
+       date: new Date('2026-04-10T00:00:00'),
+       syllabus: [ { subject: "General", topic: "Full Syllabus (XI + XII)", dailyTests: [{name:"Mock-3", subs:["Complete Physics", "Complete Chemistry", "Complete Biology"]}] } ]
+   },
+   {
+       name: "AIATS-9",
+       date: new Date('2026-04-12T00:00:00'),
+       syllabus: [ { subject: "General", topic: "Full Syllabus NEET Pattern", dailyTests: [{name:"Mock-4", subs:["Complete Physics", "Complete Chemistry", "Complete Biology"]}] } ]
+   },
+   {
+       name: "FST-3",
+       date: new Date('2026-04-17T00:00:00'),
+       syllabus: [ { subject: "General", topic: "Full Syllabus (XI + XII)", dailyTests: [{name:"Mock-5", subs:["Complete Physics", "Complete Chemistry", "Complete Biology"]}] } ]
+   },
+   {
+       name: "AIATS-10",
+       date: new Date('2026-04-19T00:00:00'),
+       syllabus: [ { subject: "General", topic: "Full Syllabus NEET Pattern", dailyTests: [{name:"Mock-6", subs:["Complete Physics", "Complete Chemistry", "Complete Biology"]}] } ]
+   },
+   {
+       name: "FST-4",
+       date: new Date('2026-04-24T00:00:00'),
+       syllabus: [ { subject: "General", topic: "Full Syllabus (XI + XII)", dailyTests: [{name:"Mock-7", subs:["Complete Physics", "Complete Chemistry", "Complete Biology"]}] } ]
+   },
+   {
+       name: "AIATS-11",
+       date: new Date('2026-04-26T00:00:00'),
+       syllabus: [ { subject: "General", topic: "Full Syllabus NEET Pattern", dailyTests: [{name:"Mock-8", subs:["Complete Physics", "Complete Chemistry", "Complete Biology"]}] } ]
    }
 ];
 
+
+
+
 const backlogPlan = {
-   name: "AIATS-5 Backlog",
-   date: new Date('2026-02-01T00:00:00'),
+   name: "AIATS-5 (Backlog)",
+   date: new Date('2026-02-08T00:00:00'),
    syllabus: [
-       { 
-           subject: "Chemistry", 
-           topic: "Hydrocarbons", 
+       // --- PHYSICS ---
+       {
+           subject: "Physics",
+           topic: "Electrostatics",
            dailyTests: [
-               {name:"DT-28 (Chem-XI)", subs:["Alkanes: Nomenclature, Isomerism, Preparation", "Alkanes: Chemical Properties"]}, 
-               {name:"DT-29 (Chem-XI)", subs:["Alkenes: Structure, Preparation", "Alkenes: Chemical Properties (Markovnikov)"]}, 
-               {name:"DT-30 (Chem-XI)", subs:["Alkynes: Prep & Properties", "Aromatic Hydrocarbons: Benzene Structure & Prep", "Electrophilic Substitution", "Carcinogenicity"]}
-           ] 
+               {name:"DT-1 (Phy-XII)", subs:["Electric Charges, Induction"]},
+               {name:"DT-2 (Phy-XII)", subs:["Coulomb's Law"]},
+               {name:"DT-3 (Phy-XII)", subs:["Electric Field"]},
+               {name:"DT-4 (Phy-XII)", subs:["Field Lines, Dipole"]},
+               {name:"DT-5 (Phy-XII)", subs:["Gauss's Law"]},
+               {name:"DT-6 (Phy-XII)", subs:["Potential"]},
+               {name:"DT-7 (Phy-XII)", subs:["Equipotential Surfaces"]},
+               {name:"DT-8 (Phy-XII)", subs:["Conductors"]},
+               {name:"DT-9 (Phy-XII)", subs:["Capacitors"]},
+               {name:"DT-10 (Phy-XII)", subs:["Combinations"]}
+           ]
        },
-       { 
-           subject: "Chemistry", 
-           topic: "Haloalkanes", 
+       {
+           subject: "Physics",
+           topic: "Current Electricity",
            dailyTests: [
-               {name:"DT-17 (Chem-XII)", subs:["Nomenclature", "Nature of C-X Bond", "Methods of Preparation"]}, 
-               {name:"DT-18 (Chem-XII)", subs:["Chemical Reactions: Nucleophilic Substitution (SN1, SN2)", "Elimination Reactions", "Stereochemical Aspects"]}, 
-               {name:"DT-19 (Chem-XII)", subs:["Reaction with Metals", "Polyhalogen Compounds"]}
-           ] 
+               {name:"DT-11 (Phy-XII)", subs:["Ohm's Law"]},
+               {name:"DT-12 (Phy-XII)", subs:["Resistors"]},
+               {name:"DT-13 (Phy-XII)", subs:["Cells, EMF"]},
+               {name:"DT-14 (Phy-XII)", subs:["Kirchhoff's Laws"]},
+               {name:"DT-15 (Phy-XII)", subs:["Instruments"]}
+           ]
        },
-       { 
-           subject: "Chemistry", 
-           topic: "Alcohols", 
+
+       // --- CHEMISTRY ---
+       {
+           subject: "Chemistry",
+           topic: "Hydrocarbons (XI)",
            dailyTests: [
-               {name:"DT-20 (Chem-XII)", subs:["Classification", "Nomenclature", "Preparation of Alcohols"]}, 
-               {name:"DT-21 (Chem-XII)", subs:["Phenols: Preparation", "Physical Properties", "Chemical Properties (Acidity)"]}, 
-               {name:"DT-22 (Chem-XII)", subs:["Ethers: Preparation", "Physical & Chemical Properties", "Uses"]}
-           ] 
+               {name:"DT-28 (Chem-XI)", subs:["Alkanes"]},
+               {name:"DT-29 (Chem-XI)", subs:["Alkenes"]},
+               {name:"DT-30 (Chem-XI)", subs:["Alkynes & Aromatic"]}
+           ]
        },
-       { 
-           subject: "Chemistry", 
-           topic: "Aldehydes", 
+       {
+           subject: "Chemistry",
+           topic: "Haloalkanes & Haloarenes",
            dailyTests: [
-               {name:"DT-23 (Chem-XII)", subs:["Aldehydes & Ketones: Prep", "Physical Properties", "Nucleophilic Addition"]}, 
-               {name:"DT-24 (Chem-XII)", subs:["Carboxylic Acids: Nomenclature, Prep", "Physical & Chemical Properties"]}
-           ] 
+               {name:"DT-16 (Chem-XII)", subs:["Haloalkanes"]},
+               {name:"DT-17 (Chem-XII)", subs:["SN1/SN2"]},
+               {name:"DT-18 (Chem-XII)", subs:["Elimination"]},
+               {name:"DT-19 (Chem-XII)", subs:["Haloarenes"]}
+           ]
        },
-       { 
-           subject: "Botany", 
-           topic: "Sexual Repro", 
+       {
+           subject: "Chemistry",
+           topic: "Alcohols, Phenols & Ethers",
            dailyTests: [
-               {name:"DT-1 (Bot-XII)", subs:["Flower Structure", "Pre-fertilization: Stamen, Microsporangium", "Pollen Grain"]}, 
-               {name:"DT-2 (Bot-XII)", subs:["Pistil, Megasporangium (Ovule)", "Embryo Sac"]}, 
-               {name:"DT-3 (Bot-XII)", subs:["Pollination: Types, Agents", "Outbreeding Devices", "Pollen-Pistil Interaction"]}, 
-               {name:"DT-4 (Bot-XII)", subs:["Double Fertilization", "Post-fertilization: Endosperm & Embryo"]}, 
-               {name:"DT-5 (Bot-XII)", subs:["Seed & Fruit Formation", "Apomixis & Polyembryony"]}
-           ] 
+               {name:"DT-20 (Chem-XII)", subs:["Alcohols"]},
+               {name:"DT-21 (Chem-XII)", subs:["Phenols"]},
+               {name:"DT-22 (Chem-XII)", subs:["Ethers"]}
+           ]
        },
-       { 
-           subject: "Botany", 
-           topic: "Genetics I", 
+       {
+           subject: "Chemistry",
+           topic: "Aldehydes & Ketones",
            dailyTests: [
-               {name:"DT-6 (Bot-XII)", subs:["Mendel's Laws of Inheritance", "Inheritance of One Gene"]}, 
-               {name:"DT-7 (Bot-XII)", subs:["Incomplete Dominance", "Co-dominance", "Inheritance of Two Genes"]}, 
-               {name:"DT-8 (Bot-XII)", subs:["Chromosomal Theory of Inheritance", "Linkage & Recombination", "Sex Determination"]}, 
-               {name:"DT-9 (Bot-XII)", subs:["Mutation", "Pedigree Analysis", "Genetic Disorders (Mendelian & Chromosomal)"]}
-           ] 
+               {name:"DT-23 (Chem-XII)", subs:["Prep & Reactions"]},
+               {name:"DT-24 (Chem-XII)", subs:["Carboxylic Acids"]}
+           ]
        },
-       { 
-           subject: "Zoology", 
-           topic: "Human Repro", 
+
+       // --- BOTANY ---
+       {
+           subject: "Botany",
+           topic: "Sexual Repro in Flowering Plants",
            dailyTests: [
-               {name:"DT-1 (Zoo-XII)", subs:["Male Reproductive System"]}, 
-               {name:"DT-2 (Zoo-XII)", subs:["Female Reproductive System", "Mammary Glands"]}, 
-               {name:"DT-3 (Zoo-XII)", subs:["Gametogenesis: Spermatogenesis & Oogenesis"]}, 
-               {name:"DT-4 (Zoo-XII)", subs:["Menstrual Cycle", "Fertilization & Implantation"]}, 
-               {name:"DT-5 (Zoo-XII)", subs:["Pregnancy & Embryonic Development", "Parturition & Lactation"]}
-           ] 
+               {name:"DT-1 (Bot-XII)", subs:["Flower"]},
+               {name:"DT-2 (Bot-XII)", subs:["Megasporangium"]},
+               {name:"DT-3 (Bot-XII)", subs:["Pollination"]},
+               {name:"DT-4 (Bot-XII)", subs:["Fertilization"]},
+               {name:"DT-5 (Bot-XII)", subs:["Seed/Fruit"]}
+           ]
        },
-       { 
-           subject: "Zoology", 
-           topic: "Repro Health", 
+       {
+           subject: "Botany",
+           topic: "Principles of Inheritance",
            dailyTests: [
-               {name:"DT-7 (Zoo-XII)", subs:["Reproductive Health: Problems & Strategies", "Population Explosion"]}, 
-               {name:"DT-8 (Zoo-XII)", subs:["Birth Control Methods", "Medical Termination of Pregnancy (MTP)"]}, 
-               {name:"DT-9 (Zoo-XII)", subs:["Sexually Transmitted Infections (STIs)", "Infertility", "Assisted Reproductive Technologies (ART)"]}
-           ] 
+               {name:"DT-6 (Bot-XII)", subs:["Mendel's Laws"]},
+               {name:"DT-7 (Bot-XII)", subs:["Epistasis"]},
+               {name:"DT-8 (Bot-XII)", subs:["Linkage"]},
+               {name:"DT-9 (Bot-XII)", subs:["Disorders"]}
+           ]
+       },
+
+       // --- ZOOLOGY ---
+       {
+           subject: "Zoology",
+           topic: "Human Reproduction",
+           dailyTests: [
+               {name:"DT-1 (Zoo-XII)", subs:["Male System"]},
+               {name:"DT-2 (Zoo-XII)", subs:["Female System"]},
+               {name:"DT-3 (Zoo-XII)", subs:["Spermatogenesis"]},
+               {name:"DT-4 (Zoo-XII)", subs:["Oogenesis"]},
+               {name:"DT-5 (Zoo-XII)", subs:["Menstrual Cycle"]},
+               {name:"DT-6 (Zoo-XII)", subs:["Pregnancy"]}
+           ]
+       },
+       {
+           subject: "Zoology",
+           topic: "Reproductive Health",
+           dailyTests: [
+               {name:"DT-7 (Zoo-XII)", subs:["Population"]},
+               {name:"DT-8 (Zoo-XII)", subs:["Contraception"]},
+               {name:"DT-9 (Zoo-XII)", subs:["STIs/ART"]}
+           ]
        }
    ]
 };
-
-
 
         // --- STATE MODIFICATION: USE REAL DATE ---
         const state = {
@@ -1259,7 +1932,7 @@ const backlogPlan = {
             mistakes: [], // NEW: Array for mistakes
             activeNotebook: null // NEW: Currently open subject
         };
-
+window.state = state;
         // --- FIXED: ADDED ESCAPE HELPERS FOR SECURITY ---
         const escapeHtml = (unsafe) => {
             if (typeof unsafe !== 'string') return '';
@@ -1473,26 +2146,26 @@ function initLocalMode() {
             }
         }
 // --- NEW HELPER: CALCULATE STATS (FIXED) ---
+// --- HELPER: CALCULATE STATS (Aligned with Dashboard) ---
 function calculateUserStats() {
-    // 1. Build a list of ALL valid test names from your schedule
+    // 1. Build Valid Tests List
     const validTests = new Set();
-    
-    // Add Main Schedule tests (Current + Future exams)
     mainSchedule.forEach(exam => {
-        if(exam.syllabus) {
-            exam.syllabus.forEach(s => s.dailyTests.forEach(dt => validTests.add(dt.name)));
-        }
+        if(exam.syllabus) exam.syllabus.forEach(s => s.dailyTests.forEach(dt => validTests.add(dt.name)));
     });
-
-    // Add Backlog tests
     if(typeof backlogPlan !== 'undefined' && backlogPlan.syllabus) {
         backlogPlan.syllabus.forEach(s => s.dailyTests.forEach(dt => validTests.add(dt.name)));
     }
 
-    // 2. Calculate Counts based on VALID tests only
-    const allCompleted = new Set(Object.values(state.tasks).flat().filter(t => t.completed).map(t => t.text));
-    
-    // Main Exam Progress (active exam only)
+    // 2. Scan Completed Tasks
+    // Normalize text to match "Study: Topic - Subtopic" format
+    const allCompleted = new Set(
+        Object.values(state.tasks).flat()
+        .filter(t => t.completed)
+        .map(t => t.text)
+    );
+
+    // 3. Main Exam % (Matches Dashboard Card)
     let mainTotal = 0, mainDone = 0;
     if(state.nextExam && state.nextExam.syllabus) {
         state.nextExam.syllabus.forEach(s => s.dailyTests.forEach(dt => dt.subs.forEach(sub => {
@@ -1502,7 +2175,7 @@ function calculateUserStats() {
     }
     const mainPct = mainTotal ? Math.round((mainDone/mainTotal)*100) : 0;
 
-    // Backlog Progress
+    // 4. Backlog % (Matches Backlog Card)
     let blTotal = 0, blDone = 0;
     if(typeof backlogPlan !== 'undefined' && backlogPlan.syllabus) {
         backlogPlan.syllabus.forEach(s => s.dailyTests.forEach(dt => dt.subs.forEach(sub => {
@@ -1512,13 +2185,12 @@ function calculateUserStats() {
     }
     const blPct = blTotal ? Math.round((blDone/blTotal)*100) : 0;
 
-    // 3. CORRECTED TEST COUNT
-    // Only count if the key is true AND it exists in our validTests list
+    // 5. Test Count
     const testCount = Object.keys(state.dailyTestsAttempted).filter(k => 
         state.dailyTestsAttempted[k] && validTests.has(k)
     ).length;
 
-    // 4. Calculate Overall Score
+    // 6. Overall Score
     const overallScore = (mainPct * 5) + (blPct * 3) + (testCount * 10);
 
     return { mainPct, blPct, testCount, overallScore };
@@ -1904,21 +2576,25 @@ function renderDailyHadith() {
     state.activeView = view;
     toggleMobileMenu(true); 
     
-    // NEW: Handle Leaderboard
+    // Handle specific view logic
     if(view === 'leaderboard') {
         fetchLeaderboard();
         switchRankTab('overall'); 
     }
-if(view === 'namaz') {
+    if(view === 'namaz') {
         renderNamazView();
+    }
+    // NEW: Handle Planner View
+    if(view === 'planner') {
+        renderPlanner();
     }
     // Reset Notebook if leaving mistakes view
     if(view === 'mistakes') {
         closeNotebook(); 
     }
 
-    // Updated list to include 'leaderboard'
-    ['overview','target','backlog', 'mistakes', 'leaderboard', 'namaz'].forEach(v => {
+    // Updated list to include 'planner'
+    ['overview','target','backlog', 'mistakes', 'leaderboard', 'namaz', 'planner'].forEach(v => {
         const btn = document.getElementById(`nav-${v}`);
         if(btn) {
             if(v === view) btn.className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all bg-brand-50 dark:bg-brand-900/20 text-brand-700 dark:text-brand-400 shadow-sm";
@@ -1931,9 +2607,9 @@ if(view === 'namaz') {
     const activeEl = document.getElementById(`view-${view}`);
     if(activeEl) activeEl.classList.remove('hidden');
     
-    // Only render standard views if NOT leaderboard
-    if(view !== 'leaderboard') renderAll();
-};       
+    // Only render standard views if NOT leaderboard or planner (Planner handles its own render)
+    if(view !== 'leaderboard' && view !== 'planner') renderAll();
+};
 
 
 
@@ -2224,29 +2900,19 @@ window.fetchLeaderboard = async function() {
         document.getElementById('leaderboard-list').innerHTML = `<div class="p-8 text-center text-red-400">Failed to load rankings.<br>Check Firestore rules.</div>`;
     }
 };
-
 window.renderLeaderboardList = function() {
     const list = document.getElementById('leaderboard-list');
     if(!list) return;
 
+    // 1. Force Recalculate My Stats Live
     const myStats = calculateUserStats();
-    const myId = currentUser ? currentUser.uid : null;
-
-    // Header Text
-    const headerScore = document.getElementById('lb-header-score');
-    if(headerScore) {
-        if(activeRankTab === 'overall') headerScore.textContent = 'Study Score';
-        else if(activeRankTab === 'exam') headerScore.textContent = 'Exam Progress';
-        else if(activeRankTab === 'backlog') headerScore.textContent = 'Backlog Progress';
-        else headerScore.textContent = 'Tests Taken';
-    }
-
-    // My Stats Card Update (WITH NAME SUPPORT)
+    
+    // 2. Update the "Profile Card" at the top immediately
     const myNameEl = document.getElementById('lb-user-name');
     if(myNameEl) myNameEl.textContent = state.displayName || (currentUser ? currentUser.email.split('@')[0] : "Guest");
     
     const myExamEl = document.getElementById('lb-my-exam');
-    if(myExamEl) myExamEl.textContent = `${myStats.mainPct}%`;
+    if(myExamEl) myExamEl.textContent = `${myStats.mainPct}%`; // This should now match Dashboard
 
     const myBacklogEl = document.getElementById('lb-my-backlog');
     if(myBacklogEl) myBacklogEl.textContent = `${myStats.blPct}%`;
@@ -2254,17 +2920,21 @@ window.renderLeaderboardList = function() {
     const myTestsEl = document.getElementById('lb-my-tests');
     if(myTestsEl) myTestsEl.textContent = myStats.testCount;
 
-    // Sort Data based on selected tab
+    const myRankEl = document.getElementById('lb-my-rank');
+
+    // 3. Render the List from Cache
+    const myId = currentUser ? currentUser.uid : null;
     let sortedData = [...leaderboardCache];
+
+    // Sort
     if (activeRankTab === 'overall') sortedData.sort((a, b) => (b.overallScore || 0) - (a.overallScore || 0));
     else if (activeRankTab === 'exam') sortedData.sort((a, b) => (b.mainPct || 0) - (a.mainPct || 0));
     else if (activeRankTab === 'backlog') sortedData.sort((a, b) => (b.blPct || 0) - (a.blPct || 0));
     else if (activeRankTab === 'tests') sortedData.sort((a, b) => (b.testCount || 0) - (a.testCount || 0));
 
-    // Calculate My Rank
+    // Find Rank
     const myRankIndex = sortedData.findIndex(u => u.id === myId);
-    const rankEl = document.getElementById('lb-my-rank');
-    if(rankEl) rankEl.textContent = myRankIndex > -1 ? `#${myRankIndex + 1}` : '-';
+    if(myRankEl) myRankEl.textContent = myRankIndex > -1 ? `#${myRankIndex + 1}` : '-';
 
     if(sortedData.length === 0) {
         list.innerHTML = `<div class="p-8 text-center text-slate-400">No data available yet. Start studying!</div>`;
@@ -2279,10 +2949,17 @@ window.renderLeaderboardList = function() {
         else scoreDisplay = `${user.testCount || 0}`;
 
         const isMe = user.id === myId;
+        // Logic to highlight YOU even if data is slightly out of sync
+        const displayScore = isMe ? (
+             activeRankTab === 'exam' ? `${myStats.mainPct}%` : 
+             activeRankTab === 'backlog' ? `${myStats.blPct}%` : 
+             activeRankTab === 'tests' ? myStats.testCount : 
+             scoreDisplay
+        ) : scoreDisplay;
+
         const rankColor = index === 0 ? 'text-yellow-500' : (index === 1 ? 'text-slate-400' : (index === 2 ? 'text-orange-500' : 'text-slate-500'));
         const medal = index === 0 ? '<i data-lucide="crown" class="w-4 h-4 inline mb-1"></i>' : `#${index + 1}`;
         
-        // CHECK FOR NAME FIRST, THEN EMAIL
         const userName = user.displayName || (user.email ? user.email.split('@')[0] : 'Anonymous');
         const firstLetter = userName.charAt(0).toUpperCase();
 
@@ -2297,13 +2974,15 @@ window.renderLeaderboardList = function() {
                         ${userName.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")} ${isMe ? '(You)' : ''}
                     </p>
                 </div>
-                <div class="col-span-4 text-right font-bold text-slate-700 dark:text-white">${scoreDisplay}</div>
+                <div class="col-span-4 text-right font-bold text-slate-700 dark:text-white">${displayScore}</div>
             </div>
         `;
     }).join('');
 
     if(window.lucide) lucide.createIcons({ root: list });
 };
+
+
      
 // --- PROFILE FUNCTIONS ---
     window.openProfileModal = function() {
@@ -2587,6 +3266,382 @@ window.acceptAiPlan = function(track) {
     }
 
     showToast(`📚 Added ${addedCount} sub-topics to your mission. Complete them to unlock the Daily Tests!`);
+};
+// --- PLANNER FUNCTIONS ---
+
+
+// --- NEW MOBILE-FIRST PLANNER LOGIC ---
+
+// 1. Tab Switching (Unscheduled vs Scheduled)
+window.state.plannerTab = 'unscheduled'; 
+
+window.setPlannerTab = function(tab) {
+    state.plannerTab = tab;
+    const unschBtn = document.getElementById('tab-unscheduled');
+    const schBtn = document.getElementById('tab-scheduled');
+    const unschSec = document.getElementById('planner-section-unscheduled');
+    const schSec = document.getElementById('planner-section-scheduled');
+
+    if(tab === 'unscheduled') {
+        unschBtn.className = "px-3 py-1.5 rounded-md text-xs font-bold transition-all bg-white dark:bg-slate-700 shadow-sm text-indigo-600 dark:text-indigo-300";
+        schBtn.className = "px-3 py-1.5 rounded-md text-xs font-bold transition-all text-slate-500 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-300";
+        unschSec.classList.remove('hidden');
+        schSec.classList.add('hidden');
+    } else {
+        schBtn.className = "px-3 py-1.5 rounded-md text-xs font-bold transition-all bg-white dark:bg-slate-700 shadow-sm text-indigo-600 dark:text-indigo-300";
+        unschBtn.className = "px-3 py-1.5 rounded-md text-xs font-bold transition-all text-slate-500 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-300";
+        schSec.classList.remove('hidden');
+        unschSec.classList.add('hidden');
+    }
+};
+// --- Helper for Accordion Toggle ---
+window.togglePlannerGroup = function(id) {
+    const body = document.getElementById(`group-body-${id}`);
+    const icon = document.getElementById(`group-icon-${id}`);
+    
+    if(body) {
+        const isHidden = body.classList.contains('hidden');
+        if(isHidden) {
+            body.classList.remove('hidden');
+            body.classList.add('animate-in', 'fade-in', 'slide-in-from-top-1');
+            if(icon) icon.style.transform = 'rotate(180deg)';
+        } else {
+            body.classList.add('hidden');
+            if(icon) icon.style.transform = 'rotate(0deg)';
+        }
+    }
+};
+// 2. Main Render Function
+window.renderPlanner = function() {
+    setPlannerTab(state.plannerTab || 'unscheduled');
+
+    const poolList = document.getElementById('planner-pool-list');
+    const scheduleList = document.getElementById('planner-schedule-list');
+    const completedList = document.getElementById('planner-completed-list');
+    const completedContainer = document.getElementById('planner-completed-container');
+    
+    if(!poolList) return;
+
+    poolList.innerHTML = '';
+    scheduleList.innerHTML = '';
+    completedList.innerHTML = '';
+
+    const k = formatDateKey(state.selectedDate);
+    const tasks = state.tasks[k] || [];
+    
+    // Filter tasks
+    const unscheduled = tasks.filter(t => !t.completed && (!t.timeLabel || t.timeLabel.trim() === ''));
+    const scheduled = tasks.filter(t => !t.completed && t.timeLabel && t.timeLabel.trim() !== '');
+    const completed = tasks.filter(t => t.completed);
+
+    // --- Helper to Group Tasks by Chapter ---
+    const groupByChapter = (taskList) => {
+        const groups = {};
+        taskList.forEach(t => {
+            // Extract chapter name or default to "General"
+            let chap = t.chapter;
+            if(!chap && t.text.includes(" - ")) chap = t.text.split(" - ")[0];
+            if(!chap) chap = 'General Tasks';
+            
+            if(!groups[chap]) groups[chap] = [];
+            groups[chap].push(t);
+        });
+        return groups;
+    };
+
+    // --- A. UNSCHEDULED TAB (With Dropdown) ---
+    if(unscheduled.length === 0) {
+        poolList.innerHTML = `<div class="flex flex-col items-center justify-center py-12 text-slate-400"><i data-lucide="check-circle-2" class="w-10 h-10 mb-2 opacity-50"></i><p class="text-sm">All set! Check your schedule.</p></div>`;
+    } else {
+        const groups = groupByChapter(unscheduled);
+        Object.entries(groups).forEach(([chapName, groupTasks], index) => {
+            // Create unique ID for accordion
+            const safeId = 'pool-' + index + '-' + Date.now(); 
+            
+            const el = document.createElement('div');
+            el.className = "bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all";
+            
+            el.innerHTML = `
+                <div class="p-3 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center cursor-pointer select-none" onclick="togglePlannerGroup('${safeId}')">
+                    <div class="flex items-center gap-2 overflow-hidden">
+                        <i data-lucide="chevron-down" id="group-icon-${safeId}" class="w-4 h-4 text-slate-400 transition-transform duration-200"></i>
+                        <div class="font-bold text-sm text-slate-800 dark:text-slate-200 truncate">
+                            ${chapName} <span class="text-xs font-normal text-slate-400 ml-1">(${groupTasks.length})</span>
+                        </div>
+                    </div>
+                    <button onclick="event.stopPropagation(); openScheduler(null, '${chapName}')" class="shrink-0 flex items-center gap-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-2.5 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-200 transition-colors z-10">
+                        <i data-lucide="clock" class="w-3 h-3"></i> Plan All
+                    </button>
+                </div>
+                
+                <div id="group-body-${safeId}" class="hidden bg-white dark:bg-slate-900">
+                    <div class="p-1 space-y-0.5">
+                        ${groupTasks.map(t => `
+                            <div class="flex items-center justify-between p-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg group transition-colors pl-8">
+                                <span class="text-xs font-medium text-slate-600 dark:text-slate-300 truncate pr-2">${t.text.replace(chapName + ' - ', '')}</span>
+                                <button onclick="openScheduler('${t.id}', '${t.text}')" class="p-1.5 text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-all" title="Plan specific topic">
+                                    <i data-lucide="arrow-right-circle" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            poolList.appendChild(el);
+        });
+    }
+
+    // --- B. SCHEDULED TAB (With Dropdown) ---
+    if(scheduled.length === 0) {
+        scheduleList.innerHTML = `<div class="text-center py-10 text-slate-400 text-xs italic">Nothing scheduled yet. Go to 'To Plan' tab.</div>`;
+    } else {
+        const groups = groupByChapter(scheduled);
+        
+        Object.entries(groups).forEach(([chapName, groupTasks], index) => {
+            const safeId = 'sched-' + index + '-' + Date.now();
+            
+            // Determine time label for the group (use the first task's time or "Mixed")
+            const timeLabel = groupTasks[0].timeLabel || "Scheduled";
+            const isMixed = groupTasks.some(t => t.timeLabel !== timeLabel);
+            const displayTime = isMixed ? "Multiple Times" : timeLabel;
+
+            const el = document.createElement('div');
+            el.className = "flex gap-3 relative mb-4"; // Flex container for Timeline + Card
+            
+            el.innerHTML = `
+                <div class="flex flex-col items-center pt-2">
+                    <div class="w-3 h-3 bg-indigo-500 rounded-full ring-4 ring-indigo-50 dark:ring-indigo-900/20 z-10"></div>
+                    <div class="w-0.5 flex-1 bg-slate-200 dark:bg-slate-800 my-1"></div>
+                </div>
+
+                <div class="flex-1 min-w-0">
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden">
+                        
+                        <div class="p-3 flex justify-between items-start cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors" onclick="togglePlannerGroup('${safeId}')">
+                            <div>
+                                <div class="inline-flex items-center gap-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-md text-[10px] font-bold mb-1.5">
+                                    <i data-lucide="clock" class="w-3 h-3"></i> ${displayTime}
+                                </div>
+                                <h4 class="font-bold text-slate-800 dark:text-white text-sm leading-tight flex items-center gap-2">
+                                    ${chapName}
+                                    <span class="text-xs font-normal text-slate-400">(${groupTasks.length})</span>
+                                </h4>
+                            </div>
+                            <i data-lucide="chevron-down" id="group-icon-${safeId}" class="w-4 h-4 text-slate-400 mt-1 transition-transform duration-200"></i>
+                        </div>
+
+                        <div id="group-body-${safeId}" class="hidden border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
+                            <div class="p-2 space-y-1">
+                                ${groupTasks.map(t => `
+                                    <div class="flex items-center gap-3 p-2 bg-white dark:bg-slate-900 rounded-lg border border-slate-100 dark:border-slate-800/50 shadow-sm">
+                                        <button onclick="toggleTask('${t.id}'); renderPlanner();" class="shrink-0 w-5 h-5 rounded-full border-2 border-slate-300 dark:border-slate-600 hover:border-green-500 hover:bg-green-50 transition-all"></button>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-xs font-medium text-slate-700 dark:text-slate-300 truncate">${t.text.replace(chapName + ' - ', '')}</p>
+                                        </div>
+                                        <button onclick="removeTime('${t.id}')" class="text-slate-300 hover:text-red-500">
+                                            <i data-lucide="x-circle" class="w-4 h-4"></i>
+                                        </button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            scheduleList.appendChild(el);
+        });
+    }
+
+    // --- C. COMPLETED SECTION ---
+    if(completed.length > 0) {
+        completedContainer.classList.remove('hidden');
+        completed.forEach(t => {
+            const el = document.createElement('div');
+            el.className = "flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800/50";
+            el.innerHTML = `
+                <div class="p-1 rounded-full bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 cursor-pointer" onclick="toggleTask('${t.id}'); renderPlanner();">
+                    <i data-lucide="check" class="w-3 h-3"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-xs font-medium text-slate-500 line-through truncate">${t.text}</p>
+                </div>
+                <span class="text-[10px] text-slate-400">${t.timeLabel || 'Done'}</span>
+            `;
+            completedList.appendChild(el);
+        });
+    } else {
+        completedContainer.classList.add('hidden');
+    }
+
+    if(window.lucide) lucide.createIcons({ root: document.getElementById('view-planner') });
+};
+
+// 3. Quick Add Task
+window.addPlannerTask = function() {
+    const textInput = document.getElementById('planner-new-text');
+    if(textInput && textInput.value.trim()) {
+        const key = formatDateKey(state.selectedDate);
+        if (!state.tasks[key]) state.tasks[key] = [];
+        
+        state.tasks[key].push({
+            id: Date.now() + Math.random().toString(36).substr(2, 9), 
+            text: textInput.value.trim(),
+            type: 'manual', 
+            subject: 'General', 
+            timeLabel: "", // Empty = Unscheduled
+            completed: false 
+        });
+        
+        textInput.value = '';
+        saveData();
+        renderPlanner();
+    }
+};
+
+// 4. Modal & Time Logic
+window.openScheduler = function(taskId, name) {
+    const modal = document.getElementById('scheduler-modal');
+    const title = document.getElementById('scheduler-subtitle');
+    const idInput = document.getElementById('scheduler-task-id');
+    const isChapInput = document.getElementById('scheduler-is-chapter');
+    const chapNameInput = document.getElementById('scheduler-chapter-name');
+    
+    // Reset inputs
+    document.getElementById('scheduler-start').value = '';
+    document.getElementById('scheduler-duration').value = '';
+
+    if(taskId) {
+        title.textContent = "Scheduling: " + name;
+        idInput.value = taskId;
+        isChapInput.value = "false";
+    } else {
+        title.textContent = "Scheduling Chapter: " + name;
+        isChapInput.value = "true";
+        chapNameInput.value = name;
+    }
+    modal.classList.remove('hidden');
+};
+
+window.closeScheduler = function() {
+    document.getElementById('scheduler-modal').classList.add('hidden');
+};
+
+window.setDuration = function(val) {
+    document.getElementById('scheduler-duration').value = val;
+};
+
+window.confirmSchedule = function() {
+    const startStr = document.getElementById('scheduler-start').value;
+    const duration = parseFloat(document.getElementById('scheduler-duration').value);
+    
+    if(!startStr || !duration) {
+        alert("Please set both start time and duration.");
+        return;
+    }
+
+    // Calculate End Time
+    const [h, m] = startStr.split(':').map(Number);
+    const startDate = new Date();
+    startDate.setHours(h, m, 0, 0);
+    const endDate = new Date(startDate.getTime() + duration * 60 * 60 * 1000);
+    
+    const formatTime = (d) => d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    const timeLabel = `${formatTime(startDate)} - ${formatTime(endDate)}`;
+
+    const k = formatDateKey(state.selectedDate);
+    const isChapter = document.getElementById('scheduler-is-chapter').value === "true";
+    
+    if(isChapter) {
+        const chapName = document.getElementById('scheduler-chapter-name').value;
+        (state.tasks[k] || []).forEach(t => {
+            let tChap = t.chapter || (t.text.includes(" - ") ? t.text.split(" - ")[0] : null);
+            if(tChap === chapName && !t.completed) {
+                t.timeLabel = timeLabel;
+            }
+        });
+    } else {
+        const taskId = document.getElementById('scheduler-task-id').value;
+        const task = (state.tasks[k] || []).find(t => t.id === taskId);
+        if(task) task.timeLabel = timeLabel;
+    }
+
+    saveData();
+    closeScheduler();
+    
+    // Auto-switch to Scheduled tab
+    setPlannerTab('scheduled');
+    renderPlanner();
+};
+
+window.removeTime = function(id) {
+    const k = formatDateKey(state.selectedDate);
+    const task = state.tasks[k].find(t => t.id === id);
+    if(task) {
+        task.timeLabel = ""; 
+        saveData();
+        renderPlanner();
+    }
+};
+
+window.addPlannerTask = function() {
+    const textInput = document.getElementById('planner-new-text');
+    const timeInput = document.getElementById('planner-new-time');
+    
+    if(textInput.value.trim()) {
+        const key = formatDateKey(state.selectedDate);
+        if (!state.tasks[key]) state.tasks[key] = [];
+        
+        state.tasks[key].push({
+            id: Date.now() + Math.random().toString(36).substr(2, 9), 
+            text: textInput.value.trim(),
+            type: 'manual', 
+            subject: 'General', 
+            timeLabel: timeInput.value.trim(), 
+            completed: false 
+        });
+        
+        textInput.value = '';
+        timeInput.value = '';
+        saveData();
+        renderPlanner();
+    }
+};
+window.assignChapterTime = function(chapName, inputId) {
+    const input = document.getElementById(inputId);
+    if(!input || !input.value.trim()) return;
+    
+    const timeVal = input.value.trim();
+    const k = formatDateKey(state.selectedDate);
+    const tasks = state.tasks[k] || [];
+    
+    let updatedCount = 0;
+    
+    tasks.forEach(t => {
+        // Match explicit chapter OR inferred chapter from text string
+        let tChap = t.chapter;
+        if (!tChap && t.text.startsWith("Study: ")) {
+            const parts = t.text.replace("Study: ", "").split(" - ");
+            if (parts.length > 1) tChap = parts[0];
+        }
+        if(!tChap) tChap = 'Miscellaneous Tasks';
+
+        // If it matches AND is currently unscheduled, update it
+        if(tChap === chapName && (!t.timeLabel || t.timeLabel.trim() === '')) {
+            t.timeLabel = timeVal;
+            updatedCount++;
+        }
+    });
+
+    if(updatedCount > 0) {
+        saveData();
+        renderPlanner();
+        // Simple toast notification
+        const toast = document.createElement('div');
+        toast.className = "fixed bottom-4 right-4 bg-slate-900 text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-in fade-in slide-in-from-bottom-2";
+        toast.textContent = `Moved ${updatedCount} tasks to ${timeVal}`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
 };
  document.addEventListener('DOMContentLoaded', init);
 
@@ -3228,5 +4283,85 @@ window.renderSyllabus = function(type, searchQuery = '') {
 };
       
     </script>
+<div id="customModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity opacity-0" id="modalBackdrop"></div>
+    
+    <div class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-[90%] max-w-sm p-6 transform scale-95 opacity-0 transition-all duration-300" id="modalCard">
+        <div id="modalIconBg" class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 bg-red-100 dark:bg-red-900/30">
+            <i id="modalIcon" data-lucide="alert-triangle" class="h-8 w-8 text-red-600 dark:text-red-400"></i>
+        </div>
+        
+        <div class="text-center">
+            <h3 id="modalTitle" class="text-xl font-bold text-slate-900 dark:text-white mb-2">Access Denied</h3>
+            <p id="modalMessage" class="text-slate-500 dark:text-slate-400 mb-6 text-sm leading-relaxed">
+                Only VIP members are allowed to enter.
+            </p>
+        </div>
+
+        <button onclick="closeModal()" id="modalBtn" class="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-semibold rounded-xl transition-colors shadow-lg shadow-blue-500/20">
+            Got it
+        </button>
+    </div>
+</div>
+
+<script>
+    // --- MODAL CONTROLLER ---
+    const modal = document.getElementById('customModal');
+    const backdrop = document.getElementById('modalBackdrop');
+    const card = document.getElementById('modalCard');
+    const icon = document.getElementById('modalIcon');
+    const iconBg = document.getElementById('modalIconBg');
+    const title = document.getElementById('modalTitle');
+    const msg = document.getElementById('modalMessage');
+    const btn = document.getElementById('modalBtn');
+
+    function showPopup(type, header, text) {
+        // 1. Setup Colors based on Type
+        if (type === 'error') {
+            // Red Style
+            iconBg.className = "mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 bg-red-100 dark:bg-red-900/30";
+            icon.className = "h-8 w-8 text-red-600 dark:text-red-400";
+            icon.setAttribute('data-lucide', 'alert-circle');
+            btn.className = "w-full py-3 px-4 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl shadow-lg shadow-red-500/20";
+        } else if (type === 'success') {
+            // Green Style
+            iconBg.className = "mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 bg-green-100 dark:bg-green-900/30";
+            icon.className = "h-8 w-8 text-green-600 dark:text-green-400";
+            icon.setAttribute('data-lucide', 'check-circle-2');
+            btn.className = "w-full py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl shadow-lg shadow-green-500/20";
+        } else {
+            // Blue/Info Style
+            iconBg.className = "mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 bg-blue-100 dark:bg-blue-900/30";
+            icon.className = "h-8 w-8 text-blue-600 dark:text-blue-400";
+            icon.setAttribute('data-lucide', 'info');
+            btn.className = "w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/20";
+        }
+
+        // 2. Set Content
+        title.innerText = header;
+        msg.innerText = text;
+        if(window.lucide) lucide.createIcons();
+
+        // 3. Show Animation
+        modal.classList.remove('hidden');
+        // Small delay to allow CSS transition to catch the removal of 'hidden'
+        setTimeout(() => {
+            backdrop.classList.remove('opacity-0');
+            card.classList.remove('scale-95', 'opacity-0');
+            card.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+
+    function closeModal() {
+        // Hide Animation
+        backdrop.classList.add('opacity-0');
+        card.classList.remove('scale-100', 'opacity-100');
+        card.classList.add('scale-95', 'opacity-0');
+        
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300); // Wait for animation to finish
+    }
+</script>
 </body>
 </html>
