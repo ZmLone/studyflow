@@ -2111,14 +2111,18 @@ function initLocalMode() {
         }
         renderAll();
     }
-        function setupSchedule() {
-            const today = new Date();
-            today.setHours(0,0,0,0);
+        
+function setupSchedule() {
+            // Get the current full date and time
+            const now = new Date();
             
-            // Find next exam based on REAL date
+            // Find the first exam where the deadline (5 PM on exam day) hasn't passed yet
             state.nextExam = mainSchedule.find(e => {
-                const ed = new Date(e.date); ed.setHours(0,0,0,0);
-                return ed >= today;
+                const examDeadline = new Date(e.date);
+                examDeadline.setHours(17, 0, 0, 0); // Set deadline to 5:00 PM (17:00)
+                
+                // If the 5 PM deadline is still in the future, this is our current target
+                return examDeadline > now;
             }) || mainSchedule[mainSchedule.length-1];
 
             const addTaskForm = document.getElementById('add-task-form');
@@ -2145,6 +2149,8 @@ function initLocalMode() {
                 newMForm.addEventListener('submit', window.saveMistake);
             }
         }
+
+
 // --- NEW HELPER: CALCULATE STATS (FIXED) ---
 // --- HELPER: CALCULATE STATS (Aligned with Dashboard) ---
 function calculateUserStats() {
